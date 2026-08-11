@@ -59,6 +59,9 @@ const RETRY_DELAY_MS = 2000
 const MAX_RUN_RETRIES = 9999
 const ACTIVE_ORDER_RETRY_MS = 60 * 1000
 const TEMPORARY_RETRY_MS = 60 * 1000
+/** Busy/temporary errors ke liye hard cap — iske baad run permanently failed (infinite reschedule loop band) */
+const MAX_BUSY_RETRIES = 30
+const MAX_BUSY_BACKOFF_MS = 30 * 60 * 1000
 
 const TEMPORARY_ERRORS = [
   'balance', 'not have enough', 'processing another transaction',
@@ -67,6 +70,26 @@ const TEMPORARY_ERRORS = [
   'already has an order', 'order in progress', 'link currently active',
   'processing previous order', 'wait for completion',
 ]
+
+/**
+ * Permanent provider errors — inhe retry karna bekar hai (order hamesha ke liye
+ * reschedule hota rehta tha). Inhe turant failed mark karte hain.
+ */
+const PERMANENT_ERRORS = [
+  'quantity less than minimal', 'quantity more than maximum', 'incorrect quantity',
+  'minimum quantity', 'maximum quantity', 'not enough quantity',
+  'incorrect link', 'invalid link', 'link not found', 'wrong link', 'private account',
+  'incorrect service', 'service not found', 'service is disabled', 'service inactive',
+  'no provider accounts configured', 'no provider mapped', 'no service mapping',
+  'not allowed', 'unsupported',
+]
+
+function isPermanentProviderError(msg?: string | null): boolean {
+  const m = (msg || '').toLowerCase()
+  if (!m) return false
+  return PERMANENT_ERRORS.some((p) => m.includes(p))
+}
+
 
 const ACCOUNT_SPECIFIC_ERRORS = [
   'invalid api key', 'api key not found', 'invalid key',
