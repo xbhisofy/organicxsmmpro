@@ -59,6 +59,9 @@ const RETRY_DELAY_MS = 2000
 const MAX_RUN_RETRIES = 9999
 const ACTIVE_ORDER_RETRY_MS = 60 * 1000
 const TEMPORARY_RETRY_MS = 60 * 1000
+/** Busy/temporary errors ke liye hard cap — iske baad run permanently failed (infinite reschedule loop band) */
+const MAX_BUSY_RETRIES = 30
+const MAX_BUSY_BACKOFF_MS = 30 * 60 * 1000
 
 const TEMPORARY_ERRORS = [
   'balance', 'not have enough', 'processing another transaction',
@@ -67,6 +70,26 @@ const TEMPORARY_ERRORS = [
   'already has an order', 'order in progress', 'link currently active',
   'processing previous order', 'wait for completion',
 ]
+
+/**
+ * Permanent provider errors — inhe retry karna bekar hai (order hamesha ke liye
+ * reschedule hota rehta tha). Inhe turant failed mark karte hain.
+ */
+const PERMANENT_ERRORS = [
+  'quantity less than minimal', 'quantity more than maximum', 'incorrect quantity',
+  'minimum quantity', 'maximum quantity', 'not enough quantity',
+  'incorrect link', 'invalid link', 'link not found', 'wrong link', 'private account',
+  'incorrect service', 'service not found', 'service is disabled', 'service inactive',
+  'no provider accounts configured', 'no provider mapped', 'no service mapping',
+  'not allowed', 'unsupported',
+]
+
+function isPermanentProviderError(msg?: string | null): boolean {
+  const m = (msg || '').toLowerCase()
+  if (!m) return false
+  return PERMANENT_ERRORS.some((p) => m.includes(p))
+}
+
 
 const ACCOUNT_SPECIFIC_ERRORS = [
   'invalid api key', 'api key not found', 'invalid key',
@@ -1737,14 +1760,45 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         const lastErr = (lastError || '').toLowerCase()
         const isActiveOrderError = lastErr.includes('active order') || lastErr.includes('wait until order') || 
           lastErr.includes('already has an order') || lastErr.includes('in progress')
-        
-        const postponeMs = isActiveOrderError ? ACTIVE_ORDER_RETRY_MS : TEMPORARY_RETRY_MS
+
+        // HARD STOP: permanent provider errors (min/max quantity, bad link, unmapped service)
+        // ya bahut zyada retries → run ko permanently fail karo, warna order infinite
+        // reschedule loop me phans jata hai (jaise Likes runs).
+        const permanent = isPermanentProviderError(lastError)
+        if (permanent || retryCount >= MAX_BUSY_RETRIES) {
+          const reason = permanent
+            ? `Permanent provider error: ${lastError}`
+            : `Stopped after ${retryCount} retries: ${lastError}`
+          await supabase.from('organic_run_schedule').update({
+            status: 'failed', started_at: null,
+            error_message: reason,
+            retry_count: 99,
+            provider_response: { ...(providerResult || {}), tried_providers: triedProviderIds },
+            provider_account_id: null, provider_account_name: null,
+            provider_order_id: null, provider_status: null,
+            last_status_check: new Date().toISOString(),
+          }).eq('id', run.id)
+          await supabase.from('engagement_order_items')
+            .update({ status: 'failed', error_message: reason })
+            .eq('id', item.id)
+            .not('status', 'in', '("cancelled","paused","completed")')
+          failed++
+          results.push({ run_id: run.id, type: item.engagement_type, run_number: run.run_number,
+            success: false, error: reason, will_retry: false, retry_attempt: retryCount })
+          await new Promise(resolve => setTimeout(resolve, 50))
+          continue
+        }
+
+        // Exponential-ish backoff so busy providers ko har minute hammer na karein
+        const postponeMs = isActiveOrderError
+          ? ACTIVE_ORDER_RETRY_MS
+          : Math.min(TEMPORARY_RETRY_MS * retryCount, MAX_BUSY_BACKOFF_MS)
         const newScheduledAt = new Date(Date.now() + postponeMs).toISOString()
         
         await supabase.from('organic_run_schedule').update({
           status: 'pending', started_at: null,
           scheduled_at: newScheduledAt,
-          error_message: `[Auto-retry #${retryCount}] All ${accountsToTry.length} accounts busy: ${lastError}`,
+          error_message: `[Auto-retry #${retryCount}/${MAX_BUSY_RETRIES}] All ${accountsToTry.length} accounts busy: ${lastError}`,
           provider_response: {
             ...(providerResult || {}),
             tried_providers: triedProviderIds,
@@ -1772,6 +1826,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         }
         results.push({ run_id: run.id, type: item.engagement_type, run_number: run.run_number, 
           success: false, error: lastError, will_retry: true, retry_attempt: retryCount, postponed_min: postponeMs / 60000 })
+
       }
 
       // Minimal delay between runs for max throughput
@@ -1953,23 +2008,32 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         processed++
       } else {
         const isTemporaryError = lastError?.startsWith('TEMP_ERROR:')
-        if (isTemporaryError) {
-          const cleanError = lastError?.replace('TEMP_ERROR: ', '') || ''
+        const cleanError = lastError?.replace('TEMP_ERROR: ', '') || ''
+        const legacyRetryCount = (run.retry_count || 0) + 1
+        const legacyPermanent = isPermanentProviderError(cleanError)
+        if (isTemporaryError && !legacyPermanent && legacyRetryCount < MAX_BUSY_RETRIES) {
           const isActiveOrder = cleanError.toLowerCase().includes('active order') || cleanError.toLowerCase().includes('wait until order')
-          const postponeMs = isActiveOrder ? ACTIVE_ORDER_RETRY_MS : TEMPORARY_RETRY_MS
+          const postponeMs = isActiveOrder
+            ? ACTIVE_ORDER_RETRY_MS
+            : Math.min(TEMPORARY_RETRY_MS * legacyRetryCount, MAX_BUSY_BACKOFF_MS)
           await supabase.from('organic_run_schedule').update({
             status: 'pending', started_at: null,
             scheduled_at: new Date(Date.now() + postponeMs).toISOString(),
-            error_message: `[Will retry] ${cleanError}`,
+            error_message: `[Will retry #${legacyRetryCount}/${MAX_BUSY_RETRIES}] ${cleanError}`,
+            retry_count: legacyRetryCount,
           }).eq('id', run.id)
           skipped++
         } else {
           await supabase.from('organic_run_schedule').update({
-            status: 'failed', error_message: lastError || 'Failed after retries',
+            status: 'failed', retry_count: 99,
+            error_message: legacyPermanent
+              ? `Permanent provider error: ${cleanError || lastError}`
+              : (cleanError || lastError || 'Failed after retries'),
           }).eq('id', run.id)
           failed++
         }
       }
+
     }
 
     const totalTime = Date.now() - startTime
