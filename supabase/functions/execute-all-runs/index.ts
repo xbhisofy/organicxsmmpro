@@ -2008,23 +2008,32 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         processed++
       } else {
         const isTemporaryError = lastError?.startsWith('TEMP_ERROR:')
-        if (isTemporaryError) {
-          const cleanError = lastError?.replace('TEMP_ERROR: ', '') || ''
+        const cleanError = lastError?.replace('TEMP_ERROR: ', '') || ''
+        const legacyRetryCount = (run.retry_count || 0) + 1
+        const legacyPermanent = isPermanentProviderError(cleanError)
+        if (isTemporaryError && !legacyPermanent && legacyRetryCount < MAX_BUSY_RETRIES) {
           const isActiveOrder = cleanError.toLowerCase().includes('active order') || cleanError.toLowerCase().includes('wait until order')
-          const postponeMs = isActiveOrder ? ACTIVE_ORDER_RETRY_MS : TEMPORARY_RETRY_MS
+          const postponeMs = isActiveOrder
+            ? ACTIVE_ORDER_RETRY_MS
+            : Math.min(TEMPORARY_RETRY_MS * legacyRetryCount, MAX_BUSY_BACKOFF_MS)
           await supabase.from('organic_run_schedule').update({
             status: 'pending', started_at: null,
             scheduled_at: new Date(Date.now() + postponeMs).toISOString(),
-            error_message: `[Will retry] ${cleanError}`,
+            error_message: `[Will retry #${legacyRetryCount}/${MAX_BUSY_RETRIES}] ${cleanError}`,
+            retry_count: legacyRetryCount,
           }).eq('id', run.id)
           skipped++
         } else {
           await supabase.from('organic_run_schedule').update({
-            status: 'failed', error_message: lastError || 'Failed after retries',
+            status: 'failed', retry_count: 99,
+            error_message: legacyPermanent
+              ? `Permanent provider error: ${cleanError || lastError}`
+              : (cleanError || lastError || 'Failed after retries'),
           }).eq('id', run.id)
           failed++
         }
       }
+
     }
 
     const totalTime = Date.now() - startTime
