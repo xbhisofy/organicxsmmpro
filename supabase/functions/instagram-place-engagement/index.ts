@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
       const bg = fetch(`${SUPABASE_URL}/functions/v1/process-engagement-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}`, apikey: SERVICE_KEY },
-        body: JSON.stringify({ engagement_order_id: order.id }),
+        body: JSON.stringify({ engagement_order_id: order.id, delivery_hours }),
       }).catch((e) => console.error("process-engagement-order bg failed", e));
       // @ts-ignore
       if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) EdgeRuntime.waitUntil(bg);
