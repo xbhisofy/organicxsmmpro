@@ -192,12 +192,26 @@ export function InstagramAccountsPanel() {
       </div>
 
       <div className="space-y-3">
-        {isLoading && <div className="text-center text-white/80 py-8">Loading...</div>}
-        {!isLoading && accounts.length === 0 && (
+        {isLoading && accounts.length === 0 && <div className="text-center text-white/80 py-8">Loading...</div>}
+        {pending
+          .filter((u) => !accounts.some((a: any) => String(a.username).toLowerCase() === u))
+          .map((u) => (
+            <div key={`pending-${u}`} className="rounded-2xl p-4 bg-[#0a0a14]/80 border border-purple-400/20 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-white/5 animate-pulse shrink-0" />
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold !text-white truncate">@{u}</span>
+                <p className="text-[11px] text-purple-200/80 mt-1 flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin" /> Profile & posts fetch ho rahe hain...
+                </p>
+              </div>
+            </div>
+          ))}
+        {!isLoading && accounts.length === 0 && pending.length === 0 && (
           <div className="text-center py-10 rounded-2xl border border-dashed border-white/10 text-white/75">
             No Instagram accounts linked yet.
           </div>
         )}
+
         {accounts.map((a: any) => (
           <div key={a.id} className="rounded-2xl p-4 bg-[#0a0a14]/80 border border-white/10 flex items-center gap-4">
             <div className="relative w-14 h-14 shrink-0">
