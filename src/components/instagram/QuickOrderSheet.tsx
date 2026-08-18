@@ -18,7 +18,7 @@ export function QuickOrderSheet({ open, onOpenChange, link, onPlaced }: QuickOrd
   const [views, setViews] = useState(5000);
   const [likes, setLikes] = useState(500);
   const [comments, setComments] = useState(0);
-  const [drip, setDrip] = useState(0);
+  const [hours, setHours] = useState(24);
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
@@ -26,7 +26,7 @@ export function QuickOrderSheet({ open, onOpenChange, link, onPlaced }: QuickOrd
     setBusy(true);
     try {
       const { data, error } = await supabase.functions.invoke("instagram-place-engagement", {
-        body: { link, views, likes, comments, drip_minutes: drip, source: "web" },
+        body: { link, views, likes, comments, delivery_hours: hours, source: "web" },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -61,8 +61,9 @@ export function QuickOrderSheet({ open, onOpenChange, link, onPlaced }: QuickOrd
             <Input type="number" min={0} value={comments} onChange={(e) => setComments(Math.max(0, Number(e.target.value) || 0))} />
           </div>
           <div>
-            <Label className="text-white/70">Drip (minutes, 0 = instant)</Label>
-            <Input type="number" min={0} value={drip} onChange={(e) => setDrip(Math.max(0, Number(e.target.value) || 0))} />
+            <Label className="text-white/70">Delivery window (hours, 0 = auto)</Label>
+            <Input type="number" min={0} max={168} value={hours} onChange={(e) => setHours(Math.min(168, Math.max(0, Number(e.target.value) || 0)))} />
+            <p className="text-[11px] text-white/50 mt-1">Quantity is spread organically with random timing across this window — likes, comments, saves and shares follow the views curve.</p>
           </div>
           <Button onClick={submit} disabled={busy} className="h-11 bg-gradient-to-b from-purple-500 to-fuchsia-600">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Place Order"}

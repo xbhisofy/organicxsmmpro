@@ -314,6 +314,9 @@ serve(async (req) => {
         .from('engagement_order_items')
         .select('id, engagement_type, service_id, quantity, price, drip_interval, drip_interval_unit')
         .eq('engagement_order_id', order.id)
+      // Optional delivery window (hours) passed by internal callers (e.g. Auto Boost).
+      // 0 / missing => organic engine picks a random window itself.
+      const requestedHours = Math.max(0, Math.min(168, Number(body.delivery_hours ?? 0) || 0))
       for (const it of items ?? []) {
         createdItemIds.push({
           type: it.engagement_type,
@@ -324,7 +327,7 @@ serve(async (req) => {
             service_id: it.service_id,
             quantity: it.quantity,
             price: it.price,
-            time_limit_hours: 0,
+            time_limit_hours: requestedHours,
             peak_hours_enabled: ord.peak_hours_enabled ?? false,
             scheduled_runs: [],
           },
