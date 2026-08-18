@@ -249,7 +249,7 @@ export function InstagramAccountsPanel() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {(() => {
-                const on = a.auto_boost_enabled !== false;
+                const on = a.auto_boost_enabled === true;
                 return (
                   <button
                     onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}

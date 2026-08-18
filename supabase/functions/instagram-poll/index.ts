@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
         };
         const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
 
-        if (preset?.mode === "auto" && (acc as any).auto_boost_enabled !== false && totalQ > 0) {
+        if (preset?.mode === "auto" && (acc as any).auto_boost_enabled === true && totalQ > 0) {
           const r = await placeOrder(acc.user_id, link, q, `Auto Boost — @${acc.username}`);
           if (r.ok) {
             ordersPlaced++;
