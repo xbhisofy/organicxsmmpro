@@ -23,7 +23,7 @@ async function placeOrder(user_id: string, link: string, p: Record<string, numbe
   const res = await fetch(`${SUPABASE_URL}/functions/v1/instagram-place-engagement`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}`, apikey: SERVICE_KEY },
-    body: JSON.stringify({ user_id, link, ...p, source: "poll-auto" }),
+    body: JSON.stringify({ user_id, link, ...p, source: "poll-auto", campaign_name: p.campaign_name as unknown as string }),
   });
   const j = await res.json().catch(() => ({}));
   return { ok: res.ok, ...j };

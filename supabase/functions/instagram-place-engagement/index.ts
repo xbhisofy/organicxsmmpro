@@ -35,6 +35,8 @@ Deno.serve(async (req) => {
     // Percent of each type's quantity delivered per drip run (1-100). 0 = let organic engine decide.
     const drip_percent_per_run = Math.min(100, Math.max(0, Math.floor(Number(body.drip_percent_per_run ?? 0))));
     const source = String(body.source ?? "web");
+    const rawCampaign = typeof body.campaign_name === "string" ? body.campaign_name.trim().slice(0, 120) : "";
+    const campaignName = rawCampaign || (source === "poll-auto" ? "Auto Boost — new post" : null);
 
     if (!link || !/instagram\.com\//i.test(link)) {
       return new Response(JSON.stringify({ error: "Invalid Instagram link" }), {
@@ -160,6 +162,7 @@ Deno.serve(async (req) => {
         status: "pending",
         is_organic_mode: true,
         peak_hours_enabled: true,
+        campaign_name: campaignName,
       })
       .select()
       .single();
