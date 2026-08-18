@@ -135,14 +135,22 @@ async function runPoll(runId: string) {
       }
     }
 
-    console.log(`[poll ${runId}] done: ${accounts.length} accounts, ${ordersPlaced} auto-orders`);
-    return new Response(JSON.stringify({ ok: true, checked: accounts.length, ordersPlaced, details }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.log(`[poll ${runId}] done: ${accounts.length} accounts, ${ordersPlaced} auto-orders`, JSON.stringify(details));
+    return;
   } catch (e) {
     console.error(`[poll ${runId}] error`, e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   }
+  }
+}
+
+Deno.serve((req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const runId = crypto.randomUUID().slice(0, 8);
+  // Scraper calls can take a minute; run in background so cron never times out.
+  const task = runPoll(runId);
+  try { (globalThis as any).EdgeRuntime?.waitUntil?.(task); } catch { /* ignore */ }
+  return new Response(JSON.stringify({ ok: true, accepted: true, run_id: runId }), {
+    status: 202, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 });
+
