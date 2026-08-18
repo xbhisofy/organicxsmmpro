@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Rocket, Droplets, Sparkles, Wallet, Code2,
   LifeBuoy, Settings, Shield, LogOut, MoreHorizontal, X, History,
-  Instagram, Grid3x3, Send
+  Instagram, Grid3x3, Send, Zap
 } from 'lucide-react';
 import logo from '@/assets/logo.jpg';
 import { useAuth } from '@/hooks/useAuth';
