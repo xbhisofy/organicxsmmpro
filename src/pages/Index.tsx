@@ -280,7 +280,7 @@ const Index = () => {
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-400 to-fuchsia-600 flex items-center justify-center">
-                        <Zap className="h-4 w-4 text-black" />
+                        <Zap className="h-4 w-4 text-white" />
                       </div>
                       <div>
                         <p className="text-[12px] font-bold !text-white leading-tight">Auto Boost</p>
