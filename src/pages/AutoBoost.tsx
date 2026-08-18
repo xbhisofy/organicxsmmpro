@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { ArrowLeft, Eye, Heart, MessageCircle, Bookmark, Share2, Repeat2, Loader2, Save, Zap, Timer, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -100,8 +99,8 @@ export default function AutoBoost() {
 
   const save = async () => {
     if (!user) return;
-    if (preset.mode === "auto" && total === 0) {
-      toast.error("Auto mode ke liye kam se kam ek quantity set karo");
+    if (total === 0) {
+      toast.error("Kam se kam ek quantity set karo");
       return;
     }
     setSaving(true);
@@ -109,6 +108,7 @@ export default function AutoBoost() {
       {
         user_id: user.id,
         ...preset,
+        mode: "auto",
         delivery_hours: hours,
         drip_minutes: schedule.intervalMinutes,
         drip_percent_per_run: schedule.percentPerRun,
@@ -174,28 +174,6 @@ export default function AutoBoost() {
         </div>
       ) : (
         <>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Zap className="w-4 h-4" /> Auto order on new posts</CardTitle>
-              <CardDescription>
-                On karne par sirf un accounts par order lagega jinke card me <b>Auto</b> toggle green hai (upar accounts list me).
-              </CardDescription>
-
-            </CardHeader>
-            <CardContent className="flex items-center justify-between gap-4">
-              <div className="text-sm">
-                <div className="font-medium">{preset.mode === "auto" ? "Auto mode ON" : "Auto mode OFF"}</div>
-                <div className="text-muted-foreground text-xs">
-                  {preset.mode === "auto" ? "New posts auto-boost honge" : "Manual — tum khud order karoge"}
-                </div>
-              </div>
-              <Switch
-                checked={preset.mode === "auto"}
-                onCheckedChange={(v) => setPreset((p) => ({ ...p, mode: v ? "auto" : "manual" }))}
-              />
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Per-post quantities</CardTitle>
