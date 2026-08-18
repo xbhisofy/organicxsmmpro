@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Eye, Heart, MessageCircle, Bookmark, Share2, Repeat2, Loader2, Save, Zap, Timer } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageMeta } from "@/components/seo/PageMeta";
+import logo from "@/assets/logo.png";
 
 type Preset = {
   views: number;
