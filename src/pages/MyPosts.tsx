@@ -9,6 +9,7 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { igQueryKeys } from '@/lib/instagramCache';
+import { igImageUrl, igImageFallback } from '@/lib/igImage';
 
 type Row = {
   media_id: string;
