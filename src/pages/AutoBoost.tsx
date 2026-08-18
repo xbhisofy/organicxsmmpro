@@ -176,28 +176,6 @@ export default function AutoBoost() {
         <>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Zap className="w-4 h-4" /> Auto order on new posts</CardTitle>
-              <CardDescription>
-                On karne par sirf un accounts par order lagega jinke card me <b>Auto</b> toggle green hai (upar accounts list me).
-              </CardDescription>
-
-            </CardHeader>
-            <CardContent className="flex items-center justify-between gap-4">
-              <div className="text-sm">
-                <div className="font-medium">{preset.mode === "auto" ? "Auto mode ON" : "Auto mode OFF"}</div>
-                <div className="text-muted-foreground text-xs">
-                  {preset.mode === "auto" ? "New posts auto-boost honge" : "Manual — tum khud order karoge"}
-                </div>
-              </div>
-              <Switch
-                checked={preset.mode === "auto"}
-                onCheckedChange={(v) => setPreset((p) => ({ ...p, mode: v ? "auto" : "manual" }))}
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
               <CardTitle>Per-post quantities</CardTitle>
               <CardDescription>Total per post: {total.toLocaleString()}</CardDescription>
             </CardHeader>
