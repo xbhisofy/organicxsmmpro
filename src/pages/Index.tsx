@@ -96,26 +96,22 @@ const Index = () => {
 
           {/* Headline */}
           <h1
-            className="!text-white text-[2.75rem] sm:text-7xl lg:text-[92px] font-extrabold tracking-[-0.03em] leading-[0.95] mb-6"
-            style={{ fontFamily: "'Syne', system-ui, sans-serif" }}
+            className="!text-white text-4xl sm:text-6xl lg:text-[76px] font-bold tracking-tight leading-[1.08] mb-6"
+            style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
           >
             Real Growth,
             <br />
             Engineered like{' '}
-            <span
-              className="italic font-normal bg-gradient-to-r from-purple-200 via-fuchsia-300 to-purple-400 bg-clip-text text-transparent"
-              style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
-            >
-              Art
-            </span>
+            <span className="text-purple-300">Art</span>
           </h1>
 
           {/* Sub */}
-          <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
             Instagram, TikTok aur YouTube par 100% organic engagement — zero bots.
             Auto Boost every new post, multi-provider failover, instant wallet
             top-ups and live order tracking, all in one panel.
           </p>
+
 
 
           {/* CTA */}
