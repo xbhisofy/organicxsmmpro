@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock } from 'lucide-react';
+import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { igQueryKeys } from '@/lib/instagramCache';
@@ -77,6 +77,22 @@ export function InstagramAccountsPanel() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const toggleAutoMut = useMutation({
+    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
+      const { error } = await supabase
+        .from('instagram_accounts')
+        .update({ auto_boost_enabled: enabled })
+        .eq('id', id);
+      if (error) throw error;
+      return enabled;
+    },
+    onSuccess: (enabled) => {
+      toast.success(enabled ? 'Auto post order ON for this account' : 'Auto post order OFF for this account');
+      qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const removeMut = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('instagram_accounts').delete().eq('id', id);
@@ -88,6 +104,7 @@ export function InstagramAccountsPanel() {
       qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
     },
   });
+
 
   return (
     <div className="space-y-4">
@@ -186,9 +203,31 @@ export function InstagramAccountsPanel() {
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {(() => {
+                const on = a.auto_boost_enabled !== false;
+                return (
+                  <button
+                    onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}
+                    disabled={toggleAutoMut.isPending}
+                    title={on ? 'Auto post order ON — new post par order lagega' : 'Auto post order OFF'}
+                    className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center gap-2 transition-colors disabled:opacity-60 ${
+                      on
+                        ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-200'
+                        : 'bg-white/5 border-white/10 text-white/60'
+                    }`}
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Auto</span>
+                    <span className={`w-8 h-4 rounded-full relative transition-colors ${on ? 'bg-emerald-500/70' : 'bg-white/15'}`}>
+                      <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${on ? 'left-[18px]' : 'left-0.5'}`} />
+                    </span>
+                  </button>
+                );
+              })()}
               <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 flex items-center">
                 View Posts
               </Link>
+
               <button
                 onClick={() => confirm(`Remove @${a.username}?`) && removeMut.mutate(a.id)}
                 className="w-9 h-9 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-400/20 text-red-300 flex items-center justify-center"
