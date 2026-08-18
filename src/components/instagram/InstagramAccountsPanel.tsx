@@ -318,7 +318,6 @@ export function InstagramAccountsPanel() {
                 return (
                   <button
                     onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}
-                    disabled={toggleAutoMut.isPending}
                     title={on ? 'Auto post order ON — new post par order lagega' : 'Auto post order OFF'}
                     className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center gap-2 transition-colors disabled:opacity-60 ${
                       on
