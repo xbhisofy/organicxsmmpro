@@ -222,6 +222,107 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Auto Boost */}
+      <section id="auto-boost" className="relative py-24 sm:py-32 border-t border-white/5 overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-[42rem] rounded-full bg-amber-500/10 blur-[120px]" />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
+          <div className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-amber-500/[0.08] via-orange-500/[0.04] to-transparent p-7 sm:p-12 backdrop-blur-sm">
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-400/10 px-3 py-1 mb-5">
+                  <Zap className="h-3.5 w-3.5 text-amber-300" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-100">New · Auto Boost</span>
+                </div>
+                <h2 className="!text-white text-3xl sm:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
+                  You post.
+                  <br />
+                  <span className="italic text-amber-200" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    It boosts itself.
+                  </span>
+                </h2>
+                <p className="text-slate-200 leading-relaxed mb-7 max-w-lg">
+                  Connect your Instagram accounts once, set your views, likes, comments, saves and shares — then
+                  forget it. The second a new post goes live, Auto Boost fires the order and drips it out over
+                  the delivery window you chose.
+                </p>
+
+                <div className="grid sm:grid-cols-2 gap-3 mb-8">
+                  {[
+                    { Icon: Instagram, title: 'Per-account control', body: 'Turn Auto Boost on for only the accounts you want.' },
+                    { Icon: Activity, title: 'Custom drip window', body: 'Spread delivery from 6 hours up to 7 days.' },
+                    { Icon: Sparkles, title: 'Your own presets', body: 'Save exact quantities per engagement type.' },
+                    { Icon: BarChart3, title: 'Tracked in history', body: 'Every auto order is tagged with a ⚡ badge.' },
+                  ].map(({ Icon, title, body }) => (
+                    <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <Icon className="h-4 w-4 text-amber-300" />
+                        <h3 className="text-[13px] font-semibold !text-white">{title}</h3>
+                      </div>
+                      <p className="text-[12.5px] text-slate-300 leading-relaxed">{body}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  to={user ? '/auto-boost' : '/auth'}
+                  className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-[13px] font-bold text-black bg-gradient-to-r from-amber-300 to-orange-400 hover:from-amber-200 hover:to-orange-300 transition-colors shadow-[0_0_28px_rgba(251,146,60,0.35)]"
+                >
+                  <Zap className="h-4 w-4" />
+                  {user ? 'Open Auto Boost' : 'Start Auto Boost free'}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              {/* Visual mock */}
+              <div className="relative">
+                <div className="rounded-2xl border border-white/10 bg-[#08070c]/80 p-5 backdrop-blur-md shadow-2xl">
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center">
+                        <Zap className="h-4 w-4 text-black" />
+                      </div>
+                      <div>
+                        <p className="text-[12px] font-bold !text-white leading-tight">Auto Boost</p>
+                        <p className="text-[10px] text-slate-400 leading-tight">@yourhandle</p>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-bold px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30">
+                      ACTIVE
+                    </span>
+                  </div>
+
+                  <div className="space-y-2.5 mb-5">
+                    {[
+                      { label: 'Views', value: '10,000', width: 'w-[92%]' },
+                      { label: 'Likes', value: '850', width: 'w-[68%]' },
+                      { label: 'Comments', value: '40', width: 'w-[34%]' },
+                      { label: 'Saves', value: '220', width: 'w-[48%]' },
+                      { label: 'Shares', value: '180', width: 'w-[42%]' },
+                    ].map(({ label, value, width }) => (
+                      <div key={label}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[11px] text-slate-300">{label}</span>
+                          <span className="text-[11px] font-semibold !text-white">{value}</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                          <div className={`h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 ${width}`} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5">
+                    <span className="text-[11px] text-slate-300">Delivery window</span>
+                    <span className="text-[11px] font-bold text-amber-200">72 hours</span>
+                  </div>
+                </div>
+                <div aria-hidden className="absolute -inset-4 -z-10 rounded-3xl bg-amber-500/10 blur-2xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Platforms */}
       <section id="platforms" className="relative py-24 border-t border-white/5">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-12 items-center">
