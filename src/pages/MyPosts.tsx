@@ -3,13 +3,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Grid3x3, ExternalLink, Rocket, PlayCircle, Image as ImageIcon, Layers, Instagram, History } from 'lucide-react';
+import { Grid3x3, ExternalLink, Rocket, PlayCircle, Image as ImageIcon, Layers, Instagram, History, Copy, Check } from 'lucide-react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useCurrency } from '@/hooks/useCurrency';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { igQueryKeys } from '@/lib/instagramCache';
 import { igImageUrl, igImageFallback } from '@/lib/igImage';
+import { toast } from 'sonner';
 
 type Row = {
   media_id: string;
@@ -45,6 +46,29 @@ export default function MyPosts() {
 
   const goBoost = (url: string) => navigate(`/engagement-order?link=${encodeURIComponent(url)}`);
 
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const copyLink = async (id: string, url: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopiedId(id);
+      toast.success('Link copied');
+      setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1600);
+    } catch {
+      toast.error('Copy nahi hua — link manually copy karo');
+    }
+  };
+
   const { data: rows = [], isLoading } = useQuery({
     queryKey: igQueryKeys.postsSummary(user?.id, selectedAccountId),
     queryFn: async () => {
@@ -78,7 +102,20 @@ export default function MyPosts() {
         if (list) list.push(o); else byShortcode.set(key, [o]);
       }
 
-      return (media ?? []).map((m: any) => {
+      // Dedupe posts — same shortcode/permalink can arrive under multiple media_ids
+      const seen = new Set<string>();
+      const uniqueMedia = (media ?? []).filter((m: any) => {
+        const key = String(
+          m.shortcode ||
+            String(m.permalink ?? '').match(/\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/)?.[1] ||
+            m.media_id,
+        ).toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      return uniqueMedia.map((m: any) => {
         const matchingOrders = m.shortcode ? (byShortcode.get(String(m.shortcode).toLowerCase()) ?? []) : [];
 
         return {
@@ -281,6 +318,21 @@ export default function MyPosts() {
                   className="w-full h-9 rounded-lg text-[12px] font-semibold bg-gradient-to-b from-purple-500 to-fuchsia-600 text-white shadow-md shadow-purple-500/20 hover:shadow-purple-500/40 flex items-center justify-center gap-1.5"
                 >
                   <Rocket className="w-3.5 h-3.5" /> Boost
+                </button>
+                <button
+                  onClick={() => copyLink(r.media_id, r.permalink)}
+                  title={r.permalink}
+                  className={`w-full h-8 rounded-lg text-[11px] font-medium border flex items-center justify-center gap-1.5 transition ${
+                    copiedId === r.media_id
+                      ? 'bg-emerald-500/15 border-emerald-400/40 text-emerald-200'
+                      : 'bg-white/5 hover:bg-white/10 border-white/10 text-white/80 hover:text-white'
+                  }`}
+                >
+                  {copiedId === r.media_id ? (
+                    <><Check className="w-3.5 h-3.5" /> Copied!</>
+                  ) : (
+                    <><Copy className="w-3.5 h-3.5" /> Copy link</>
+                  )}
                 </button>
                 {(r.active_orders > 0 || r.completed_orders > 0 || Number(r.total_spent) > 0) && (
                   <button
