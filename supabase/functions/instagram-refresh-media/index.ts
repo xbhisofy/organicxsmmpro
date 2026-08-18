@@ -122,15 +122,7 @@ Deno.serve(async (req) => {
         });
       }
       userIdCheck = userRes.user.id;
-
-      const { data: sub } = await admin
-        .from('subscriptions').select('status, plan_type').eq('user_id', userIdCheck).maybeSingle();
-      const active = sub && sub.status === 'active' && ['monthly', 'lifetime'].includes(String(sub.plan_type ?? ''));
-      if (!active) {
-        return new Response(JSON.stringify({ error: 'Active subscription required to refresh Instagram posts.' }), {
-          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
+      // No subscription gate: any signed-in user can refresh their own linked accounts.
     }
 
     const { data: account, error: accErr } = await admin
@@ -253,16 +245,18 @@ Deno.serve(async (req) => {
         acctUpdate.posts_count = normalized.length;
       }
       await admin.from('instagram_accounts').update(acctUpdate).eq('id', account.id);
+      return {
+        followers: profile?.followers ?? 0,
+        posts: normalized.length,
+        profile_ok: !!profile,
+      };
     })();
 
-    // @ts-ignore EdgeRuntime global
-    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime?.waitUntil) {
-      // @ts-ignore
-      EdgeRuntime.waitUntil(backgroundTask);
-    }
+    // Wait for the scrape so the UI gets fresh data immediately (no empty first render).
+    const result = await backgroundTask;
 
-    return new Response(JSON.stringify({ queued: true, account_id: account.id }), {
-      status: 202,
+    return new Response(JSON.stringify({ ok: true, account_id: account.id, ...result }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
