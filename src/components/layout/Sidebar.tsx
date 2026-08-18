@@ -102,27 +102,28 @@ export function Sidebar({ onClose }: SidebarProps) {
           );
         })}
 
-        {/* Auto Boost — featured */}
-        <Link
-          to="/auto-boost"
-          onClick={onClose}
-          className={cn(
-            'group relative mt-3 flex items-center gap-3 px-3 py-2.5 rounded-xl overflow-hidden border transition-all duration-200',
-            location.pathname === '/auto-boost'
-              ? 'border-amber-400/50 bg-gradient-to-r from-amber-500/25 via-orange-500/15 to-transparent'
-              : 'border-amber-400/25 bg-gradient-to-r from-amber-500/10 via-orange-500/[0.06] to-transparent hover:border-amber-400/45 hover:from-amber-500/20'
-          )}
-        >
-          <div className="absolute -top-8 -right-6 w-24 h-24 rounded-full bg-amber-500/25 blur-2xl pointer-events-none" />
-          <div className="relative w-8 h-8 shrink-0 rounded-lg flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-600 shadow-[0_0_16px_rgba(251,146,60,0.45)]">
-            <Zap className="w-4 h-4 text-black" />
-          </div>
-          <div className="relative flex flex-col min-w-0">
-            <span className="text-[13px] font-bold !text-white leading-tight">Auto Boost</span>
-            <span className="text-[9.5px] font-medium text-amber-200/80 leading-tight">New post → auto order</span>
-          </div>
-          <span className="relative ml-auto text-[8px] px-1.5 py-0.5 rounded-full font-bold bg-amber-400/20 text-amber-100 border border-amber-300/40">AUTO</span>
-        </Link>
+        {/* Auto Boost */}
+        {(() => {
+          const isActive = location.pathname === '/auto-boost';
+          return (
+            <Link
+              to="/auto-boost"
+              onClick={onClose}
+              className={cn(
+                'flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] mb-0.5 transition-all duration-150 border',
+                isActive
+                  ? 'bg-white/[0.06] border-white/10 text-white font-semibold'
+                  : 'border-transparent text-white/85 hover:text-white hover:bg-white/[0.04]'
+              )}
+            >
+              <Zap className={cn('w-4 h-4', isActive ? 'text-purple-300' : 'text-white/70')} />
+              <span className="flex-1">Auto Boost</span>
+              {!isActive && (
+                <span className="text-[8px] px-1.5 py-0.5 rounded-full font-bold bg-purple-500/20 text-purple-200 border border-purple-400/30">AUTO</span>
+              )}
+            </Link>
+          );
+        })()}
 
         {isAdmin && (
           <>
