@@ -236,7 +236,6 @@ export default function MyPosts() {
                     onError={(e) => igImageFallback(e.currentTarget, r.thumbnail_url)}
                   />
                 ) : (
-                ) : (
                   <div className="w-full h-full flex items-center justify-center text-white/80"><ImageIcon className="w-10 h-10" /></div>
                 )}
                 <div className="absolute top-2 left-2 flex items-center gap-1 px-2 h-6 rounded-full bg-black/70 backdrop-blur text-[10px] font-semibold text-white/90 uppercase">
