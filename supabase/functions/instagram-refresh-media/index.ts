@@ -171,16 +171,15 @@ Deno.serve(async (req) => {
       const started = Date.now();
       const uname = encodeURIComponent(account.username);
 
-      const [infoRes, postsRes, reelsRes] = await Promise.allSettled([
-        fetchWithRetry(`${IG_API_BASE}/info?username=${uname}`),
-        fetchWithRetry(`${IG_API_BASE}/posts?username=${uname}`),
-        fetchWithRetry(`${IG_API_BASE}/reels?username=${uname}`),
+      const [infoRes, postsRes] = await Promise.allSettled([
+        fetchWithRetry(igProfileUrl(uname)),
+        fetchWithRetry(igPostsUrl(uname)),
       ]);
 
       // Profile
       let profile: ReturnType<typeof normalizeProfile> = null;
       if (infoRes.status === 'fulfilled') {
-        profile = normalizeProfile(infoRes.value);
+        profile = normalizeProfile(infoRes.value?.profile ?? infoRes.value);
         console.log('ig_info_ok', account.username, profile?.followers);
         await logCall('profile', started, true, profile ? 1 : 0, null);
       } else {
@@ -188,7 +187,7 @@ Deno.serve(async (req) => {
         await logCall('profile', started, false, 0, String(infoRes.reason?.message ?? infoRes.reason));
       }
 
-      // Posts + reels merge
+      // Posts
       const rawPosts: any[] = [];
       if (postsRes.status === 'fulfilled') {
         const arr = postsRes.value?.posts ?? postsRes.value?.items ?? postsRes.value ?? [];
@@ -197,13 +196,7 @@ Deno.serve(async (req) => {
       } else {
         console.error('ig_posts_fail', account.username, postsRes.reason?.message);
       }
-      if (reelsRes.status === 'fulfilled') {
-        const arr = reelsRes.value?.reels ?? reelsRes.value?.items ?? reelsRes.value?.posts ?? reelsRes.value ?? [];
-        if (Array.isArray(arr)) rawPosts.push(...arr);
-        console.log('ig_reels_ok', account.username, Array.isArray(arr) ? arr.length : 0);
-      } else {
-        console.warn('ig_reels_fail', account.username, reelsRes.reason?.message);
-      }
+
 
       const seen = new Set<string>();
       const normalized = rawPosts
