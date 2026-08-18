@@ -78,7 +78,20 @@ export default function MyPosts() {
         if (list) list.push(o); else byShortcode.set(key, [o]);
       }
 
-      return (media ?? []).map((m: any) => {
+      // Dedupe posts — same shortcode/permalink can arrive under multiple media_ids
+      const seen = new Set<string>();
+      const uniqueMedia = (media ?? []).filter((m: any) => {
+        const key = String(
+          m.shortcode ||
+            String(m.permalink ?? '').match(/\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/)?.[1] ||
+            m.media_id,
+        ).toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      return uniqueMedia.map((m: any) => {
         const matchingOrders = m.shortcode ? (byShortcode.get(String(m.shortcode).toLowerCase()) ?? []) : [];
 
         return {
