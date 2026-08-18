@@ -20,11 +20,11 @@ async function placeOrder(user_id: string, link: string, p: Record<string, numbe
   return { ok: res.ok, ...j };
 }
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  const runId = crypto.randomUUID().slice(0, 8);
-  console.log(`[poll ${runId}] start`);
+async function runPoll(runId: string) {
+  {
+    console.log(`[poll ${runId}] start`);
   try {
+
     // 1) Only accounts with Auto Boost explicitly ON
     const { data: accounts, error: accErr } = await admin
       .from("instagram_accounts")
