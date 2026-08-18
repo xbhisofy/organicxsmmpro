@@ -34,9 +34,7 @@ async function runPoll(runId: string) {
     if (accErr) throw accErr;
     if (!accounts?.length) {
       console.log(`[poll ${runId}] no accounts with auto_boost_enabled=true`);
-      return new Response(JSON.stringify({ ok: true, checked: 0, ordersPlaced: 0 }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return;
     }
 
     const userIds = [...new Set(accounts.map((a) => a.user_id))];
