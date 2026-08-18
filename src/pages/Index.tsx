@@ -221,105 +221,76 @@ const Index = () => {
       </section>
 
       {/* Auto Boost */}
-      <section id="auto-boost" className="relative py-24 sm:py-32 border-t border-white/5 overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-[42rem] rounded-full bg-violet-500/12 blur-[120px]" />
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="rounded-3xl border border-violet-400/25 bg-gradient-to-br from-violet-500/[0.08] via-fuchsia-500/[0.04] to-transparent p-7 sm:p-12 backdrop-blur-sm">
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-violet-400/10 px-3 py-1 mb-5">
-                  <Zap className="h-3.5 w-3.5 text-violet-300" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-100">New · Auto Boost</span>
-                </div>
-                <h2 className="!text-white text-3xl sm:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
-                  You post.
-                  <br />
-                  <span className="italic text-violet-200" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                    It boosts itself.
-                  </span>
-                </h2>
-                <p className="text-slate-200 leading-relaxed mb-7 max-w-lg">
-                  Connect your Instagram accounts once, set your views, likes, comments, saves and shares — then
-                  forget it. The second a new post goes live, Auto Boost fires the order and drips it out over
-                  the delivery window you chose.
-                </p>
+      <section id="auto-boost" className="relative py-20 border-t border-white/5">
+        <div className="relative max-w-5xl mx-auto px-5 sm:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div>
+              <p className="text-[11px] tracking-[0.22em] uppercase text-slate-400 mb-4">Auto Boost</p>
+              <h2 className="!text-white text-3xl sm:text-4xl font-bold tracking-tight leading-tight mb-4">
+                Post karo, order khud lag jayega
+              </h2>
+              <p className="text-slate-300 leading-relaxed mb-6 max-w-lg">
+                Apna Instagram account ek baar link karo aur views, likes, comments, saves, shares ki
+                quantity set kar do. Naya post aane ke 1–3 minute me order automatically place ho jata
+                hai, aur aapke chune hue time me dheere-dheere deliver hota hai.
+              </p>
 
-                <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                  {[
-                    { Icon: Instagram, title: 'Per-account control', body: 'Turn Auto Boost on for only the accounts you want.' },
-                    { Icon: Activity, title: 'Custom drip window', body: 'Spread delivery from 6 hours up to 7 days.' },
-                    { Icon: Sparkles, title: 'Your own presets', body: 'Save exact quantities per engagement type.' },
-                    { Icon: BarChart3, title: 'Tracked in history', body: 'Every auto order is tagged with a ⚡ badge.' },
-                  ].map(({ Icon, title, body }) => (
-                    <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <Icon className="h-4 w-4 text-violet-300" />
-                        <h3 className="text-[13px] font-semibold !text-white">{title}</h3>
-                      </div>
-                      <p className="text-[12.5px] text-slate-300 leading-relaxed">{body}</p>
-                    </div>
-                  ))}
-                </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  'Har account ke liye alag on/off switch',
+                  'Delivery time 6 ghante se 7 din tak',
+                  'Aapke saved quantity presets hi use hote hain',
+                  'Auto orders history me ⚡ badge ke saath dikhte hain',
+                ].map((line) => (
+                  <li key={line} className="flex items-start gap-2.5 text-[14px] text-slate-300">
+                    <Check className="h-4 w-4 mt-0.5 text-purple-300 shrink-0" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
 
-                <Link
-                  to={user ? '/auto-boost' : '/auth'}
-                  className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-[13px] font-bold !text-white bg-gradient-to-r from-violet-300 to-orange-400 hover:from-violet-200 hover:to-orange-300 transition-colors shadow-[0_0_28px_rgba(167,139,250,0.35)]"
-                >
-                  <Zap className="h-4 w-4" />
-                  {user ? 'Open Auto Boost' : 'Start Auto Boost free'}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+              <Link
+                to={user ? '/auto-boost' : '/auth'}
+                className="inline-flex items-center gap-2 h-11 px-5 rounded-lg text-[13px] font-semibold !text-white border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] transition-colors"
+              >
+                <Zap className="h-4 w-4 text-purple-300" />
+                {user ? 'Open Auto Boost' : 'Set up Auto Boost'}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            {/* Example setup */}
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+                <p className="text-[13px] font-semibold !text-white">Example setup</p>
+                <span className="text-[11px] text-slate-400">@yourhandle</span>
               </div>
 
-              {/* Visual mock */}
-              <div className="relative">
-                <div className="rounded-2xl border border-white/10 bg-[#08070c]/80 p-5 backdrop-blur-md shadow-2xl">
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-400 to-fuchsia-600 flex items-center justify-center">
-                        <Zap className="h-4 w-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-[12px] font-bold !text-white leading-tight">Auto Boost</p>
-                        <p className="text-[10px] text-slate-400 leading-tight">@yourhandle</p>
-                      </div>
-                    </div>
-                    <span className="text-[9px] font-bold px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30">
-                      ACTIVE
-                    </span>
+              <dl className="space-y-2.5 text-[13px]">
+                {[
+                  ['Views', '10,000'],
+                  ['Likes', '850'],
+                  ['Comments', '40'],
+                  ['Saves', '220'],
+                  ['Shares', '180'],
+                  ['Delivery time', '72 hours'],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-center justify-between">
+                    <dt className="text-slate-400">{label}</dt>
+                    <dd className="font-medium !text-white">{value}</dd>
                   </div>
+                ))}
+              </dl>
 
-                  <div className="space-y-2.5 mb-5">
-                    {[
-                      { label: 'Views', value: '10,000', width: 'w-[92%]' },
-                      { label: 'Likes', value: '850', width: 'w-[68%]' },
-                      { label: 'Comments', value: '40', width: 'w-[34%]' },
-                      { label: 'Saves', value: '220', width: 'w-[48%]' },
-                      { label: 'Shares', value: '180', width: 'w-[42%]' },
-                    ].map(({ label, value, width }) => (
-                      <div key={label}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] text-slate-300">{label}</span>
-                          <span className="text-[11px] font-semibold !text-white">{value}</span>
-                        </div>
-                        <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-                          <div className={`h-full rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-500 ${width}`} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5">
-                    <span className="text-[11px] text-slate-300">Delivery window</span>
-                    <span className="text-[11px] font-bold text-violet-200">72 hours</span>
-                  </div>
-                </div>
-                <div aria-hidden className="absolute -inset-4 -z-10 rounded-3xl bg-violet-500/12 blur-2xl" />
-              </div>
+              <p className="mt-4 pt-4 border-t border-white/10 text-[12px] text-slate-400 leading-relaxed">
+                Ye sirf ek example hai — quantity aur timing aap Auto Boost page se kabhi bhi badal
+                sakte ho.
+              </p>
             </div>
           </div>
         </div>
       </section>
+
 
       {/* Platforms */}
       <section id="platforms" className="relative py-24 border-t border-white/5">
