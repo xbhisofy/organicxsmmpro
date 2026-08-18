@@ -18,71 +18,22 @@
 // with a 403 before we touch the wallet or the orders tables.
 
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { recordSecurityEvent } from "./security-audit.ts";
 
 export type PaymentEligibility =
-  | { ok: true; reason: "admin" | "subscription" | "verified_deposit" }
+  | { ok: true; reason: "admin" | "subscription" | "verified_deposit" | "wallet" }
   | { ok: false; status: 403; error: string };
 
-const VERIFIED_GATEWAYS = ["oxapay", "razorpay_auto", "zapupi"];
-const VALID_ACTIVE_PLANS = ["monthly", "yearly", "lifetime"];
 
 export async function assertPaymentEligible(
-  admin: SupabaseClient,
+  _admin: SupabaseClient,
   userId: string,
-  ctx?: { source: string; request?: Request },
+  _ctx?: { source: string; request?: Request },
 ): Promise<PaymentEligibility> {
   if (!userId) {
     return { ok: false, status: 403, error: "Not authenticated" };
   }
-
-  // 1. Admin bypass
-  const { data: adminRow } = await admin
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (adminRow) return { ok: true, reason: "admin" };
-
-  // 2. Active, verified subscription
-  const { data: sub } = await admin
-    .from("subscriptions")
-    .select("status, plan_type, expires_at")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (sub && sub.status === "active" && VALID_ACTIVE_PLANS.includes(String(sub.plan_type))) {
-    const notExpired = !sub.expires_at || new Date(sub.expires_at).getTime() > Date.now();
-    if (notExpired) return { ok: true, reason: "subscription" };
-  }
-
-  // 3. At least one completed deposit from a real payment gateway
-  const { data: verifiedDeposit } = await admin
-    .from("transactions")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("type", "deposit")
-    .eq("status", "completed")
-    .in("payment_method", VERIFIED_GATEWAYS)
-    .limit(1)
-    .maybeSingle();
-
-  if (verifiedDeposit) return { ok: true, reason: "verified_deposit" };
-
-  await recordSecurityEvent(admin, {
-    category: "payment_gate_denied",
-    source: ctx?.source ?? "payment-eligibility",
-    reason: "no active subscription and no verified deposit",
-    user_id: userId,
-    http_status: 403,
-    request: ctx?.request,
-  });
-
-  return {
-    ok: false,
-    status: 403,
-    error:
-      "Payment required: activate a subscription or make a verified deposit before placing orders.",
-  };
+  // Subscriptions are no longer required. Any authenticated user may place
+  // orders — the wallet debit itself enforces that they have enough funds,
+  // and wallet credits can only be written by verified provider webhooks.
+  return { ok: true, reason: "wallet" };
 }
