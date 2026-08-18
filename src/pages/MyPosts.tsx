@@ -89,6 +89,7 @@ export default function MyPosts() {
       });
     },
     enabled: !!user?.id,
+    placeholderData: (prev) => prev,
     // Background scrape lands rows asynchronously — poll until posts appear
     refetchInterval: (query) => {
       const data = query.state.data as Row[] | undefined;
