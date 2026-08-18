@@ -1,0 +1,1 @@
+SELECT cron.unschedule('instagram-poll-every-3min');
