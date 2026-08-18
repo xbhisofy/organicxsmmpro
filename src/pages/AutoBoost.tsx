@@ -178,8 +178,9 @@ export default function AutoBoost() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Zap className="w-4 h-4" /> Auto order on new posts</CardTitle>
               <CardDescription>
-                On karne par tumhare linked Instagram account ki har nayi post par ye quantities automatically order ho jayengi.
+                On karne par sirf un accounts par order lagega jinke card me <b>Auto</b> toggle green hai (upar accounts list me).
               </CardDescription>
+
             </CardHeader>
             <CardContent className="flex items-center justify-between gap-4">
               <div className="text-sm">
