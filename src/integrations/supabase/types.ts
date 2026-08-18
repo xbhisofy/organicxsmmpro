@@ -580,6 +580,7 @@ export type Database = {
           created_at: string
           default_link: string | null
           drip_minutes: number
+          drip_percent_per_run: number
           likes: number
           mode: string
           reposts: number
@@ -594,6 +595,7 @@ export type Database = {
           created_at?: string
           default_link?: string | null
           drip_minutes?: number
+          drip_percent_per_run?: number
           likes?: number
           mode?: string
           reposts?: number
@@ -608,6 +610,7 @@ export type Database = {
           created_at?: string
           default_link?: string | null
           drip_minutes?: number
+          drip_percent_per_run?: number
           likes?: number
           mode?: string
           reposts?: number
