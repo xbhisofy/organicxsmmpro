@@ -58,7 +58,7 @@ const Index = () => {
 
           <nav className="hidden md:flex items-center gap-8 text-sm text-white/85">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#auto-boost" className="text-amber-200 hover:text-amber-100 transition-colors">Auto Boost</a>
+            <a href="#auto-boost" className="hover:text-white transition-colors">Auto Boost</a>
             <a href="#platforms" className="hover:text-white transition-colors">Platforms</a>
             <Link to="/support" className="hover:text-white transition-colors">Support</Link>
           </nav>
@@ -225,19 +225,19 @@ const Index = () => {
 
       {/* Auto Boost */}
       <section id="auto-boost" className="relative py-24 sm:py-32 border-t border-white/5 overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-[42rem] rounded-full bg-amber-500/10 blur-[120px]" />
+        <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-[42rem] rounded-full bg-violet-500/12 blur-[120px]" />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-amber-500/[0.08] via-orange-500/[0.04] to-transparent p-7 sm:p-12 backdrop-blur-sm">
+          <div className="rounded-3xl border border-violet-400/25 bg-gradient-to-br from-violet-500/[0.08] via-fuchsia-500/[0.04] to-transparent p-7 sm:p-12 backdrop-blur-sm">
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-400/10 px-3 py-1 mb-5">
-                  <Zap className="h-3.5 w-3.5 text-amber-300" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-100">New · Auto Boost</span>
+                <div className="inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-violet-400/10 px-3 py-1 mb-5">
+                  <Zap className="h-3.5 w-3.5 text-violet-300" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-100">New · Auto Boost</span>
                 </div>
                 <h2 className="!text-white text-3xl sm:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
                   You post.
                   <br />
-                  <span className="italic text-amber-200" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  <span className="italic text-violet-200" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                     It boosts itself.
                   </span>
                 </h2>
@@ -256,7 +256,7 @@ const Index = () => {
                   ].map(({ Icon, title, body }) => (
                     <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <Icon className="h-4 w-4 text-amber-300" />
+                        <Icon className="h-4 w-4 text-violet-300" />
                         <h3 className="text-[13px] font-semibold !text-white">{title}</h3>
                       </div>
                       <p className="text-[12.5px] text-slate-300 leading-relaxed">{body}</p>
@@ -266,7 +266,7 @@ const Index = () => {
 
                 <Link
                   to={user ? '/auto-boost' : '/auth'}
-                  className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-[13px] font-bold text-black bg-gradient-to-r from-amber-300 to-orange-400 hover:from-amber-200 hover:to-orange-300 transition-colors shadow-[0_0_28px_rgba(251,146,60,0.35)]"
+                  className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-[13px] font-bold !text-white bg-gradient-to-r from-violet-300 to-orange-400 hover:from-violet-200 hover:to-orange-300 transition-colors shadow-[0_0_28px_rgba(167,139,250,0.35)]"
                 >
                   <Zap className="h-4 w-4" />
                   {user ? 'Open Auto Boost' : 'Start Auto Boost free'}
@@ -279,7 +279,7 @@ const Index = () => {
                 <div className="rounded-2xl border border-white/10 bg-[#08070c]/80 p-5 backdrop-blur-md shadow-2xl">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-400 to-fuchsia-600 flex items-center justify-center">
                         <Zap className="h-4 w-4 text-black" />
                       </div>
                       <div>
@@ -306,7 +306,7 @@ const Index = () => {
                           <span className="text-[11px] font-semibold !text-white">{value}</span>
                         </div>
                         <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-                          <div className={`h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 ${width}`} />
+                          <div className={`h-full rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-500 ${width}`} />
                         </div>
                       </div>
                     ))}
@@ -314,10 +314,10 @@ const Index = () => {
 
                   <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5">
                     <span className="text-[11px] text-slate-300">Delivery window</span>
-                    <span className="text-[11px] font-bold text-amber-200">72 hours</span>
+                    <span className="text-[11px] font-bold text-violet-200">72 hours</span>
                   </div>
                 </div>
-                <div aria-hidden className="absolute -inset-4 -z-10 rounded-3xl bg-amber-500/10 blur-2xl" />
+                <div aria-hidden className="absolute -inset-4 -z-10 rounded-3xl bg-violet-500/12 blur-2xl" />
               </div>
             </div>
           </div>
