@@ -235,11 +235,12 @@ export default function AutoBoost() {
                 />
               </div>
               <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
-                Delivery completes in <b>{durationText}</b> — approx <b>{schedule.runs} runs</b>, about{" "}
-                <b>{schedule.percentPerRun}%</b> of the quantity every <b>{schedule.intervalMinutes} min</b>.
+                Delivery completes in about <b>{durationText}</b> — the engine schedules roughly{" "}
+                <b>{schedule.runs} runs</b> at randomized times inside that window, each with a randomized quantity.
                 <div className="text-muted-foreground text-xs mt-1">
                   Example: {preset.views.toLocaleString()} views → ~
-                  {Math.max(1, Math.ceil(preset.views / schedule.runs)).toLocaleString()} views per run.
+                  {Math.max(1, Math.ceil(preset.views / schedule.runs)).toLocaleString()} views per run on average, with
+                  likes/comments/saves/shares ramping alongside the views.
                 </div>
               </div>
             </CardContent>
