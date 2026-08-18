@@ -189,7 +189,7 @@ export function InstagramAccountsPanel() {
     <div className="space-y-4">
       <div className="rounded-2xl p-5 bg-[#0a0a14]/80 border border-white/10">
         <label className="block text-xs font-semibold uppercase tracking-wider text-white/80 mb-2">Add Instagram Username</label>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <div className="flex-1 relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/75">@</span>
             <input
@@ -203,7 +203,7 @@ export function InstagramAccountsPanel() {
           <button
             disabled={!username || linkMut.isPending}
             onClick={() => linkMut.mutate(username)}
-            className="h-11 px-5 rounded-xl font-semibold bg-gradient-to-b from-purple-500 to-fuchsia-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all disabled:opacity-50 flex items-center gap-2"
+            className="h-11 px-5 rounded-xl font-semibold bg-gradient-to-b from-purple-500 to-fuchsia-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
           >
             {linkMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             Link
@@ -226,17 +226,17 @@ export function InstagramAccountsPanel() {
           const resetAt = oldest ? new Date(oldest.getTime() + 30 * 24 * 60 * 60 * 1000) : null;
           const resetStr = resetAt ? resetAt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : null;
           return (
-            <div className={`mt-3 rounded-xl px-3 py-2 text-[12px] flex items-center gap-2 border ${
+            <div className={`mt-3 rounded-xl px-3 py-2 text-[12px] flex flex-wrap items-start gap-x-2 gap-y-1 border ${
               blocked
                 ? 'bg-rose-500/10 border-rose-400/30 text-rose-200'
                 : remaining <= 1
                   ? 'bg-amber-500/10 border-amber-400/30 text-amber-200'
                   : 'bg-emerald-500/10 border-emerald-400/30 text-emerald-200'
             }`}>
-              {blocked ? <Lock className="w-3.5 h-3.5 shrink-0" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+              {blocked ? <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />}
               <span className="font-semibold">{used}/10 links used</span>
-              <span className="opacity-80">·</span>
-              <span>
+              <span className="opacity-80 hidden sm:inline">·</span>
+              <span className="basis-full sm:basis-auto sm:flex-1 min-w-0">
                 {blocked
                   ? `Monthly limit reached. Slot frees on ${resetStr}, or remove an existing account.`
                   : `${remaining} more account${remaining === 1 ? '' : 's'} can be linked in this 30-day window${resetStr ? ` · next reset ${resetStr}` : ''}.`}
@@ -248,9 +248,9 @@ export function InstagramAccountsPanel() {
 
       <div className="space-y-3">
         {!isLoading && accounts.length > 0 && (
-          <div className="rounded-2xl p-3 bg-sky-500/10 border border-sky-400/30 text-[12px] text-sky-100 flex items-center gap-2">
-            <RefreshCw className="w-4 h-4 shrink-0" />
-            <span>
+          <div className="rounded-2xl p-3 bg-sky-500/10 border border-sky-400/30 text-[12px] text-sky-100 flex items-start gap-2">
+            <RefreshCw className="w-4 h-4 shrink-0 mt-0.5" />
+            <span className="min-w-0">
               Auto check is off (to save API requests). After uploading a new post, press that account's{' '}
               <b>Check</b> button — only then the new post is detected and the order is placed.
             </span>
@@ -278,8 +278,8 @@ export function InstagramAccountsPanel() {
         )}
 
         {accounts.map((a: any) => (
-          <div key={a.id} className="rounded-2xl p-4 bg-[#0a0a14]/80 border border-white/10 flex items-center gap-4">
-            <div className="relative w-14 h-14 shrink-0">
+          <div key={a.id} className="rounded-2xl p-4 bg-[#0a0a14]/80 border border-white/10 flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg ring-2 ring-purple-400/30">
                 {a.username[0]?.toUpperCase()}
               </div>
