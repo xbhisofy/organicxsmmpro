@@ -244,6 +244,10 @@ Deno.serve(async (req) => {
         if (typeof profile.postsCount === 'number') acctUpdate.posts_count = profile.postsCount;
         if (profile.avatarUrl) acctUpdate.avatar_url = profile.avatarUrl;
         if (profile.fullName) acctUpdate.full_name = profile.fullName;
+        if (profile.bio) acctUpdate.biography = profile.bio;
+        acctUpdate.is_verified = !!profile.isVerified;
+        acctUpdate.is_private = !!profile.isPrivate;
+        acctUpdate.status = 'active';
       }
       if (acctUpdate.posts_count === undefined && normalized.length > 0) {
         acctUpdate.posts_count = normalized.length;
