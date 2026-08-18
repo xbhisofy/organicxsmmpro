@@ -10,26 +10,35 @@ const igProfileUrl = (u: string) => `${IG_API_BASE}/api/instagram/${u}/profile`;
 const igPostsUrl = (u: string) => `${IG_API_BASE}/api/instagram/${u}/posts`;
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
-async function fetchWithRetry(url: string, timeoutMs = 25_000): Promise<any> {
-  for (let attempt = 0; attempt < 2; attempt++) {
+// The free scraper can take up to a minute on a cold start, so allow a long
+// timeout and 3 attempts — otherwise new posts never land in the DB.
+async function fetchWithRetry(url: string, timeoutMs = 70_000, attempts = 3): Promise<any> {
+  let lastErr: unknown = new Error('fetch failed');
+  for (let attempt = 0; attempt < attempts; attempt++) {
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const res = await fetch(url, {
-        headers: { 'User-Agent': UA, 'Accept': 'application/json' },
+      const sep = url.includes('?') ? '&' : '?';
+      const res = await fetch(`${url}${sep}_t=${Date.now()}`, {
+        headers: { 'User-Agent': UA, 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
         signal: ctrl.signal,
       });
       clearTimeout(to);
       const text = await res.text();
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
-      try { return JSON.parse(text); }
+      let json: any;
+      try { json = JSON.parse(text); }
       catch { throw new Error(`Invalid JSON: ${text.slice(0, 200)}`); }
+      if (json?.error) throw new Error(String(json.error).slice(0, 200));
+      return json;
     } catch (e) {
       clearTimeout(to);
-      if (attempt === 1) throw e;
-      await new Promise((r) => setTimeout(r, 600));
+      lastErr = e;
+      if (attempt === attempts - 1) break;
+      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
     }
   }
+  throw lastErr;
 }
 
 function normalizeProfile(p: any) {
