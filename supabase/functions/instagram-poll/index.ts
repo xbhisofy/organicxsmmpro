@@ -53,8 +53,7 @@ async function runPoll(runId: string, accountIds: string[] | null) {
       saves: preset?.saves ?? 0,
       shares: preset?.shares ?? 0,
       reposts: preset?.reposts ?? 0,
-      drip_minutes: preset?.drip_minutes ?? 0,
-      drip_percent_per_run: preset?.drip_percent_per_run ?? 0,
+      delivery_hours: preset?.delivery_hours ?? 0,
     };
     const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
     if (totalQ <= 0) {
