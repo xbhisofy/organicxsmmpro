@@ -27,7 +27,7 @@ interface Bundle {
 
 /**
  * Live admin view: whenever a bundle/item is added or a price changes in /admin/bundles,
- * yahaan turant (realtime) dikh jata hai bina refresh kiye.
+ * it shows up here instantly (realtime) without a refresh.
  */
 export function BundlesLivePanel() {
   const queryClient = useQueryClient();
