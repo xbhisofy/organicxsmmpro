@@ -200,7 +200,9 @@ export default function AutoBoost() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Timer className="w-4 h-4" /> Delivery time</CardTitle>
               <CardDescription>
-                Just like the full engagement page — pick a time period (e.g. 72 hours) and the quantity drips organically across it.
+                Exactly like the full engagement page — pick a window (e.g. 72 hours) and the organic engine spreads the
+                quantity with random run times and random batch sizes. Likes, comments, saves, shares and reposts follow
+                the views curve. No drip-feed, no fixed repeats.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
