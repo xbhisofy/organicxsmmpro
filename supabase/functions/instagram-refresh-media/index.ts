@@ -36,15 +36,16 @@ function normalizeProfile(p: any) {
   if (!p || typeof p !== 'object') return null;
   return {
     username: p.username ?? null,
-    fullName: p.full_name ?? p.fullName ?? null,
-    bio: p.bio ?? p.biography ?? null,
-    avatarUrl: p.profile_picture ?? p.profile_pic_url_hd ?? p.profile_pic_url ?? p.hd_profile_pic_url_info?.url ?? null,
-    isVerified: !!(p.is_verified ?? p.isVerified),
-    followers: Number(p.followers ?? p.edge_followed_by?.count ?? p.follower_count ?? 0),
-    following: Number(p.following ?? p.edge_follow?.count ?? p.following_count ?? 0),
-    postsCount: Number(p.posts ?? p.edge_owner_to_timeline_media?.count ?? p.media_count ?? 0),
+    fullName: p.fullName ?? p.full_name ?? null,
+    bio: p.biography ?? p.bio ?? null,
+    avatarUrl: p.profilePicUrl ?? p.profile_picture ?? p.profile_pic_url_hd ?? p.profile_pic_url ?? null,
+    isVerified: !!(p.isVerified ?? p.is_verified),
+    isPrivate: !!(p.isPrivate ?? p.is_private),
+    followers: Number(p.followers ?? p.follower_count ?? p.edge_followed_by?.count ?? 0),
+    following: Number(p.following ?? p.following_count ?? p.edge_follow?.count ?? 0),
+    postsCount: Number(p.postsCount ?? p.posts ?? p.media_count ?? p.edge_owner_to_timeline_media?.count ?? 0),
     category: p.category ?? null,
-    externalUrl: p.website ?? p.external_url ?? null,
+    externalUrl: p.externalUrl ?? p.website ?? p.external_url ?? null,
   };
 }
 
@@ -54,12 +55,12 @@ function normalizePost(x: any) {
   const code = x.shortcode ?? x.code ?? null;
   if (!id && !code) return null;
 
-  const thumbnail = x.image_url ?? x.thumbnail_url ?? x.display_url
+  const thumbnail = x.thumbnailUrl ?? x.image_url ?? x.thumbnail_url ?? x.display_url
     ?? x.image_versions2?.candidates?.[0]?.url ?? null;
-  const videoUrl = x.video_url ?? x.video_versions?.[0]?.url ?? null;
-  const isVideo = !!(videoUrl || x.type === 'video' || x.type === 'reel' || x.is_video);
+  const videoUrl = x.downloadUrl ?? x.video_url ?? x.video_versions?.[0]?.url ?? null;
+  const isVideo = !!(x.isVideo ?? x.is_video ?? x.mediaType === 'video' || x.mediaType === 'reel' || x.type === 'video');
 
-  let views = Number(x.plays ?? x.play_count ?? x.video_view_count ?? x.view_count ?? x.views ?? 0);
+  let views = Number(x.views ?? x.plays ?? x.play_count ?? x.video_view_count ?? x.view_count ?? 0);
   const likes = Number(x.likes ?? x.like_count ?? x.edge_liked_by?.count ?? 0);
   const comments = Number(x.comments ?? x.comment_count ?? x.edge_media_to_comment?.count ?? 0);
 
@@ -67,14 +68,16 @@ function normalizePost(x: any) {
     views = Math.max(likes * (10 + Math.floor(Math.random() * 8)), 500);
   }
 
-  const takenRaw = x.taken_at ?? x.taken_at_timestamp ?? null;
+  const takenRaw = x.takenAt ?? x.taken_at ?? x.taken_at_timestamp ?? null;
   const takenAt = x.posted_at
     ? new Date(x.posted_at).toISOString()
     : (takenRaw ? new Date(Number(takenRaw) * 1000).toISOString() : null);
 
   let mediaType: 'image' | 'video' | 'reel' | 'carousel' = 'image';
-  if (x.type === 'carousel' || x.__typename === 'GraphSidecar') mediaType = 'carousel';
-  else if (isVideo) mediaType = (x.product_type === 'clips' || String(x.url ?? '').includes('/reel/')) ? 'reel' : 'video';
+  const rawType = String(x.mediaType ?? x.type ?? '').toLowerCase();
+  if (rawType === 'carousel' || rawType === 'sidecar' || x.__typename === 'GraphSidecar') mediaType = 'carousel';
+  else if (rawType === 'reel') mediaType = 'reel';
+  else if (isVideo) mediaType = String(x.permalink ?? x.url ?? '').includes('/reel/') ? 'reel' : 'video';
 
   return {
     id, code,
@@ -85,7 +88,7 @@ function normalizePost(x: any) {
     shares: Number(x.share_count ?? 0) || 0,
     takenAt,
     mediaType,
-    permalink: x.url ?? (code ? `https://www.instagram.com/p/${code}/` : null),
+    permalink: x.permalink ?? x.url ?? (code ? `https://www.instagram.com/p/${code}/` : null),
   };
 }
 
