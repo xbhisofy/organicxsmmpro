@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowLeft, Eye, Heart, MessageCircle, Bookmark, Share2, Repeat2, Loader2, Save, Zap } from "lucide-react";
+import { ArrowLeft, Eye, Heart, MessageCircle, Bookmark, Share2, Repeat2, Loader2, Save, Zap, Timer } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageMeta } from "@/components/seo/PageMeta";
 
@@ -19,6 +19,7 @@ type Preset = {
   shares: number;
   reposts: number;
   drip_minutes: number;
+  drip_percent_per_run: number;
   mode: "auto" | "manual";
 };
 
@@ -29,7 +30,8 @@ const DEFAULTS: Preset = {
   saves: 0,
   shares: 0,
   reposts: 0,
-  drip_minutes: 0,
+  drip_minutes: 30,
+  drip_percent_per_run: 10,
   mode: "manual",
 };
 
@@ -53,7 +55,7 @@ export default function AutoBoost() {
     (async () => {
       const { data } = await supabase
         .from("engagement_presets")
-        .select("views,likes,comments,saves,shares,reposts,drip_minutes,mode")
+        .select("views,likes,comments,saves,shares,reposts,drip_minutes,drip_percent_per_run,mode")
         .eq("user_id", user.id)
         .maybeSingle();
       if (data) {
@@ -65,6 +67,7 @@ export default function AutoBoost() {
           shares: data.shares ?? 0,
           reposts: data.reposts ?? 0,
           drip_minutes: data.drip_minutes ?? 0,
+          drip_percent_per_run: data.drip_percent_per_run ?? 0,
           mode: (data.mode as "auto" | "manual") ?? "manual",
         });
       }
@@ -76,6 +79,15 @@ export default function AutoBoost() {
     setPreset((p) => ({ ...p, [key]: Math.max(0, Math.floor(Number(value) || 0)) }));
 
   const total = FIELDS.reduce((s, f) => s + (preset[f.key] as number), 0);
+  const dripActive = preset.drip_minutes > 0 && preset.drip_percent_per_run > 0;
+  const runs = dripActive ? Math.ceil(100 / preset.drip_percent_per_run) : 0;
+  const totalMinutes = runs * preset.drip_minutes;
+  const durationText =
+    totalMinutes >= 1440
+      ? `${(totalMinutes / 1440).toFixed(1)} din`
+      : totalMinutes >= 60
+        ? `${(totalMinutes / 60).toFixed(1)} ghante`
+        : `${totalMinutes} min`;
 
   const save = async () => {
     if (!user) return;
@@ -158,14 +170,48 @@ export default function AutoBoost() {
                   />
                 </div>
               ))}
-              <div className="sm:col-span-2">
-                <Label className="text-muted-foreground">Drip (minutes, 0 = instant)</Label>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Timer className="w-4 h-4" /> Delivery timing (drip)</CardTitle>
+              <CardDescription>
+                Ek hi baar sab nahi jayega — thodi-thodi quantity set interval par jayegi (full engagement page jaisa hi organic drip).
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label className="text-muted-foreground">Interval (minutes)</Label>
                 <Input
                   type="number"
                   min={0}
                   value={preset.drip_minutes}
                   onChange={(e) => setNum("drip_minutes", e.target.value)}
                 />
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Har interval me quantity (%)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={preset.drip_percent_per_run}
+                  onChange={(e) => setNum("drip_percent_per_run", e.target.value)}
+                />
+              </div>
+              <div className="sm:col-span-2 rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
+                {dripActive ? (
+                  <>
+                    Har <b>{preset.drip_minutes} min</b> me har type ki <b>{preset.drip_percent_per_run}%</b> quantity jayegi
+                    — approx <b>{runs} runs</b>, pura delivery ~<b>{durationText}</b> me.
+                    <div className="text-muted-foreground text-xs mt-1">
+                      Example: {preset.views.toLocaleString()} views → ~{Math.max(1, Math.ceil((preset.views * preset.drip_percent_per_run) / 100)).toLocaleString()} views per run.
+                    </div>
+                  </>
+                ) : (
+                  <>Interval ya percent 0 hai — order organic engine ke default schedule par chalega (instant nahi, par tumhara custom drip off hai).</>
+                )}
               </div>
             </CardContent>
           </Card>
