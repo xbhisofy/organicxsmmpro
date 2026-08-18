@@ -249,7 +249,7 @@ export default function InstagramPage() {
                 </div>
                 {a.avatar_url && (
                   <img
-                    src={`https://lvrbhgulxqdsamhdjzkw.supabase.co/functions/v1/ig-image-proxy?url=${encodeURIComponent(a.avatar_url)}`}
+                    src={igImageUrl(a.avatar_url)}
                     alt={a.username}
                     referrerPolicy="no-referrer"
                     loading="lazy"
