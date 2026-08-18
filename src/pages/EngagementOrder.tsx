@@ -818,102 +818,31 @@ export default function EngagementOrder() {
               </div>
             </div>
 
-            {/* Inline AI Modules — segmented control style */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-              {/* Organic Algorithm */}
-              <button
-                type="button"
-                onClick={() => { setIsOrganicMode(!isOrganicMode); if (!isOrganicMode) setIsAutoRatios(false); }}
-                className={cn(
-                  "group relative text-left rounded-xl border p-3 sm:p-3.5 transition-all overflow-hidden",
-                  isOrganicMode
-                    ? "border-emerald-400/40 bg-emerald-500/[0.08] shadow-[0_0_25px_rgba(16,185,129,0.18)]"
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
-                )}
-              >
-                {isOrganicMode && (
-                  <div aria-hidden className="absolute -top-8 -right-8 w-32 h-32 bg-emerald-400/20 blur-3xl rounded-full" />
-                )}
-                <div className="relative flex items-center gap-3">
-                  <div className={cn(
-                    "shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border transition-all",
-                    isOrganicMode ? "bg-emerald-500/20 border-emerald-400/40 text-emerald-200" : "bg-white/5 border-white/10 text-white/80"
-                  )}>
-                    <Brain className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[12px] sm:text-[13px] font-bold !text-white tracking-tight">AI Organic Algorithm</span>
-                      <span className={cn(
-                        "text-[9px] font-bold uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-md border",
-                        isOrganicMode ? "bg-emerald-500/15 text-emerald-200 border-emerald-400/30" : "bg-white/5 text-white/75 border-white/10"
-                      )}>
-                        {isOrganicMode ? "Active" : "Idle"}
-                      </span>
-                    </div>
-                    <p className="text-[10.5px] sm:text-[11px] text-white/80 leading-snug">
-                      Unique S-curve · Random variance · Anti-bot
-                    </p>
-                  </div>
-                  <div className={cn(
-                    "shrink-0 w-9 h-5 rounded-full p-0.5 transition-all relative",
-                    isOrganicMode ? "bg-emerald-500/80" : "bg-white/10"
-                  )}>
-                    <div className={cn(
-                      "w-4 h-4 rounded-full bg-white shadow transition-all",
-                      isOrganicMode ? "translate-x-4" : "translate-x-0"
-                    )} />
-                  </div>
+            {/* Auto Boost entry */}
+            <Link
+              to="/auto-boost"
+              className="group relative block rounded-2xl border border-purple-400/30 bg-gradient-to-r from-purple-500/[0.12] via-fuchsia-500/[0.06] to-transparent p-3.5 sm:p-4 overflow-hidden transition-all hover:border-purple-300/50 hover:shadow-[0_0_35px_rgba(168,85,247,0.25)]"
+            >
+              <div aria-hidden className="absolute -top-10 -right-6 w-36 h-36 bg-fuchsia-400/20 blur-3xl rounded-full" />
+              <div className="relative flex items-center gap-3 sm:gap-4">
+                <div className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center bg-purple-500/20 border border-purple-300/30 text-purple-100 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+                  <Zap className="h-5 w-5" />
                 </div>
-              </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                    <span className="text-[13px] sm:text-[14px] font-bold !text-white tracking-tight">Auto Boost</span>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-md border bg-purple-500/15 text-purple-100 border-purple-300/30">
+                      New post → auto order
+                    </span>
+                  </div>
+                  <p className="text-[11px] sm:text-[12px] text-white/65 leading-snug">
+                    Har nayi post par quantity + delivery time set karo — yahin se manage.
+                  </p>
+                </div>
+                <ArrowRight className="shrink-0 h-4 w-4 text-white/50 transition-transform group-hover:translate-x-0.5 group-hover:text-white/80" />
+              </div>
+            </Link>
 
-              {/* Smart Ratios */}
-              <button
-                type="button"
-                onClick={() => { setIsAutoRatios(!isAutoRatios); if (!isAutoRatios) setIsOrganicMode(false); }}
-                className={cn(
-                  "group relative text-left rounded-xl border p-3 sm:p-3.5 transition-all overflow-hidden",
-                  isAutoRatios
-                    ? "border-purple-400/40 bg-purple-500/[0.08] shadow-[0_0_25px_rgba(168,85,247,0.18)]"
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
-                )}
-              >
-                {isAutoRatios && (
-                  <div aria-hidden className="absolute -top-8 -right-8 w-32 h-32 bg-purple-400/25 blur-3xl rounded-full" />
-                )}
-                <div className="relative flex items-center gap-3">
-                  <div className={cn(
-                    "shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border transition-all",
-                    isAutoRatios ? "bg-purple-500/20 border-purple-400/40 text-purple-200" : "bg-white/5 border-white/10 text-white/80"
-                  )}>
-                    <Percent className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[12px] sm:text-[13px] font-bold !text-white tracking-tight">AI Smart Ratios</span>
-                      <span className={cn(
-                        "text-[9px] font-bold uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-md border",
-                        isAutoRatios ? "bg-purple-500/15 text-purple-200 border-purple-400/30" : "bg-white/5 text-white/75 border-white/10"
-                      )}>
-                        {isAutoRatios ? "Auto" : "Manual"}
-                      </span>
-                    </div>
-                    <p className="text-[10.5px] sm:text-[11px] text-white/80 leading-snug italic">
-                      {isAutoRatios ? "Optimized for platform algorithms" : "You set the engagement mix"}
-                    </p>
-                  </div>
-                  <div className={cn(
-                    "shrink-0 w-9 h-5 rounded-full p-0.5 transition-all",
-                    isAutoRatios ? "bg-purple-500/80" : "bg-white/10"
-                  )}>
-                    <div className={cn(
-                      "w-4 h-4 rounded-full bg-white shadow transition-all",
-                      isAutoRatios ? "translate-x-4" : "translate-x-0"
-                    )} />
-                  </div>
-                </div>
-              </button>
-            </div>
           </div>
         </div>
 
