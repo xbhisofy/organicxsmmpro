@@ -77,6 +77,22 @@ export function InstagramAccountsPanel() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const toggleAutoMut = useMutation({
+    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
+      const { error } = await supabase
+        .from('instagram_accounts')
+        .update({ auto_boost_enabled: enabled })
+        .eq('id', id);
+      if (error) throw error;
+      return enabled;
+    },
+    onSuccess: (enabled) => {
+      toast.success(enabled ? 'Auto post order ON for this account' : 'Auto post order OFF for this account');
+      qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const removeMut = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('instagram_accounts').delete().eq('id', id);
@@ -88,6 +104,7 @@ export function InstagramAccountsPanel() {
       qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
     },
   });
+
 
   return (
     <div className="space-y-4">
