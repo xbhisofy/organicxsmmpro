@@ -12,6 +12,7 @@ export function InstagramAccountsPanel() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [username, setUsername] = useState('');
+  const [pending, setPending] = useState<string[]>([]);
 
   const { data: accounts = [], isLoading } = useQuery({
     queryKey: igQueryKeys.accounts(user?.id),
@@ -23,6 +24,15 @@ export function InstagramAccountsPanel() {
       return data;
     },
     enabled: !!user?.id,
+    placeholderData: (prev) => prev,
+    // Naya account link hone par profile data background me aata hai — jab tak
+    // followers/posts na aa jaaye tab tak halke se poll karo (card gayab na ho).
+    refetchInterval: (query) => {
+      const data = (query.state.data as any[] | undefined) ?? [];
+      const incomplete = data.some((a) => !a.last_fetched_at || (!a.followers && !a.posts_count));
+      return incomplete ? 3000 : false;
+    },
+    refetchIntervalInBackground: false,
   });
 
   // Persistent 30-day link usage from audit log (survives account deletion).
@@ -41,6 +51,7 @@ export function InstagramAccountsPanel() {
       return data;
     },
     enabled: !!user?.id,
+    placeholderData: (prev) => prev,
   });
 
   const linkMut = useMutation({
@@ -59,23 +70,36 @@ export function InstagramAccountsPanel() {
       return data;
     },
     onSuccess: async (d) => {
-      toast.success(`Linked @${d.account.username} — fetching profile + posts...`);
+      const uname = String(d.account.username).toLowerCase();
+      toast.success(`Linked @${uname} — profile & posts load ho rahe hain...`);
       setUsername('');
+      setPending((p) => (p.includes(uname) ? p : [...p, uname]));
       qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
       qc.invalidateQueries({ queryKey: igQueryKeys.linkEvents() });
       qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
-      try {
-        await supabase.functions.invoke('instagram-refresh-media', {
-          body: { account_id: d.account.id, source: 'link' },
-        });
-        setTimeout(() => {
-          qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
-          qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
-        }, 6000);
-      } catch { /* refresh button se retry ho sakta hai */ }
+
+      const refresh = async () => {
+        try {
+          await supabase.functions.invoke('instagram-refresh-media', {
+            body: { account_id: d.account.id, source: 'link' },
+          });
+        } catch { /* retry below */ }
+        qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
+        qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
+      };
+
+      await refresh();
+      // Scraper rate-limit hone par ek retry — data pakka aa jaaye.
+      setTimeout(async () => {
+        const fresh = qc.getQueryData<any[]>(igQueryKeys.accounts(user?.id)) ?? [];
+        const acc = fresh.find((a) => a.id === d.account.id);
+        if (!acc || (!acc.followers && !acc.posts_count)) await refresh();
+        setPending((p) => p.filter((x) => x !== uname));
+      }, 8000);
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
 
   const toggleAutoMut = useMutation({
     mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
