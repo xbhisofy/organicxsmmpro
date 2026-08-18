@@ -319,7 +319,17 @@ export function InstagramAccountsPanel() {
                   </button>
                 );
               })()}
+              <button
+                onClick={() => checkMut.mutate(a.id)}
+                disabled={checking === a.id}
+                title="New post check karo — naya post mila to order lag jayega"
+                className="h-9 px-3 rounded-lg text-[12px] font-semibold bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-sky-100 flex items-center gap-2 disabled:opacity-60"
+              >
+                {checking === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                Check
+              </button>
               <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 flex items-center">
+
                 View Posts
               </Link>
 
