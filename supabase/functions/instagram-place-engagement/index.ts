@@ -176,12 +176,10 @@ Deno.serve(async (req) => {
       price: it.price_usd,
       status: "pending",
       is_enabled: true,
-      drip_interval: drip_minutes || null,
-      drip_interval_unit: drip_minutes ? "minutes" : null,
-      drip_qty_per_run:
-        drip_minutes && drip_percent_per_run
-          ? Math.max(1, Math.ceil((it.qty * drip_percent_per_run) / 100))
-          : null,
+      // No drip-feed: delivery is handled by the organic run scheduler.
+      drip_interval: null,
+      drip_interval_unit: null,
+      drip_qty_per_run: null,
     }));
     const { error: itemsErr } = await admin.from("engagement_order_items").insert(itemRows);
     if (itemsErr) throw itemsErr;
