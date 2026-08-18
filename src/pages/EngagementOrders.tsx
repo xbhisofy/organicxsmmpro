@@ -70,7 +70,7 @@ export default function EngagementOrders() {
       const { data, error } = await supabase
         .from('engagement_orders')
         .select(`
-          id, order_number, status, total_price, link, base_quantity, created_at, updated_at, is_organic_mode,
+          id, order_number, status, total_price, link, base_quantity, created_at, updated_at, is_organic_mode, campaign_name,
           items:engagement_order_items(
             id, engagement_type, quantity, status,
             runs:organic_run_schedule(id, status, quantity_to_send, scheduled_at, run_number, provider_status, provider_remains)
@@ -95,6 +95,7 @@ export default function EngagementOrders() {
     const query = searchQuery.toLowerCase().trim();
     return orders.filter(order => 
       order.order_number?.toString().includes(query) ||
+      order.campaign_name?.toLowerCase().includes(query) ||
       order.link?.toLowerCase().includes(query)
     );
   }, [orders, searchQuery]);
@@ -244,6 +245,11 @@ function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
                 <StatusIcon className="h-3 w-3 mr-1" />
                 {effectiveStatus}
               </Badge>
+              {order.campaign_name && (
+                <Badge variant="outline" className="border-primary/40 text-primary">
+                  ⚡ {order.campaign_name}
+                </Badge>
+              )}
               {order.is_organic_mode && (
                 <Badge variant="outline" className="border-border text-muted-foreground">
                   🌱 Organic

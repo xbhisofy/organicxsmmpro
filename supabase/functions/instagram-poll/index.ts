@@ -19,11 +19,11 @@ async function tgSend(chatId: number, text: string, extra: Record<string, unknow
   } catch (e) { console.error("tg send failed", e); }
 }
 
-async function placeOrder(user_id: string, link: string, p: Record<string, number>) {
+async function placeOrder(user_id: string, link: string, p: Record<string, number>, campaign_name?: string) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/instagram-place-engagement`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}`, apikey: SERVICE_KEY },
-    body: JSON.stringify({ user_id, link, ...p, source: "poll-auto" }),
+    body: JSON.stringify({ user_id, link, ...p, source: "poll-auto", campaign_name }),
   });
   const j = await res.json().catch(() => ({}));
   return { ok: res.ok, ...j };
@@ -125,8 +125,8 @@ Deno.serve(async (req) => {
         };
         const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
 
-        if (preset?.mode === "auto" && (acc as any).auto_boost_enabled !== false && totalQ > 0) {
-          const r = await placeOrder(acc.user_id, link, q);
+        if (preset?.mode === "auto" && (acc as any).auto_boost_enabled === true && totalQ > 0) {
+          const r = await placeOrder(acc.user_id, link, q, `Auto Boost — @${acc.username}`);
           if (r.ok) {
             ordersPlaced++;
             if (chatId) {
