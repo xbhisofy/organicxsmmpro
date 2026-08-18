@@ -245,16 +245,18 @@ Deno.serve(async (req) => {
         acctUpdate.posts_count = normalized.length;
       }
       await admin.from('instagram_accounts').update(acctUpdate).eq('id', account.id);
+      return {
+        followers: profile?.followers ?? 0,
+        posts: normalized.length,
+        profile_ok: !!profile,
+      };
     })();
 
-    // @ts-ignore EdgeRuntime global
-    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime?.waitUntil) {
-      // @ts-ignore
-      EdgeRuntime.waitUntil(backgroundTask);
-    }
+    // Wait for the scrape so the UI gets fresh data immediately (no empty first render).
+    const result = await backgroundTask;
 
-    return new Response(JSON.stringify({ queued: true, account_id: account.id }), {
-      status: 202,
+    return new Response(JSON.stringify({ ok: true, account_id: account.id, ...result }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
