@@ -25,15 +25,34 @@ export function InstagramAccountsPanel() {
     },
     enabled: !!user?.id,
     placeholderData: (prev) => prev,
-    // Naya account link hone par profile data background me aata hai — jab tak
-    // followers/posts na aa jaaye tab tak halke se poll karo (card gayab na ho).
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    // Jab tak followers/posts na aa jaaye tez poll, uske baad halka refresh.
     refetchInterval: (query) => {
       const data = (query.state.data as any[] | undefined) ?? [];
       const incomplete = data.some((a) => !a.last_fetched_at || (!a.followers && !a.posts_count));
-      return incomplete ? 3000 : false;
+      return incomplete ? 3000 : 20000;
     },
     refetchIntervalInBackground: false,
   });
+
+  // Jis account ka data khaali hai uske liye ek baar khud refresh trigger karo.
+  const kicked = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    accounts.forEach((a: any) => {
+      if (a.followers || a.posts_count) return;
+      if (kicked.current.has(a.id)) return;
+      kicked.current.add(a.id);
+      supabase.functions
+        .invoke('instagram-refresh-media', { body: { account_id: a.id, source: 'auto-heal' } })
+        .then(() => {
+          qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
+          qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
+        })
+        .catch(() => {});
+    });
+  }, [accounts, qc]);
 
   // Persistent 30-day link usage from audit log (survives account deletion).
   const { data: linkEvents = [] } = useQuery({
