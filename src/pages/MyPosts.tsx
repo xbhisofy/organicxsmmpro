@@ -46,6 +46,29 @@ export default function MyPosts() {
 
   const goBoost = (url: string) => navigate(`/engagement-order?link=${encodeURIComponent(url)}`);
 
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const copyLink = async (id: string, url: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopiedId(id);
+      toast.success('Link copied');
+      setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1600);
+    } catch {
+      toast.error('Copy nahi hua — link manually copy karo');
+    }
+  };
+
   const { data: rows = [], isLoading } = useQuery({
     queryKey: igQueryKeys.postsSummary(user?.id, selectedAccountId),
     queryFn: async () => {
