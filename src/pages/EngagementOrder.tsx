@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, memo, lazy, Suspense } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -45,7 +45,7 @@ import {
   curveToSchedule,
   calculateQuantitiesFromCurve,
 } from "@/lib/curve-to-schedule";
-import { Loader2, Rocket, Link as LinkIcon, Wallet, RefreshCw, Brain, Percent, Eye, EyeOff } from "lucide-react";
+import { Loader2, Rocket, Link as LinkIcon, Wallet, RefreshCw, Brain, Percent, Eye, EyeOff, Zap, ArrowRight } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useDebounce } from "@/hooks/useDebounce";
 import { FullOrganicConfig } from "@/lib/organic-algorithm";
