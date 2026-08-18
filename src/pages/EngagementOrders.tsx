@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -188,6 +188,14 @@ export default function EngagementOrders() {
             {filteredOrders?.map((order) => (
               <OrderCard key={order.id} order={order} onClick={() => navigate(`/engagement-orders/${order.order_number}`)} />
             ))}
+            {hasMore && (
+              <div className="flex justify-center pt-2">
+                <Button variant="outline" disabled={isFetching} onClick={() => setPage((p) => p + 1)}>
+                  {isFetching ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                  Load more
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -197,43 +205,21 @@ export default function EngagementOrders() {
 
 function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
   const { formatPrice } = useCurrency();
-  // Calculate progress
-  const allRuns = order.items?.flatMap((item: any) => item.runs || []) || [];
-  const completedRuns = allRuns.filter((r: any) => r.status === 'completed').length;
-  const totalRuns = allRuns.length;
+  // All heavy aggregation is done server-side in get_engagement_orders_page()
+  const completedRuns = Number(order.completed_runs ?? 0);
+  const totalRuns = Number(order.total_runs ?? 0);
+  const pendingCount = Number(order.pending_runs ?? 0);
+  const activeRuns = Number(order.active_runs ?? 0);
+  const totalDelivered = Number(order.delivered ?? 0);
+  const totalQuantity = Number(order.total_quantity ?? 0);
   const progressPercent = totalRuns > 0 ? (completedRuns / totalRuns) * 100 : 0;
+  const nextRun = order.next_run_at ? { scheduled_at: order.next_run_at } : null;
 
-  // Calculate delivered using provider truth (matches Live Stats on detail page)
-  const normalizeProviderStatus = (s: any): string => (s ?? '').toString().toLowerCase().trim();
-  const calculateActualDelivered = (run: any): number => {
-    const ps = normalizeProviderStatus(run.provider_status);
-    if (ps === 'completed' || ps === 'complete') return run.quantity_to_send;
-    if (run.provider_remains !== null && run.provider_remains !== undefined) {
-      return Math.max(0, run.quantity_to_send - run.provider_remains);
-    }
-    if (run.status === 'completed') return run.quantity_to_send;
-    return 0;
-  };
-  const totalDelivered = allRuns.reduce((sum: number, r: any) => sum + calculateActualDelivered(r), 0);
-
-  const totalQuantity = order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
-
-  // Find next run
-  const pendingRuns = allRuns
-    .filter((r: any) => r.status === 'pending')
-    .sort((a: any, b: any) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime());
-  const nextRun = pendingRuns[0];
-
-  // Active runs
-  const activeRuns = allRuns.filter((r: any) => r.status === 'started').length;
-
-  // Derive effective status: if provider delivered everything, treat as completed
-  // regardless of stale DB status (real-time accuracy).
   let effectiveStatus = order.status as string;
   if (effectiveStatus !== 'cancelled' && effectiveStatus !== 'failed' && effectiveStatus !== 'paused') {
     if (totalQuantity > 0 && totalDelivered >= totalQuantity) {
       effectiveStatus = 'completed';
-    } else if (activeRuns > 0 || pendingRuns.length > 0 || totalDelivered > 0) {
+    } else if (activeRuns > 0 || pendingCount > 0 || totalDelivered > 0) {
       effectiveStatus = 'processing';
     }
   }
@@ -303,7 +289,7 @@ function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
           </div>
           <div className="p-3 bg-secondary rounded-xl border border-border">
             <Clock className="h-4 w-4 mx-auto mb-1 text-foreground" />
-            <p className="text-sm font-bold text-foreground">{pendingRuns.length}</p>
+            <p className="text-sm font-bold text-foreground">{pendingCount}</p>
             <p className="text-[10px] text-muted-foreground">Pending</p>
           </div>
           <div className="p-3 bg-secondary rounded-xl border border-border">
@@ -338,12 +324,9 @@ function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
         <div className="flex flex-wrap gap-2">
           {order.items?.map((item: any) => {
             const Icon = ENGAGEMENT_ICONS[item.engagement_type as keyof typeof ENGAGEMENT_ICONS] || Eye;
-            const itemRuns = item.runs || [];
-            const itemCompleted = itemRuns.filter((r: any) => r.status === 'completed').length;
-            const itemDelivered = itemRuns.reduce(
-              (sum: number, r: any) => sum + calculateActualDelivered(r),
-              0
-            );
+            const itemCompleted = Number(item.completed_runs ?? 0);
+            const itemTotalRuns = Number(item.total_runs ?? 0);
+            const itemDelivered = Number(item.delivered ?? 0);
 
             return (
               <Badge 
@@ -354,7 +337,7 @@ function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
                 <Icon className="h-3.5 w-3.5" />
                 <span className="capitalize">{item.engagement_type}:</span>
                 <span className="font-mono">{itemDelivered.toLocaleString()}/{item.quantity.toLocaleString()}</span>
-                <span className="text-muted-foreground">({itemCompleted}/{itemRuns.length})</span>
+                <span className="text-muted-foreground">({itemCompleted}/{itemTotalRuns})</span>
               </Badge>
             );
           })}
