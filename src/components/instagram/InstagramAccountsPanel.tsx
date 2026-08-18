@@ -319,7 +319,7 @@ export function InstagramAccountsPanel() {
                   <button
                     onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}
                     title={on ? 'Auto post order ON — orders are placed on new posts' : 'Auto post order OFF'}
-                    className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center gap-2 transition-colors disabled:opacity-60 ${
+                    className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center justify-center gap-2 transition-colors disabled:opacity-60 ${
                       on
                         ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-200'
                         : 'bg-white/5 border-white/10 text-white/60'
@@ -337,13 +337,12 @@ export function InstagramAccountsPanel() {
                 onClick={() => checkMut.mutate(a.id)}
                 disabled={checking === a.id}
                 title="Check for new posts — an order is placed if a new post is found"
-                className="h-9 px-3 rounded-lg text-[12px] font-semibold bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-sky-100 flex items-center gap-2 disabled:opacity-60"
+                className="h-9 px-3 rounded-lg text-[12px] font-semibold bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-sky-100 flex flex-1 sm:flex-none items-center justify-center gap-2 disabled:opacity-60"
               >
                 {checking === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                 Check
               </button>
-              <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 flex items-center">
-
+              <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 flex flex-1 sm:flex-none items-center justify-center whitespace-nowrap">
                 View Posts
               </Link>
 
