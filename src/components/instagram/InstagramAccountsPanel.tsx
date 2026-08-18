@@ -289,13 +289,13 @@ export function InstagramAccountsPanel() {
                   alt={a.username}
                   referrerPolicy="no-referrer"
                   loading="lazy"
-                  className="absolute inset-0 w-14 h-14 rounded-full object-cover ring-2 ring-purple-400/30 transition-opacity duration-300 opacity-0"
+                  className="absolute inset-0 w-full h-full rounded-full object-cover ring-2 ring-purple-400/30 transition-opacity duration-300 opacity-0"
                   onLoad={(e) => { (e.target as HTMLImageElement).style.opacity = '1'; }}
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
               )}
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-[140px]">
               <div className="flex items-center gap-1.5">
                 <span className="font-semibold !text-white truncate">@{a.username}</span>
                 {a.is_verified && <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />}
@@ -312,7 +312,7 @@ export function InstagramAccountsPanel() {
               )}
 
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 basis-full sm:basis-auto sm:shrink-0 flex-wrap">
               {(() => {
                 const on = a.auto_boost_enabled === true;
                 return (
