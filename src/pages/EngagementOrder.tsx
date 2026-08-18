@@ -19,7 +19,6 @@ import { cn } from "@/lib/utils";
 import { PlatformSelector } from "@/components/engagement/PlatformSelector";
 import { QuantitySelector } from "@/components/engagement/QuantitySelector";
 import { EngagementTypeCard } from "@/components/engagement/EngagementTypeCard";
-import { DrawableGrowthChart } from "@/components/engagement/DrawableGrowthChart";
 import { AIEngagementChat } from "@/components/engagement/AIEngagementChat";
 import { PreOrderRatioWarning } from "@/components/engagement/PreOrderRatioWarning";
 
