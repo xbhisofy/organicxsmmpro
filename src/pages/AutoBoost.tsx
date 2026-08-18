@@ -133,7 +133,7 @@ export default function AutoBoost() {
           </p>
         </div>
         <Button asChild variant="outline" size="sm">
-          <Link to="/dashboard"><ArrowLeft className="w-4 h-4 mr-1" /> Home</Link>
+          <Link to="/engagement-order"><ArrowLeft className="w-4 h-4 mr-1" /> Home</Link>
         </Button>
       </div>
 

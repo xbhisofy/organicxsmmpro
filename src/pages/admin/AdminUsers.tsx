@@ -507,7 +507,7 @@ export default function AdminUsers() {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/engagement-order" replace />;
   }
 
   const getSubscriptionBadge = (sub?: Subscription) => {

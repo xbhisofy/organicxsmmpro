@@ -173,7 +173,7 @@ export default function AdminOrders() {
   // INSTANT RENDER - No blocking loader
 
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/engagement-order" replace />;
   }
 
   return (
