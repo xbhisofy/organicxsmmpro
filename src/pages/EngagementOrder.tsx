@@ -19,7 +19,6 @@ import { cn } from "@/lib/utils";
 import { PlatformSelector } from "@/components/engagement/PlatformSelector";
 import { QuantitySelector } from "@/components/engagement/QuantitySelector";
 import { EngagementTypeCard } from "@/components/engagement/EngagementTypeCard";
-import { DrawableGrowthChart } from "@/components/engagement/DrawableGrowthChart";
 import { AIEngagementChat } from "@/components/engagement/AIEngagementChat";
 import { PreOrderRatioWarning } from "@/components/engagement/PreOrderRatioWarning";
 
@@ -945,15 +944,6 @@ export default function EngagementOrder() {
           </div>
         </div>
 
-        {/* Drawable Growth Chart - Interactive curve editing */}
-        {activeEngagementTypes.length > 0 && (
-          <DrawableGrowthChart
-            engagements={engagements as Record<EngagementType, EngagementConfig>}
-            onCurveChange={handleCurveChange}
-            drawModeState={drawModeState}
-            onDrawModeChange={setDrawModeState}
-          />
-        )}
 
         {/* Heavy delivery previews — opt-in to keep initial render snappy */}
         {activeEngagementTypes.length > 0 && (
