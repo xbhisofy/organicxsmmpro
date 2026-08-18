@@ -100,8 +100,8 @@ export default function AutoBoost() {
 
   const save = async () => {
     if (!user) return;
-    if (preset.mode === "auto" && total === 0) {
-      toast.error("Auto mode ke liye kam se kam ek quantity set karo");
+    if (total === 0) {
+      toast.error("Kam se kam ek quantity set karo");
       return;
     }
     setSaving(true);
@@ -109,6 +109,7 @@ export default function AutoBoost() {
       {
         user_id: user.id,
         ...preset,
+        mode: "auto",
         delivery_hours: hours,
         drip_minutes: schedule.intervalMinutes,
         drip_percent_per_run: schedule.percentPerRun,
