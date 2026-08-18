@@ -19,11 +19,11 @@ async function tgSend(chatId: number, text: string, extra: Record<string, unknow
   } catch (e) { console.error("tg send failed", e); }
 }
 
-async function placeOrder(user_id: string, link: string, views: number, likes: number, comments: number, drip_minutes: number) {
+async function placeOrder(user_id: string, link: string, p: Record<string, number>) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/instagram-place-engagement`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}`, apikey: SERVICE_KEY },
-    body: JSON.stringify({ user_id, link, views, likes, comments, drip_minutes, source: "poll-auto" }),
+    body: JSON.stringify({ user_id, link, ...p, source: "poll-auto" }),
   });
   const j = await res.json().catch(() => ({}));
   return { ok: res.ok, ...j };
@@ -113,8 +113,19 @@ Deno.serve(async (req) => {
         const link = np.permalink;
         const shortcode = np.shortcode ?? "";
 
-        if (preset?.mode === "auto" && (preset.views + preset.likes + preset.comments) > 0) {
-          const r = await placeOrder(acc.user_id, link, preset.views ?? 0, preset.likes ?? 0, preset.comments ?? 0, preset.drip_minutes ?? 0);
+        const q = {
+          views: preset?.views ?? 0,
+          likes: preset?.likes ?? 0,
+          comments: preset?.comments ?? 0,
+          saves: preset?.saves ?? 0,
+          shares: preset?.shares ?? 0,
+          reposts: preset?.reposts ?? 0,
+          drip_minutes: preset?.drip_minutes ?? 0,
+        };
+        const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
+
+        if (preset?.mode === "auto" && totalQ > 0) {
+          const r = await placeOrder(acc.user_id, link, q);
           if (r.ok) {
             ordersPlaced++;
             if (chatId) {
