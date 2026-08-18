@@ -2243,6 +2243,10 @@ export type Database = {
           username: string
         }[]
       }
+      get_engagement_orders_page: {
+        Args: { _limit?: number; _offset?: number; _search?: string }
+        Returns: Json
+      }
       get_orders_by_link: {
         Args: { _link: string; _user_id: string }
         Returns: {
