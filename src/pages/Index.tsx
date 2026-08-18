@@ -96,26 +96,27 @@ const Index = () => {
 
           {/* Headline */}
           <h1
-            className="!text-white text-5xl sm:text-7xl lg:text-[88px] font-extrabold tracking-tight leading-[1.02] mb-6"
-            style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+            className="!text-white text-[2.75rem] sm:text-7xl lg:text-[92px] font-extrabold tracking-[-0.03em] leading-[0.95] mb-6"
+            style={{ fontFamily: "'Syne', system-ui, sans-serif" }}
           >
-            The Growth Engine
+            Real Growth,
             <br />
-            for Social{' '}
+            Engineered like{' '}
             <span
-              className="italic font-bold text-purple-300"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              className="italic font-normal bg-gradient-to-r from-purple-200 via-fuchsia-300 to-purple-400 bg-clip-text text-transparent"
+              style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
             >
-              Magic
+              Art
             </span>
           </h1>
 
           {/* Sub */}
-          <p className="text-base sm:text-xl text-slate-200 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Master Instagram, TikTok, and YouTube organic engagement through a
-            precision-engineered platform. No bots — just high-performance
-            software with multi-provider failover, wallet, and a live dashboard.
+          <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Instagram, TikTok aur YouTube par 100% organic engagement — zero bots.
+            Auto Boost every new post, multi-provider failover, instant wallet
+            top-ups and live order tracking, all in one panel.
           </p>
+
 
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
