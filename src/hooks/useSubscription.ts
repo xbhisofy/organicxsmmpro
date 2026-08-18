@@ -76,7 +76,8 @@ export function useSubscription() {
     staleTime: 10 * 60 * 1000,
   });
 
-  const hasActiveSubscription = subscription?.status === 'active' && subscription?.plan_type !== 'trial';
+  // Subscriptions are no longer required — anyone with wallet funds can order.
+  const hasActiveSubscription = true;
   const isSubscriptionExpired = subscription?.status === 'expired';
   const hasPendingRequest = !!pendingRequest;
   const isTrial = subscription?.plan_type === 'trial' && subscription?.status === 'active';
