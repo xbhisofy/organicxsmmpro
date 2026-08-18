@@ -58,7 +58,7 @@ function normalizePost(x: any) {
   const thumbnail = x.thumbnailUrl ?? x.image_url ?? x.thumbnail_url ?? x.display_url
     ?? x.image_versions2?.candidates?.[0]?.url ?? null;
   const videoUrl = x.downloadUrl ?? x.video_url ?? x.video_versions?.[0]?.url ?? null;
-  const isVideo = !!(x.isVideo ?? x.is_video ?? x.mediaType === 'video' || x.mediaType === 'reel' || x.type === 'video');
+  const isVideo = !!((x.isVideo ?? x.is_video) || x.mediaType === 'video' || x.mediaType === 'reel' || x.type === 'video');
 
   let views = Number(x.views ?? x.plays ?? x.play_count ?? x.video_view_count ?? x.view_count ?? 0);
   const likes = Number(x.likes ?? x.like_count ?? x.edge_liked_by?.count ?? 0);
