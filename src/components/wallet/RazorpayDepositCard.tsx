@@ -12,7 +12,7 @@ const WHATSAPP_NUMBER = '255637520201'; // +255 637 520 201
 function buildSupportMessage(email?: string) {
   return (
     `Hi! 👋\n\n` +
-    `Mujhe apne OrganicSMM Pro wallet me funds add karne hain.\n` +
+    `I'd like to add funds to my OrganicSMM Pro wallet.\n` +
     (email ? `My account email: ${email}\n` : '') +
     `\nPlease help me with the payment process. 🙏`
   );
@@ -29,9 +29,9 @@ export default function RazorpayDepositCard() {
     // Workaround: copy the message to clipboard, then open the chat.
     try {
       await navigator.clipboard.writeText(message);
-      toast.success('📋 Message copied! Telegram me paste kar dena.', { duration: 4000 });
+      toast.success('📋 Message copied! Just paste it in Telegram.', { duration: 4000 });
     } catch {
-      toast.info('Telegram khul raha hai — apna message type kar dena.');
+      toast.info('Opening Telegram — please type your message there.');
     }
     // let the default <a target="_blank"> navigation continue
   };
@@ -83,8 +83,8 @@ export default function RazorpayDepositCard() {
           >
             <Clock className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: '#b45309' }} />
             <p className="text-[11.5px] leading-relaxed" style={{ color: '#92400e' }}>
-              <b>Auto payment gateway temporarily unavailable.</b> Funds add karne ke liye
-              niche diye Telegram ya WhatsApp se direct contact karein — instant manual credit.
+              <b>Auto payment gateway temporarily unavailable.</b> To add funds, contact us
+              directly on Telegram or WhatsApp below — instant manual credit.
             </p>
           </div>
         </div>
@@ -168,8 +168,8 @@ export default function RazorpayDepositCard() {
               </div>
 
               <p className="text-[10px] mt-4 leading-relaxed" style={{ color: '#a1a1aa' }}>
-                Telegram pe click karte hi message <b style={{ color: '#fff' }}>auto-copy</b> ho
-                jayega — chat me sirf paste karke send karna.
+                The message is <b style={{ color: '#fff' }}>auto-copied</b> the moment you click
+                Telegram — just paste and send it in the chat.
               </p>
             </div>
           </div>

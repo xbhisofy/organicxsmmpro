@@ -183,7 +183,7 @@ export default function Admin() {
           </CardContent>
         </Card>
 
-        {/* Global markup hata diya gaya hai — admin har service ka per-1000 price direct /admin/services se set karta hai */}
+        {/* Global markup removed — admins set each service's per-1000 price directly from /admin/services */}
 
 
         {/* Maintenance Mode Toggle */}

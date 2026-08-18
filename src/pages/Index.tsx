@@ -227,20 +227,20 @@ const Index = () => {
             <div>
               <p className="text-[11px] tracking-[0.22em] uppercase text-slate-400 mb-4">Auto Boost</p>
               <h2 className="!text-white text-3xl sm:text-4xl font-bold tracking-tight leading-tight mb-4">
-                Post karo, order khud lag jayega
+                Post it, the order places itself
               </h2>
               <p className="text-slate-300 leading-relaxed mb-6 max-w-lg">
-                Apna Instagram account ek baar link karo aur views, likes, comments, saves, shares ki
-                quantity set kar do. Naya post aane ke 1–3 minute me order automatically place ho jata
-                hai, aur aapke chune hue time me dheere-dheere deliver hota hai.
+                Link your Instagram account once and set the quantity for views, likes, comments,
+                saves and shares. When a new post goes up, the order is placed automatically within
+                1–3 minutes and delivered gradually over the time window you chose.
               </p>
 
               <ul className="space-y-3 mb-8">
                 {[
-                  'Har account ke liye alag on/off switch',
-                  'Delivery time 6 ghante se 7 din tak',
-                  'Aapke saved quantity presets hi use hote hain',
-                  'Auto orders history me ⚡ badge ke saath dikhte hain',
+                  'A separate on/off switch for every account',
+                  'Delivery time from 6 hours to 7 days',
+                  'Your saved quantity presets are used every time',
+                  'Auto orders appear in history with a ⚡ badge',
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-2.5 text-[14px] text-slate-300">
                     <Check className="h-4 w-4 mt-0.5 text-purple-300 shrink-0" />
@@ -283,8 +283,8 @@ const Index = () => {
               </dl>
 
               <p className="mt-4 pt-4 border-t border-white/10 text-[12px] text-slate-400 leading-relaxed">
-                Ye sirf ek example hai — quantity aur timing aap Auto Boost page se kabhi bhi badal
-                sakte ho.
+                This is just an example — you can change the quantity and timing any time from the
+                Auto Boost page.
               </p>
             </div>
           </div>

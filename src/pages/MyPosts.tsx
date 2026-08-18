@@ -65,7 +65,7 @@ export default function MyPosts() {
       toast.success('Link copied');
       setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1600);
     } catch {
-      toast.error('Copy nahi hua — link manually copy karo');
+      toast.error('Copy failed — please copy the link manually');
     }
   };
 

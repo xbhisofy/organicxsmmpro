@@ -37,7 +37,7 @@ export function InstagramAccountsPanel() {
     refetchIntervalInBackground: false,
   });
 
-  // Jis account ka data khaali hai uske liye ek baar khud refresh trigger karo.
+  // Trigger a one-time refresh for accounts whose data is empty.
   const kicked = useRef<Set<string>>(new Set());
   useEffect(() => {
     accounts.forEach((a: any) => {
@@ -108,7 +108,7 @@ export function InstagramAccountsPanel() {
       };
 
       await refresh();
-      // Scraper rate-limit hone par ek retry — data pakka aa jaaye.
+      // Retry once if the scraper is rate-limited, so data reliably arrives.
       setTimeout(async () => {
         const fresh = qc.getQueryData<any[]>(igQueryKeys.accounts(user?.id)) ?? [];
         const acc = fresh.find((a) => a.id === d.account.id);
@@ -163,7 +163,7 @@ export function InstagramAccountsPanel() {
     onSuccess: (d: any) => {
       const ordered = Number(d?.ordersPlaced ?? 0);
       if (ordered > 0) toast.success(`${ordered} new post detect hua — order lag gaya`);
-      else toast.info('Koi naya post nahi mila — data refresh ho gaya');
+      else toast.info('No new post found — data refreshed');
       qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
       qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
     },
@@ -251,8 +251,8 @@ export function InstagramAccountsPanel() {
           <div className="rounded-2xl p-3 bg-sky-500/10 border border-sky-400/30 text-[12px] text-sky-100 flex items-center gap-2">
             <RefreshCw className="w-4 h-4 shrink-0" />
             <span>
-              Auto check band hai (API requests bachane ke liye). Naya post upload karne ke baad us account ka{' '}
-              <b>Check</b> button dabao — tabhi new post detect hoga aur order lagega.
+              Auto check is off (to save API requests). After uploading a new post, press that account's{' '}
+              <b>Check</b> button — only then the new post is detected and the order is placed.
             </span>
           </div>
         )}
@@ -318,7 +318,7 @@ export function InstagramAccountsPanel() {
                 return (
                   <button
                     onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}
-                    title={on ? 'Auto post order ON — new post par order lagega' : 'Auto post order OFF'}
+                    title={on ? 'Auto post order ON — orders are placed on new posts' : 'Auto post order OFF'}
                     className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center gap-2 transition-colors disabled:opacity-60 ${
                       on
                         ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-200'
@@ -336,7 +336,7 @@ export function InstagramAccountsPanel() {
               <button
                 onClick={() => checkMut.mutate(a.id)}
                 disabled={checking === a.id}
-                title="New post check karo — naya post mila to order lag jayega"
+                title="Check for new posts — an order is placed if a new post is found"
                 className="h-9 px-3 rounded-lg text-[12px] font-semibold bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-sky-100 flex items-center gap-2 disabled:opacity-60"
               >
                 {checking === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}

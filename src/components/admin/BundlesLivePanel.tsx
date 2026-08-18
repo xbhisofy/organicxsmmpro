@@ -26,7 +26,7 @@ interface Bundle {
 }
 
 /**
- * Live admin view: jab bhi /admin/bundles me bundle/item add ya price change ho,
+ * Live admin view: whenever a bundle/item is added or a price changes in /admin/bundles,
  * yahaan turant (realtime) dikh jata hai bina refresh kiye.
  */
 export function BundlesLivePanel() {
@@ -89,7 +89,7 @@ export function BundlesLivePanel() {
           </Link>
         </div>
         <p className="text-xs text-muted-foreground">
-          Naye bundle / engagement type yahaan turant dikh jate hain. Per-1000 price har service ke against editable hai (neeche Services table me).
+          New bundles / engagement types show up here instantly. The per-1000 price is editable against each service (in the Services table below).
         </p>
       </CardHeader>
       <CardContent>
@@ -99,7 +99,7 @@ export function BundlesLivePanel() {
           </div>
         ) : !bundles || bundles.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">
-            Abhi koi bundle nahi hai. /admin/bundles se banao.
+            No bundles yet. Create one from /admin/bundles.
           </p>
         ) : (
           <div className="grid gap-3 md:grid-cols-2">
