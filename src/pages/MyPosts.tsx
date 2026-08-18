@@ -319,6 +319,21 @@ export default function MyPosts() {
                 >
                   <Rocket className="w-3.5 h-3.5" /> Boost
                 </button>
+                <button
+                  onClick={() => copyLink(r.media_id, r.permalink)}
+                  title={r.permalink}
+                  className={`w-full h-8 rounded-lg text-[11px] font-medium border flex items-center justify-center gap-1.5 transition ${
+                    copiedId === r.media_id
+                      ? 'bg-emerald-500/15 border-emerald-400/40 text-emerald-200'
+                      : 'bg-white/5 hover:bg-white/10 border-white/10 text-white/80 hover:text-white'
+                  }`}
+                >
+                  {copiedId === r.media_id ? (
+                    <><Check className="w-3.5 h-3.5" /> Copied!</>
+                  ) : (
+                    <><Copy className="w-3.5 h-3.5" /> Copy link</>
+                  )}
+                </button>
                 {(r.active_orders > 0 || r.completed_orders > 0 || Number(r.total_spent) > 0) && (
                   <button
                     onClick={() => navigate(`/engagement-orders?q=${encodeURIComponent(r.permalink)}`)}
