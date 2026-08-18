@@ -20,6 +20,7 @@ type Preset = {
   reposts: number;
   drip_minutes: number;
   drip_percent_per_run: number;
+  delivery_hours: number;
   mode: "auto" | "manual";
 };
 
@@ -30,8 +31,9 @@ const DEFAULTS: Preset = {
   saves: 0,
   shares: 0,
   reposts: 0,
-  drip_minutes: 30,
-  drip_percent_per_run: 10,
+  drip_minutes: 60,
+  drip_percent_per_run: 5,
+  delivery_hours: 24,
   mode: "manual",
 };
 
@@ -44,6 +46,16 @@ const FIELDS: { key: keyof Preset; label: string; icon: typeof Eye }[] = [
   { key: "reposts", label: "Reposts", icon: Repeat2 },
 ];
 
+const HOUR_PRESETS = [6, 12, 24, 48, 72, 168];
+
+function deriveSchedule(hours: number) {
+  const h = Math.min(168, Math.max(1, hours));
+  const runs = Math.min(48, Math.max(2, Math.round(h)));
+  const intervalMinutes = Math.max(5, Math.round((h * 60) / runs));
+  const percentPerRun = Math.max(1, Math.round(100 / runs));
+  return { runs, intervalMinutes, percentPerRun };
+}
+
 export default function AutoBoost() {
   const { user } = useAuth();
   const [preset, setPreset] = useState<Preset>(DEFAULTS);
@@ -55,7 +67,7 @@ export default function AutoBoost() {
     (async () => {
       const { data } = await supabase
         .from("engagement_presets")
-        .select("views,likes,comments,saves,shares,reposts,drip_minutes,drip_percent_per_run,mode")
+        .select("views,likes,comments,saves,shares,reposts,drip_minutes,drip_percent_per_run,delivery_hours,mode")
         .eq("user_id", user.id)
         .maybeSingle();
       if (data) {
@@ -68,6 +80,7 @@ export default function AutoBoost() {
           reposts: data.reposts ?? 0,
           drip_minutes: data.drip_minutes ?? 0,
           drip_percent_per_run: data.drip_percent_per_run ?? 0,
+          delivery_hours: data.delivery_hours ?? 24,
           mode: (data.mode as "auto" | "manual") ?? "manual",
         });
       }
@@ -79,15 +92,9 @@ export default function AutoBoost() {
     setPreset((p) => ({ ...p, [key]: Math.max(0, Math.floor(Number(value) || 0)) }));
 
   const total = FIELDS.reduce((s, f) => s + (preset[f.key] as number), 0);
-  const dripActive = preset.drip_minutes > 0 && preset.drip_percent_per_run > 0;
-  const runs = dripActive ? Math.ceil(100 / preset.drip_percent_per_run) : 0;
-  const totalMinutes = runs * preset.drip_minutes;
-  const durationText =
-    totalMinutes >= 1440
-      ? `${(totalMinutes / 1440).toFixed(1)} din`
-      : totalMinutes >= 60
-        ? `${(totalMinutes / 60).toFixed(1)} ghante`
-        : `${totalMinutes} min`;
+  const hours = preset.delivery_hours;
+  const schedule = deriveSchedule(hours);
+  const durationText = hours >= 24 ? `${(hours / 24).toFixed(hours % 24 === 0 ? 0 : 1)} din` : `${hours} ghante`;
 
   const save = async () => {
     if (!user) return;
@@ -97,7 +104,13 @@ export default function AutoBoost() {
     }
     setSaving(true);
     const { error } = await supabase.from("engagement_presets").upsert(
-      { user_id: user.id, ...preset },
+      {
+        user_id: user.id,
+        ...preset,
+        delivery_hours: hours,
+        drip_minutes: schedule.intervalMinutes,
+        drip_percent_per_run: schedule.percentPerRun,
+      },
       { onConflict: "user_id" },
     );
     setSaving(false);
@@ -175,43 +188,47 @@ export default function AutoBoost() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Timer className="w-4 h-4" /> Delivery timing (drip)</CardTitle>
+              <CardTitle className="flex items-center gap-2"><Timer className="w-4 h-4" /> Delivery time</CardTitle>
               <CardDescription>
-                Ek hi baar sab nahi jayega — thodi-thodi quantity set interval par jayegi (full engagement page jaisa hi organic drip).
+                Full engagement page jaisa hi — sirf time period choose karo (jaise 72 hours), quantity apne aap us time me organically drip hogi.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <Label className="text-muted-foreground">Interval (minutes)</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  value={preset.drip_minutes}
-                  onChange={(e) => setNum("drip_minutes", e.target.value)}
-                />
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {HOUR_PRESETS.map((h) => (
+                  <Button
+                    key={h}
+                    type="button"
+                    size="sm"
+                    variant={preset.delivery_hours === h ? "default" : "outline"}
+                    onClick={() => setPreset((p) => ({ ...p, delivery_hours: h }))}
+                  >
+                    {h < 24 ? `${h}h` : `${h / 24}d`}
+                  </Button>
+                ))}
               </div>
               <div>
-                <Label className="text-muted-foreground">Har interval me quantity (%)</Label>
+                <Label className="text-muted-foreground">Custom (hours, 1–168)</Label>
                 <Input
                   type="number"
-                  min={0}
-                  max={100}
-                  value={preset.drip_percent_per_run}
-                  onChange={(e) => setNum("drip_percent_per_run", e.target.value)}
+                  min={1}
+                  max={168}
+                  value={preset.delivery_hours}
+                  onChange={(e) =>
+                    setPreset((p) => ({
+                      ...p,
+                      delivery_hours: Math.min(168, Math.max(1, Math.floor(Number(e.target.value) || 1))),
+                    }))
+                  }
                 />
               </div>
-              <div className="sm:col-span-2 rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
-                {dripActive ? (
-                  <>
-                    Har <b>{preset.drip_minutes} min</b> me har type ki <b>{preset.drip_percent_per_run}%</b> quantity jayegi
-                    — approx <b>{runs} runs</b>, pura delivery ~<b>{durationText}</b> me.
-                    <div className="text-muted-foreground text-xs mt-1">
-                      Example: {preset.views.toLocaleString()} views → ~{Math.max(1, Math.ceil((preset.views * preset.drip_percent_per_run) / 100)).toLocaleString()} views per run.
-                    </div>
-                  </>
-                ) : (
-                  <>Interval ya percent 0 hai — order organic engine ke default schedule par chalega (instant nahi, par tumhara custom drip off hai).</>
-                )}
+              <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
+                Delivery <b>{durationText}</b> me complete hogi — approx <b>{schedule.runs} runs</b>, har{" "}
+                <b>{schedule.intervalMinutes} min</b> par ~<b>{schedule.percentPerRun}%</b> quantity.
+                <div className="text-muted-foreground text-xs mt-1">
+                  Example: {preset.views.toLocaleString()} views → ~
+                  {Math.max(1, Math.ceil(preset.views / schedule.runs)).toLocaleString()} views per run.
+                </div>
               </div>
             </CardContent>
           </Card>

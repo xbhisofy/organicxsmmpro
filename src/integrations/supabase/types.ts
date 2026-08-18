@@ -579,6 +579,7 @@ export type Database = {
           comments: number
           created_at: string
           default_link: string | null
+          delivery_hours: number
           drip_minutes: number
           drip_percent_per_run: number
           likes: number
@@ -594,6 +595,7 @@ export type Database = {
           comments?: number
           created_at?: string
           default_link?: string | null
+          delivery_hours?: number
           drip_minutes?: number
           drip_percent_per_run?: number
           likes?: number
@@ -609,6 +611,7 @@ export type Database = {
           comments?: number
           created_at?: string
           default_link?: string | null
+          delivery_hours?: number
           drip_minutes?: number
           drip_percent_per_run?: number
           likes?: number

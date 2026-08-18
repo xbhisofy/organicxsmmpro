@@ -1,0 +1,1 @@
+ALTER TABLE public.engagement_presets ADD COLUMN IF NOT EXISTS delivery_hours integer NOT NULL DEFAULT 24;
