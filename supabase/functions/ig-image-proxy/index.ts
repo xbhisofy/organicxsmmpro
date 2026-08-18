@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     if (!target) return new Response("Missing url", { status: 400, headers: corsHeaders });
 
     const decoded = decodeURIComponent(target);
-    if (!/^https:\/\/[^/]*(cdninstagram|fbcdn)\.(com|net)\//i.test(decoded)) {
+    if (!/^https:\/\/[^/]*(cdninstagram|fbcdn|socialhubapi)\.(com|net)\//i.test(decoded)) {
       return new Response("Blocked host", { status: 400, headers: corsHeaders });
     }
 
