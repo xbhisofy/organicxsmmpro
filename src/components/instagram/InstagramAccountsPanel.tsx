@@ -236,9 +236,16 @@ export function InstagramAccountsPanel() {
                 {a.is_verified && <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />}
               </div>
               {a.full_name && <p className="text-[13px] text-white/85 truncate">{a.full_name}</p>}
-              <p className="text-[11px] text-white/75 mt-0.5">
-                {a.followers?.toLocaleString('en-IN') ?? 0} followers · {a.posts_count ?? 0} posts
-              </p>
+              {!a.last_fetched_at && !a.followers && !a.posts_count ? (
+                <p className="text-[11px] text-purple-200/80 mt-0.5 flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin" /> Loading profile...
+                </p>
+              ) : (
+                <p className="text-[11px] text-white/75 mt-0.5">
+                  {a.followers?.toLocaleString('en-IN') ?? 0} followers · {a.posts_count ?? 0} posts
+                </p>
+              )}
+
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {(() => {
