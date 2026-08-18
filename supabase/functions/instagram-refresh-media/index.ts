@@ -12,7 +12,7 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
 // The free scraper can take up to a minute on a cold start, so allow a long
 // timeout and 3 attempts — otherwise new posts never land in the DB.
-async function fetchWithRetry(url: string, timeoutMs = 55_000, attempts = 2): Promise<any> {
+async function fetchWithRetry(url: string, timeoutMs = 30_000, attempts = 2): Promise<any> {
   let lastErr: unknown = new Error('fetch failed');
   for (let attempt = 0; attempt < attempts; attempt++) {
     const ctrl = new AbortController();
