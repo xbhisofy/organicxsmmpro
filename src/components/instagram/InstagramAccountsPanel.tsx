@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock } from 'lucide-react';
+import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { igQueryKeys } from '@/lib/instagramCache';
