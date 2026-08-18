@@ -1,21 +1,7 @@
-// Shared payment-eligibility gate used by every order-placement edge function.
-//
-// A user may place orders ONLY if one of the following is true:
-//   1. They are an admin (user_roles.role = 'admin').
-//   2. They have an ACTIVE, VERIFIED subscription:
-//        - subscriptions.status = 'active'
-//        - plan_type ∈ ('monthly', 'yearly', 'lifetime')  (never 'trial' / 'none')
-//        - expires_at IS NULL OR expires_at > now()
-//      Every active row was written by a service-role webhook after the
-//      provider verified the payment — end users cannot INSERT/UPDATE this
-//      table (RLS + GRANTs restrict it to service_role).
-//   3. They have at least ONE fully verified deposit — a completed transaction
-//      of type='deposit' whose payment_method is a real gateway
-//      ('oxapay', 'razorpay_auto', 'zapupi'). Promo / referral / manual
-//      credits do NOT count as "verified payment" for placement eligibility.
-//
-// Any other user (fresh account, promo-only wallet, expired sub) is blocked
-// with a 403 before we touch the wallet or the orders tables.
+// Shared order-placement gate.
+// Subscriptions were removed: any authenticated user can place orders as long
+// as their wallet has enough balance (wallet credits only come from verified
+// provider webhooks, and the debit RPC enforces the balance).
 
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
