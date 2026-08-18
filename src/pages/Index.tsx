@@ -58,6 +58,7 @@ const Index = () => {
 
           <nav className="hidden md:flex items-center gap-8 text-sm text-white/85">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <a href="#auto-boost" className="text-amber-200 hover:text-amber-100 transition-colors">Auto Boost</a>
             <a href="#platforms" className="hover:text-white transition-colors">Platforms</a>
             <Link to="/support" className="hover:text-white transition-colors">Support</Link>
           </nav>
