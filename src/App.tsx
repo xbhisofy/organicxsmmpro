@@ -32,7 +32,7 @@ const EngagementOrderDetail = lazy(() => import("./pages/EngagementOrderDetail")
 const MassOrder = lazy(() => import("./pages/MassOrder"));
 const InstagramPage = lazy(() => import("./pages/Instagram"));
 const MyPosts = lazy(() => import("./pages/MyPosts"));
-const TelegramBot = lazy(() => import("./pages/TelegramBot"));
+const AutoBoost = lazy(() => import("./pages/AutoBoost"));
 
 const Admin = lazy(() => import("./pages/admin/Admin"));
 const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
@@ -153,7 +153,8 @@ const App = () => {
                     <Route path="/mass-order" element={<MassOrder />} />
                     <Route path="/instagram" element={<InstagramPage />} />
                     <Route path="/my-posts" element={<MyPosts />} />
-                    <Route path="/telegram-bot" element={<TelegramBot />} />
+                    <Route path="/auto-boost" element={<AutoBoost />} />
+                    <Route path="/telegram-bot" element={<Navigate to="/auto-boost" replace />} />
 
                     {/* Admin — server-verified guard */}
                     <Route path="/admin" element={<AdminGuard><Admin /></AdminGuard>} />
