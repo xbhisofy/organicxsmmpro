@@ -945,15 +945,6 @@ export default function EngagementOrder() {
           </div>
         </div>
 
-        {/* Drawable Growth Chart - Interactive curve editing */}
-        {activeEngagementTypes.length > 0 && (
-          <DrawableGrowthChart
-            engagements={engagements as Record<EngagementType, EngagementConfig>}
-            onCurveChange={handleCurveChange}
-            drawModeState={drawModeState}
-            onDrawModeChange={setDrawModeState}
-          />
-        )}
 
         {/* Heavy delivery previews — opt-in to keep initial render snappy */}
         {activeEngagementTypes.length > 0 && (
