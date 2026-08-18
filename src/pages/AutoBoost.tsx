@@ -100,7 +100,7 @@ export default function AutoBoost() {
   const save = async () => {
     if (!user) return;
     if (total === 0) {
-      toast.error("Kam se kam ek quantity set karo");
+      toast.error("Set at least one quantity");
       return;
     }
     setSaving(true);
@@ -146,7 +146,7 @@ export default function AutoBoost() {
                 </span>
               </div>
               <p className="text-muted-foreground text-xs sm:text-sm mt-1">
-                New post par kitne views / likes / comments / saves / shares jaane chahiye — yahin se manage karo.
+                Decide how many views / likes / comments / saves / shares each new post gets — manage it all here.
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function AutoBoost() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Instagram className="w-4 h-4" /> Instagram accounts</CardTitle>
           <CardDescription>
-            Apne Instagram username link karo — inki nayi posts par Auto Boost lagta hai.
+            Link your Instagram usernames — Auto Boost runs on their new posts.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -200,7 +200,7 @@ export default function AutoBoost() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Timer className="w-4 h-4" /> Delivery time</CardTitle>
               <CardDescription>
-                Full engagement page jaisa hi — sirf time period choose karo (jaise 72 hours), quantity apne aap us time me organically drip hogi.
+                Just like the full engagement page — pick a time period (e.g. 72 hours) and the quantity drips organically across it.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -233,8 +233,8 @@ export default function AutoBoost() {
                 />
               </div>
               <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
-                Delivery <b>{durationText}</b> me complete hogi — approx <b>{schedule.runs} runs</b>, har{" "}
-                <b>{schedule.intervalMinutes} min</b> par ~<b>{schedule.percentPerRun}%</b> quantity.
+                Delivery completes in <b>{durationText}</b> — approx <b>{schedule.runs} runs</b>, about{" "}
+                <b>{schedule.percentPerRun}%</b> of the quantity every <b>{schedule.intervalMinutes} min</b>.
                 <div className="text-muted-foreground text-xs mt-1">
                   Example: {preset.views.toLocaleString()} views → ~
                   {Math.max(1, Math.ceil(preset.views / schedule.runs)).toLocaleString()} views per run.

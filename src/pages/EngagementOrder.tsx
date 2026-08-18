@@ -301,7 +301,7 @@ export default function EngagementOrder() {
       const lowestMatchedMin = positiveMins.length > 0 ? Math.min(...positiveMins) : undefined;
 
       // Admin-set bundle-level per-1000 price overrides everything.
-      // Provider rotate ho ya nahi, ye fixed price hi user ko charge hota hai.
+      // Whether or not the provider rotates, this fixed price is charged to the user.
       const adminPricePerK =
         item.price_per_k != null && Number(item.price_per_k) > 0
           ? Number(item.price_per_k)
@@ -839,7 +839,7 @@ export default function EngagementOrder() {
                       </span>
                     </div>
                     <p className="text-[11px] sm:text-[12px] text-white/70 leading-snug">
-                      Har nayi post par quantity + delivery time set karo — yahin se manage.
+                      Set quantity + delivery time for every new post — manage it here.
                     </p>
                   </div>
                   <span className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/15 border border-primary/40 text-orange-100 transition-all group-hover:bg-primary group-hover:text-primary-foreground">

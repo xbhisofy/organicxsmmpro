@@ -244,13 +244,13 @@ export default function MassOrder() {
 
   const errors = useMemo(() => {
     const list: string[] = [];
-    if (!bundle) list.push("Pehle ek bundle select karo.");
+    if (!bundle) list.push("Select a bundle first.");
     if (cards.length === 0) list.push("Kam se kam 1 valid link daalo.");
-    if (parsedLinks.some((_, i) => !linkValidity[i])) list.push("Kuch links invalid hain (http/https chahiye).");
+    if (parsedLinks.some((_, i) => !linkValidity[i])) list.push("Some links are invalid (http/https required).");
     if (new Set(validLinks).size !== validLinks.length) list.push("Duplicate links hain.");
     if (baseQty <= 0) list.push("Base quantity invalid.");
-    if (timeframe === "custom" && !customDate) list.push("Custom deadline date select karo.");
-    if (bundle && !serviceMap["views"]) list.push(`Is bundle me "views" service nahi hai.`);
+    if (timeframe === "custom" && !customDate) list.push("Select a custom deadline date.");
+    if (bundle && !serviceMap["views"]) list.push(`This bundle has no "views" service.`);
     if (wallet && wallet.balance < totalCost) list.push(`Insufficient balance. Need ${formatPrice(totalCost)}, have ${formatPrice(wallet.balance)}.`);
     return list;
   }, [bundle, cards, parsedLinks, linkValidity, validLinks, baseQty, timeframe, customDate, serviceMap, wallet, totalCost, formatPrice]);
@@ -500,8 +500,8 @@ export default function MassOrder() {
                 <div>
                   <h1 className="text-lg font-bold">Mass Order — Bulk Engagement</h1>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Multiple links ek saath order karo. Paste karo ya CSV/TXT file upload karo,
-                    har link customize karo, batch me submit karo aur history me track karo.
+                    Order multiple links at once. Paste them or upload a CSV/TXT file,
+                    customize each link, submit as a batch and track it in history.
                   </p>
                 </div>
               </CardContent>
@@ -511,7 +511,7 @@ export default function MassOrder() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Package className="w-4 h-4" /> Apna Bundle
+                  <Package className="w-4 h-4" /> Your Bundle
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -560,7 +560,7 @@ export default function MassOrder() {
                 <Textarea
                   value={linksText}
                   onChange={(e) => setLinksText(e.target.value)}
-                  placeholder={"Ek line par ek link.\nhttps://instagram.com/p/abc\nhttps://instagram.com/p/xyz\n\nYa CSV upload karo (first column = link)."}
+                  placeholder={"One link per line.\nhttps://instagram.com/p/abc\nhttps://instagram.com/p/xyz\n\nOr upload a CSV (first column = link)."}
                   rows={7}
                   className="font-mono text-sm"
                 />
@@ -642,7 +642,7 @@ export default function MassOrder() {
                 </div>
 
                 <p className="text-xs text-muted-foreground border-t pt-2">
-                  Defaults sirf naye links par apply hote hain. Existing rows ko edit karke per-link override karo.
+                  Defaults apply only to newly added links. Edit existing rows to override them per link.
                 </p>
               </CardContent>
             </Card>
@@ -909,7 +909,7 @@ export default function MassOrder() {
                   })}
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Tip: har service ki quantity yahan independently set kar sakte ho (views, likes, shares — sab alag).
+                  Tip: you can set each service's quantity independently here (views, likes, shares — all separate).
                 </p>
               </div>
 

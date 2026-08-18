@@ -310,7 +310,7 @@ export default function AdminProviderAccounts() {
                       onChange={(e) => setFormData(prev => ({ ...prev, provider_id: e.target.value }))}
                       required
                     />
-                    <p className="text-xs text-muted-foreground">Koi bhi custom provider ID likh sakte ho</p>
+                    <p className="text-xs text-muted-foreground">You can enter any custom provider ID</p>
                   </div>
                   
                   <div className="space-y-2">
@@ -366,7 +366,7 @@ export default function AdminProviderAccounts() {
                       onChange={(e) => setFormData(prev => ({ ...prev, delivery_multiplier: parseFloat(e.target.value) || 1 }))}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Agar yeh provider 2x extra deta hai (1000 order par 2000 deta hai), to <strong>2.0</strong> set karo. System apne aap aadhi quantity bhejega. Default: <strong>1.0</strong>
+                      If this provider over-delivers 2x (sends 2000 for a 1000 order), set <strong>2.0</strong>. The system will automatically send half the quantity. Default: <strong>1.0</strong>
                     </p>
                   </div>
                   

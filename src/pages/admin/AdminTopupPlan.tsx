@@ -313,7 +313,7 @@ export default function AdminTopupPlan() {
                 </Badge>
               </CardTitle>
               <p className="text-xs text-muted-foreground">
-                Har provider ka real-time balance, kitna lagne wala hai, aur kitna short ya extra hai.
+                Real-time balance for every provider, how much is required, and how much is short or extra.
               </p>
             </CardHeader>
             <CardContent className="p-0">
