@@ -123,20 +123,17 @@ export default function InstagramPage() {
               <input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && username) { if (!hasActiveSubscription) { setShowSubDialog(true); } else { linkMut.mutate(username); } } }}
+                onKeyDown={(e) => { if (e.key === 'Enter' && username) linkMut.mutate(username); }}
                 placeholder="your_username"
                 className="w-full h-11 pl-8 pr-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder:text-white/65 focus:outline-none focus:border-purple-400/40"
               />
             </div>
             <button
-              disabled={!username || linkMut.isPending || subLoading}
-              onClick={() => {
-                if (!hasActiveSubscription) { setShowSubDialog(true); return; }
-                linkMut.mutate(username);
-              }}
+              disabled={!username || linkMut.isPending}
+              onClick={() => linkMut.mutate(username)}
               className="h-11 px-5 rounded-xl font-semibold bg-gradient-to-b from-purple-500 to-fuchsia-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all disabled:opacity-50 flex items-center gap-2"
             >
-              {linkMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : (hasActiveSubscription ? <Plus className="w-4 h-4" /> : <Lock className="w-4 h-4" />)}
+              {linkMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
               Link
             </button>
           </div>
@@ -144,11 +141,11 @@ export default function InstagramPage() {
             <ShieldAlert className="w-3 h-3" /> Read-only. We only fetch public profile info & posts.
           </p>
 
-          {hasActiveSubscription && (() => {
+          {(() => {
             const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
             const recent = (linkEvents as any[]).filter(e => new Date(e.created_at).getTime() >= cutoff);
             const used = recent.length;
-            const remaining = Math.max(0, 5 - used);
+            const remaining = Math.max(0, 10 - used);
             const blocked = remaining === 0;
             const oldest = recent.reduce<Date | null>((min, a) => {
               const d = new Date(a.created_at);
@@ -165,7 +162,7 @@ export default function InstagramPage() {
                     : 'bg-emerald-500/10 border-emerald-400/30 text-emerald-200'
               }`}>
                 {blocked ? <Lock className="w-3.5 h-3.5 shrink-0" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
-                <span className="font-semibold">{used}/5 links used</span>
+                <span className="font-semibold">{used}/10 links used</span>
                 <span className="opacity-80">·</span>
                 <span>
                   {blocked

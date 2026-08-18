@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Monthly link cap: max 5 distinct Instagram accounts per rolling 30 days (non-admins).
+    // Monthly link cap: max 10 distinct Instagram accounts per rolling 30 days (non-admins).
     // Re-linking an already-linked username does not count (it's a refresh).
     if (!roleRow) {
       const usernameLower = username.toLowerCase();
@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
           .gte('created_at', sinceDate.toISOString())
           .order('created_at', { ascending: true });
         const used = recent?.length ?? 0;
-        const LIMIT = 5;
+        const LIMIT = 10;
         if (used >= LIMIT) {
           const oldest = recent![0];
           const resetAt = new Date(new Date(oldest.created_at).getTime() + windowMs);
