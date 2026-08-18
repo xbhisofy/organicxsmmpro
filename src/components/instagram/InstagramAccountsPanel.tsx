@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock, Zap } from 'lucide-react';
+import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock, Zap, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { igQueryKeys } from '@/lib/instagramCache';
@@ -232,12 +232,16 @@ export function InstagramAccountsPanel() {
       </div>
 
       <div className="space-y-3">
-        {!isLoading && accounts.length > 0 && !accounts.some((a: any) => a.auto_boost_enabled === true) && (
-          <div className="rounded-2xl p-3 bg-amber-500/10 border border-amber-400/30 text-[12px] text-amber-100 flex items-center gap-2">
-            <Zap className="w-4 h-4 shrink-0" />
-            <span>Auto Boost kisi account par ON nahi hai — neeche <b>Auto</b> toggle ON karo, warna new post par order nahi lagega.</span>
+        {!isLoading && accounts.length > 0 && (
+          <div className="rounded-2xl p-3 bg-sky-500/10 border border-sky-400/30 text-[12px] text-sky-100 flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 shrink-0" />
+            <span>
+              Auto check band hai (API requests bachane ke liye). Naya post upload karne ke baad us account ka{' '}
+              <b>Check</b> button dabao — tabhi new post detect hoga aur order lagega.
+            </span>
           </div>
         )}
+
         {isLoading && accounts.length === 0 && <div className="text-center text-white/80 py-8">Loading...</div>}
         {pending
           .filter((u) => !accounts.some((a: any) => String(a.username).toLowerCase() === u))
