@@ -129,12 +129,27 @@ export function InstagramAccountsPanel() {
       if (error) throw error;
       return enabled;
     },
+    onMutate: async ({ id, enabled }) => {
+      const key = igQueryKeys.accounts(user?.id);
+      await qc.cancelQueries({ queryKey: key });
+      const prev = qc.getQueryData<any[]>(key);
+      qc.setQueryData<any[]>(key, (old) =>
+        (old ?? []).map((a) => (a.id === id ? { ...a, auto_boost_enabled: enabled } : a))
+      );
+      return { prev, key };
+    },
+    onError: (e: Error, _vars, ctx: any) => {
+      if (ctx?.prev) qc.setQueryData(ctx.key, ctx.prev);
+      toast.error(e.message);
+    },
     onSuccess: (enabled) => {
       toast.success(enabled ? 'Auto post order ON for this account' : 'Auto post order OFF for this account');
+    },
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
     },
-    onError: (e: Error) => toast.error(e.message),
   });
+
 
   const [checking, setChecking] = useState<string | null>(null);
   const checkMut = useMutation({
@@ -303,7 +318,6 @@ export function InstagramAccountsPanel() {
                 return (
                   <button
                     onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}
-                    disabled={toggleAutoMut.isPending}
                     title={on ? 'Auto post order ON — new post par order lagega' : 'Auto post order OFF'}
                     className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center gap-2 transition-colors disabled:opacity-60 ${
                       on
