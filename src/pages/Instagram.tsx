@@ -63,13 +63,24 @@ export default function InstagramPage() {
       if (data?.error) throw new Error(data.error);
       return data;
     },
-    onSuccess: (d) => {
-      toast.success(`Linked @${d.account.username} · ${d.imported} posts imported`);
+    onSuccess: async (d) => {
+      toast.success(`Linked @${d.account.username} — fetching profile + posts...`);
       setUsername('');
       qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
       qc.invalidateQueries({ queryKey: igQueryKeys.linkEvents() });
       qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
+      // Auto-fetch full data from the scraper API so username se seedha data aaye
+      try {
+        await supabase.functions.invoke('instagram-refresh-media', {
+          body: { account_id: d.account.id, source: 'link' },
+        });
+        setTimeout(() => {
+          qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
+          qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
+        }, 6000);
+      } catch { /* refresh button se retry ho sakta hai */ }
     },
+
     onError: (e: Error) => toast.error(e.message),
   });
 
