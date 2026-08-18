@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     // 1) Load active IG accounts
     const { data: accounts, error: accErr } = await admin
       .from("instagram_accounts")
-      .select("id,user_id,username")
+      .select("id,user_id,username,auto_boost_enabled")
       .eq("status", "active");
     if (accErr) throw accErr;
     if (!accounts?.length) {
@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
         };
         const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
 
-        if (preset?.mode === "auto" && totalQ > 0) {
+        if (preset?.mode === "auto" && (acc as any).auto_boost_enabled !== false && totalQ > 0) {
           const r = await placeOrder(acc.user_id, link, q);
           if (r.ok) {
             ordersPlaced++;
