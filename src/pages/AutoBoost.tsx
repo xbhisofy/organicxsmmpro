@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowLeft, Eye, Heart, MessageCircle, Bookmark, Share2, Repeat2, Loader2, Save, Zap, Timer } from "lucide-react";
+import { ArrowLeft, Eye, Heart, MessageCircle, Bookmark, Share2, Repeat2, Loader2, Save, Zap, Timer, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageMeta } from "@/components/seo/PageMeta";
 import logo from "@/assets/logo.png";
+import { InstagramAccountsPanel } from "@/components/instagram/InstagramAccountsPanel";
 
 type Preset = {
   views: number;
@@ -155,6 +156,17 @@ export default function AutoBoost() {
         </div>
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Instagram className="w-4 h-4" /> Instagram accounts</CardTitle>
+          <CardDescription>
+            Apne Instagram username link karo — inki nayi posts par Auto Boost lagta hai.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <InstagramAccountsPanel />
+        </CardContent>
+      </Card>
 
       {loading ? (
         <div className="flex items-center justify-center py-16 text-muted-foreground">

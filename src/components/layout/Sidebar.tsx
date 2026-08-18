@@ -11,7 +11,6 @@ const userNavItems = [
   { icon: Rocket, label: 'Full Engagement', path: '/engagement-order', highlight: true },
   { icon: Sparkles, label: 'Engagement Orders', path: '/engagement-orders' },
   { icon: Droplets, label: 'Mass Order', path: '/mass-order', highlight: true },
-  { icon: Instagram, label: 'Instagram Accounts', path: '/instagram' },
   { icon: Wallet, label: 'Wallet', path: '/wallet' },
   { icon: LifeBuoy, label: 'Support', path: '/support' },
   { icon: Settings, label: 'Settings', path: '/settings' },
