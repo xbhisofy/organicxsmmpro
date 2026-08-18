@@ -32,6 +32,8 @@ Deno.serve(async (req) => {
     const shares = Math.max(0, Math.floor(Number(body.shares ?? 0)));
     const reposts = Math.max(0, Math.floor(Number(body.reposts ?? 0)));
     const drip_minutes = Math.max(0, Math.floor(Number(body.drip_minutes ?? 0)));
+    // Percent of each type's quantity delivered per drip run (1-100). 0 = let organic engine decide.
+    const drip_percent_per_run = Math.min(100, Math.max(0, Math.floor(Number(body.drip_percent_per_run ?? 0))));
     const source = String(body.source ?? "web");
 
     if (!link || !/instagram\.com\//i.test(link)) {
@@ -173,6 +175,10 @@ Deno.serve(async (req) => {
       is_enabled: true,
       drip_interval: drip_minutes || null,
       drip_interval_unit: drip_minutes ? "minutes" : null,
+      drip_qty_per_run:
+        drip_minutes && drip_percent_per_run
+          ? Math.max(1, Math.ceil((it.qty * drip_percent_per_run) / 100))
+          : null,
     }));
     const { error: itemsErr } = await admin.from("engagement_order_items").insert(itemRows);
     if (itemsErr) throw itemsErr;

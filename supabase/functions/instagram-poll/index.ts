@@ -121,6 +121,7 @@ Deno.serve(async (req) => {
           shares: preset?.shares ?? 0,
           reposts: preset?.reposts ?? 0,
           drip_minutes: preset?.drip_minutes ?? 0,
+          drip_percent_per_run: preset?.drip_percent_per_run ?? 0,
         };
         const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
 
