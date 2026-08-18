@@ -1,23 +1,14 @@
-// Polls active Instagram accounts for new posts. Auto-orders (mode=auto) or notifies Telegram (mode=manual).
+// Polls Instagram accounts that have Auto Boost ON and places engagement orders on brand-new posts.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
-async function tgSend(chatId: number, text: string, extra: Record<string, unknown> = {}) {
-  if (!BOT_TOKEN) return;
-  try {
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", disable_web_page_preview: false, ...extra }),
-    });
-  } catch (e) { console.error("tg send failed", e); }
-}
+// A post is considered "new" only if it was posted within this window.
+const NEW_POST_MAX_AGE_MS = 6 * 60 * 60 * 1000; // 6h
 
 async function placeOrder(user_id: string, link: string, p: Record<string, number>, campaign_name?: string) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/instagram-place-engagement`, {
@@ -29,135 +20,135 @@ async function placeOrder(user_id: string, link: string, p: Record<string, numbe
   return { ok: res.ok, ...j };
 }
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  const runId = crypto.randomUUID().slice(0, 8);
-  console.log(`[poll ${runId}] start`);
+async function runPoll(runId: string) {
+  {
+    console.log(`[poll ${runId}] start`);
   try {
-    // 1) Load active IG accounts
+
+    // 1) Only accounts with Auto Boost explicitly ON
     const { data: accounts, error: accErr } = await admin
       .from("instagram_accounts")
       .select("id,user_id,username,auto_boost_enabled")
-      .eq("status", "active");
+      .eq("status", "active")
+      .eq("auto_boost_enabled", true);
     if (accErr) throw accErr;
     if (!accounts?.length) {
-      return new Response(JSON.stringify({ ok: true, checked: 0 }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      console.log(`[poll ${runId}] no accounts with auto_boost_enabled=true`);
+      return;
     }
 
     const userIds = [...new Set(accounts.map((a) => a.user_id))];
-
-    // 2) Load presets + telegram links SEPARATELY (no FK embeds → no PGRST200)
-    const [{ data: presets }, { data: tgLinks }] = await Promise.all([
-      admin.from("engagement_presets").select("*").in("user_id", userIds),
-      admin.from("telegram_engagement_links").select("user_id,telegram_chat_id,status").in("user_id", userIds).eq("status", "linked"),
-    ]);
+    const { data: presets } = await admin.from("engagement_presets").select("*").in("user_id", userIds);
     const presetMap = new Map<string, any>();
     (presets ?? []).forEach((p: any) => presetMap.set(p.user_id, p));
-    const tgMap = new Map<string, number>();
-    (tgLinks ?? []).forEach((t: any) => tgMap.set(t.user_id, Number(t.telegram_chat_id)));
-
-    // 3) Load poll state
-    const accountIds = accounts.map((a) => a.id);
-    const { data: states } = await admin.from("instagram_poll_state").select("*").in("account_id", accountIds);
-    const stateMap = new Map<string, any>();
-    (states ?? []).forEach((s: any) => stateMap.set(s.account_id, s));
 
     let ordersPlaced = 0;
-    let notified = 0;
+    const details: any[] = [];
 
     for (const acc of accounts) {
       const preset = presetMap.get(acc.user_id);
-      const chatId = tgMap.get(acc.user_id);
+      const q = {
+        views: preset?.views ?? 0,
+        likes: preset?.likes ?? 0,
+        comments: preset?.comments ?? 0,
+        saves: preset?.saves ?? 0,
+        shares: preset?.shares ?? 0,
+        reposts: preset?.reposts ?? 0,
+        drip_minutes: preset?.drip_minutes ?? 0,
+        drip_percent_per_run: preset?.drip_percent_per_run ?? 0,
+      };
+      const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
+      if (totalQ <= 0) {
+        details.push({ account: acc.username, skipped: "no_preset_quantities" });
+        continue;
+      }
 
-      // Trigger media refresh (best-effort, non-blocking wait — but we need latest before compare)
+      // 2) Snapshot known media BEFORE refresh so we can diff reliably
+      const { data: before } = await admin
+        .from("instagram_media")
+        .select("media_id")
+        .eq("account_id", acc.id);
+      const known = new Set((before ?? []).map((m: any) => String(m.media_id)));
+      const firstEverScrape = known.size === 0;
+
+      // 3) Refresh media (synchronous — we need fresh rows to compare)
       try {
-        await fetch(`${SUPABASE_URL}/functions/v1/instagram-refresh-media`, {
+        const r = await fetch(`${SUPABASE_URL}/functions/v1/instagram-refresh-media`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}`, apikey: SERVICE_KEY },
-          body: JSON.stringify({ account_id: acc.id, results_limit: 10 }),
+          body: JSON.stringify({ account_id: acc.id, source: "poll" }),
         });
-      } catch (e) { console.error(`[poll ${runId}] refresh failed for ${acc.username}`, e); }
+        if (!r.ok) console.error(`[poll ${runId}] refresh HTTP ${r.status} for ${acc.username}`);
+      } catch (e) {
+        console.error(`[poll ${runId}] refresh failed for ${acc.username}`, e);
+      }
 
-      const { data: media } = await admin
+      const { data: after } = await admin
         .from("instagram_media")
-        .select("media_id,shortcode,permalink,posted_at")
+        .select("media_id,shortcode,permalink,posted_at,engagement_applied")
         .eq("account_id", acc.id)
         .order("posted_at", { ascending: false, nullsFirst: false })
-        .limit(5);
+        .limit(15);
 
-      if (!media?.length) continue;
-      const latest = media[0];
-      const st = stateMap.get(acc.id);
-      const lastSeen = st?.last_seen_media_id ?? null;
-
-      // Update state to latest (always) so first-time accounts don't back-order history
       await admin.from("instagram_poll_state").upsert({
         account_id: acc.id,
-        last_seen_media_id: latest.media_id,
+        last_seen_media_id: after?.[0]?.media_id ?? null,
         last_polled_at: new Date().toISOString(),
       });
 
-      // First-ever poll: just record, don't order
-      if (!lastSeen) continue;
-      if (lastSeen === latest.media_id) continue;
-
-      // New posts: those posted after lastSeen, up to 3 newest
-      const newPosts = [];
-      for (const m of media) {
-        if (m.media_id === lastSeen) break;
-        newPosts.push(m);
+      if (firstEverScrape) {
+        details.push({ account: acc.username, skipped: "first_scrape_baseline", posts: after?.length ?? 0 });
+        continue;
       }
-      if (!newPosts.length) continue;
+
+      const now = Date.now();
+      const newPosts = (after ?? []).filter((m: any) => {
+        if (known.has(String(m.media_id))) return false;
+        if (m.engagement_applied) return false;
+        if (!m.permalink) return false;
+        if (m.posted_at && now - new Date(m.posted_at).getTime() > NEW_POST_MAX_AGE_MS) return false;
+        return true;
+      });
+
+      if (!newPosts.length) {
+        details.push({ account: acc.username, skipped: "no_new_posts" });
+        continue;
+      }
 
       for (const np of newPosts.slice(0, 3)) {
-        const link = np.permalink;
-        const shortcode = np.shortcode ?? "";
-
-        const q = {
-          views: preset?.views ?? 0,
-          likes: preset?.likes ?? 0,
-          comments: preset?.comments ?? 0,
-          saves: preset?.saves ?? 0,
-          shares: preset?.shares ?? 0,
-          reposts: preset?.reposts ?? 0,
-          drip_minutes: preset?.drip_minutes ?? 0,
-          drip_percent_per_run: preset?.drip_percent_per_run ?? 0,
-        };
-        const totalQ = q.views + q.likes + q.comments + q.saves + q.shares + q.reposts;
-
-        if (preset?.mode === "auto" && (acc as any).auto_boost_enabled === true && totalQ > 0) {
-          const r = await placeOrder(acc.user_id, link, q, `Auto Boost — @${acc.username}`);
-          if (r.ok) {
-            ordersPlaced++;
-            if (chatId) {
-              await tgSend(chatId, `🚀 Auto-order placed on new post by @${acc.username}\n<a href="${link}">${shortcode}</a>\nCharged: ₹${r.charged_inr ?? "?"}`);
-            }
-          } else {
-            console.error(`[poll ${runId}] auto-order failed`, r);
-            if (chatId) await tgSend(chatId, `⚠️ Auto-order failed for @${acc.username}: ${r.error ?? "unknown"}`);
-          }
-        } else if (chatId) {
-          // Manual mode: send inline buttons
-          const kb = {
-            inline_keyboard: [
-              [{ text: "🚀 Apply preset", callback_data: `apply:${shortcode}:all` }],
-              [{ text: "✏️ Custom quantities", callback_data: `post:${shortcode}` }],
-            ],
-          };
-          await tgSend(chatId, `🆕 New post by @${acc.username}\n<a href="${link}">${shortcode}</a>`, { reply_markup: kb });
-          notified++;
+        const r = await placeOrder(acc.user_id, np.permalink, q, `Auto Boost — @${acc.username}`);
+        if (r.ok) {
+          ordersPlaced++;
+          await admin
+            .from("instagram_media")
+            .update({ engagement_applied: true })
+            .eq("account_id", acc.id)
+            .eq("media_id", np.media_id);
+          details.push({ account: acc.username, ordered: np.shortcode });
+          console.log(`[poll ${runId}] auto-order placed @${acc.username} ${np.shortcode}`);
+        } else {
+          console.error(`[poll ${runId}] auto-order failed @${acc.username}`, r);
+          details.push({ account: acc.username, failed: np.shortcode, error: (r as any).error ?? "unknown" });
         }
       }
     }
 
-    console.log(`[poll ${runId}] done: ${accounts.length} accounts, ${ordersPlaced} auto-orders, ${notified} notified`);
-    return new Response(JSON.stringify({ ok: true, checked: accounts.length, ordersPlaced, notified }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.log(`[poll ${runId}] done: ${accounts.length} accounts, ${ordersPlaced} auto-orders`, JSON.stringify(details));
+    return;
   } catch (e) {
     console.error(`[poll ${runId}] error`, e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   }
+  }
+}
+
+Deno.serve((req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const runId = crypto.randomUUID().slice(0, 8);
+  // Scraper calls can take a minute; run in background so cron never times out.
+  const task = runPoll(runId);
+  try { (globalThis as any).EdgeRuntime?.waitUntil?.(task); } catch { /* ignore */ }
+  return new Response(JSON.stringify({ ok: true, accepted: true, run_id: runId }), {
+    status: 202, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 });
+

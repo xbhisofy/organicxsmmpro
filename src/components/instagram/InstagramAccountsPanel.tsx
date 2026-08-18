@@ -211,6 +211,12 @@ export function InstagramAccountsPanel() {
       </div>
 
       <div className="space-y-3">
+        {!isLoading && accounts.length > 0 && !accounts.some((a: any) => a.auto_boost_enabled === true) && (
+          <div className="rounded-2xl p-3 bg-amber-500/10 border border-amber-400/30 text-[12px] text-amber-100 flex items-center gap-2">
+            <Zap className="w-4 h-4 shrink-0" />
+            <span>Auto Boost kisi account par ON nahi hai — neeche <b>Auto</b> toggle ON karo, warna new post par order nahi lagega.</span>
+          </div>
+        )}
         {isLoading && accounts.length === 0 && <div className="text-center text-white/80 py-8">Loading...</div>}
         {pending
           .filter((u) => !accounts.some((a: any) => String(a.username).toLowerCase() === u))
