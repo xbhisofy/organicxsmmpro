@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import { AppErrorBoundary } from "@/components/app/AppErrorBoundary";
 
 // Eager — frequently-used dashboard pages stay fast on navigation
-import Dashboard from "./pages/Dashboard";
 import EngagementOrder from "./pages/EngagementOrder";
 import EngagementOrders from "./pages/EngagementOrders";
 import Orders from "./pages/Orders";
@@ -137,7 +136,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                     <Route path="/auth" element={<Auth />} />
                     
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Navigate to="/engagement-order" replace />} />
                     <Route path="/services" element={<Services />} />
                     <Route path="/order" element={<Navigate to="/engagement-order" replace />} />
                     <Route path="/orders" element={<Orders />} />

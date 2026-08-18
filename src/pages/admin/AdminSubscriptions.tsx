@@ -331,7 +331,7 @@ export default function AdminSubscriptions() {
   };
 
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/engagement-order" replace />;
   }
 
   const openActionDialog = (request: SubscriptionRequest, action: 'approve' | 'reject') => {

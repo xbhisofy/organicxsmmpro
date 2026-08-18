@@ -120,7 +120,7 @@ export default function AdminCronMonitor() {
   // INSTANT RENDER - No blocking loader
 
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/engagement-order" replace />;
   }
 
   const getStatusBadge = (status: string) => {

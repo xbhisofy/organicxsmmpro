@@ -173,7 +173,7 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
 
           {/* Back Link */}
           <div className="text-center mt-4">
-            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link to="/engagement-order" className="text-sm text-muted-foreground hover:text-foreground">
               ← Back to Dashboard
             </Link>
           </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Rocket, Droplets, Sparkles, Wallet, Code2,
+  Rocket, Droplets, Sparkles, Wallet, Code2,
   LifeBuoy, Settings, Shield, LogOut, MoreHorizontal, X, History,
   Instagram, Grid3x3, Send, Zap
 } from 'lucide-react';
@@ -11,9 +11,9 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { cn } from '@/lib/utils';
 
 const primary = [
-  { icon: LayoutDashboard, label: 'Home', path: '/dashboard' },
-  { icon: Instagram, label: 'Accounts', path: '/instagram' },
   { icon: Rocket, label: 'Engage', path: '/engagement-order' },
+  { icon: Instagram, label: 'Accounts', path: '/instagram' },
+  { icon: Sparkles, label: 'Orders', path: '/engagement-orders' },
   { icon: Wallet, label: 'Wallet', path: '/wallet' },
 ];
 
@@ -39,7 +39,7 @@ export function MobileBottomNav() {
       {/* Top header — all viewports */}
       <header className="fixed top-0 left-0 right-0 z-40">
         <div className="flex items-center justify-between h-14 px-3 sm:px-5 bg-[#030303]/85 backdrop-blur-md border-b border-white/5">
-          <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
+          <Link to="/engagement-order" className="flex items-center gap-2 min-w-0">
             <img src={logo} alt="OrganicSMM Pro" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white/10 shrink-0" />
             <div className="flex flex-col min-w-0">
               <span className="text-[14px] font-bold tracking-tight leading-tight !text-white truncate">OrganicSMM Pro</span>

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShoppingCart, Package, Wallet, ListOrdered, Settings, LifeBuoy, Shield, LogOut, Rocket, Sparkles, X, Code2, Droplets, Instagram, Grid3x3, Zap, History } from 'lucide-react';
+import { ShoppingCart, Package, Wallet, ListOrdered, Settings, LifeBuoy, Shield, LogOut, Rocket, Sparkles, X, Code2, Droplets, Instagram, Grid3x3, Zap, History } from 'lucide-react';
 import logo from '@/assets/logo.jpg';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 interface SidebarProps { onClose?: () => void; }
 
 const userNavItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Rocket, label: 'Full Engagement', path: '/engagement-order', highlight: true },
   { icon: Droplets, label: 'Mass Order', path: '/mass-order', highlight: true },
   { icon: Sparkles, label: 'Engagement Orders', path: '/engagement-orders' },

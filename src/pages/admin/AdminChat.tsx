@@ -271,7 +271,7 @@ export default function AdminChat() {
   const allConversations = conversations || [];
 
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/engagement-order" replace />;
   }
 
   return (

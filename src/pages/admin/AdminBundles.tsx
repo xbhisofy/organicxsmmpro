@@ -401,7 +401,7 @@ export default function AdminBundles() {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/engagement-order" replace />;
   }
 
   // Sync all service prices from provider API

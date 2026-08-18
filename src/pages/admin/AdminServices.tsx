@@ -240,7 +240,7 @@ export default function AdminServices() {
   // INSTANT RENDER - No blocking loader
 
   if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/engagement-order" replace />;
   }
 
   const categories = ['Instagram Views', 'Instagram Likes', 'Instagram Followers', 'TikTok Views', 'TikTok Likes', 'YouTube Views', 'Twitter/X'];
