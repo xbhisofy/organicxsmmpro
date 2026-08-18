@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, memo, lazy, Suspense } from "react";
+import logo from "@/assets/logo.png";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -821,27 +822,34 @@ export default function EngagementOrder() {
             {/* Auto Boost entry */}
             <Link
               to="/auto-boost"
-              className="group relative block rounded-2xl border border-purple-400/30 bg-gradient-to-r from-purple-500/[0.12] via-fuchsia-500/[0.06] to-transparent p-3.5 sm:p-4 overflow-hidden transition-all hover:border-purple-300/50 hover:shadow-[0_0_35px_rgba(168,85,247,0.25)]"
+              className="group relative block rounded-2xl p-[1.5px] bg-gradient-to-r from-primary/70 via-orange-400/40 to-primary/10 transition-all hover:from-primary hover:via-orange-300/70 hover:shadow-[0_0_45px_hsl(var(--primary)/0.35)]"
             >
-              <div aria-hidden className="absolute -top-10 -right-6 w-36 h-36 bg-fuchsia-400/20 blur-3xl rounded-full" />
-              <div className="relative flex items-center gap-3 sm:gap-4">
-                <div className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center bg-purple-500/20 border border-purple-300/30 text-purple-100 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
-                  <Zap className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <span className="text-[13px] sm:text-[14px] font-bold !text-white tracking-tight">Auto Boost</span>
-                    <span className="text-[9px] font-bold uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-md border bg-purple-500/15 text-purple-100 border-purple-300/30">
-                      New post → auto order
-                    </span>
+              <div className="relative rounded-[14px] bg-[#150d22]/90 backdrop-blur-sm p-3.5 sm:p-4 overflow-hidden">
+                <div aria-hidden className="absolute -top-12 -right-8 w-40 h-40 bg-primary/25 blur-3xl rounded-full" />
+                <div aria-hidden className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:14px_14px]" />
+                <div className="relative flex items-center gap-3 sm:gap-4">
+                  <div className="shrink-0 relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden ring-1 ring-primary/40 bg-white/5 shadow-[0_0_25px_hsl(var(--primary)/0.35)]">
+                    <img src={logo} alt="OrganicSMM Pro logo" className="w-full h-full object-cover" loading="lazy" />
                   </div>
-                  <p className="text-[11px] sm:text-[12px] text-white/65 leading-snug">
-                    Har nayi post par quantity + delivery time set karo — yahin se manage.
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <span className="text-[14px] sm:text-[15px] font-extrabold !text-white tracking-tight">Auto Boost</span>
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-primary/20 text-orange-100 border border-primary/40">
+                        <Zap className="h-2.5 w-2.5" />
+                        New post → auto order
+                      </span>
+                    </div>
+                    <p className="text-[11px] sm:text-[12px] text-white/70 leading-snug">
+                      Har nayi post par quantity + delivery time set karo — yahin se manage.
+                    </p>
+                  </div>
+                  <span className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/15 border border-primary/40 text-orange-100 transition-all group-hover:bg-primary group-hover:text-primary-foreground">
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
                 </div>
-                <ArrowRight className="shrink-0 h-4 w-4 text-white/50 transition-transform group-hover:translate-x-0.5 group-hover:text-white/80" />
               </div>
             </Link>
+
 
           </div>
         </div>
