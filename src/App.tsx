@@ -136,7 +136,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                     <Route path="/auth" element={<Auth />} />
                     
-                    <Route path="/engagement-order" element={<Navigate to="/engagement-order" replace />} />
+                    <Route path="/dashboard" element={<Navigate to="/engagement-order" replace />} />
                     <Route path="/services" element={<Services />} />
                     <Route path="/order" element={<Navigate to="/engagement-order" replace />} />
                     <Route path="/orders" element={<Orders />} />
