@@ -31,9 +31,9 @@ Deno.serve(async (req) => {
     const saves = Math.max(0, Math.floor(Number(body.saves ?? 0)));
     const shares = Math.max(0, Math.floor(Number(body.shares ?? 0)));
     const reposts = Math.max(0, Math.floor(Number(body.reposts ?? 0)));
-    const drip_minutes = Math.max(0, Math.floor(Number(body.drip_minutes ?? 0)));
-    // Percent of each type's quantity delivered per drip run (1-100). 0 = let organic engine decide.
-    const drip_percent_per_run = Math.min(100, Math.max(0, Math.floor(Number(body.drip_percent_per_run ?? 0))));
+    // Organic delivery window in hours (same concept as the full engagement page).
+    // 0 = let the organic engine pick a random window. No drip-feed involved.
+    const delivery_hours = Math.max(0, Math.min(168, Math.floor(Number(body.delivery_hours ?? 0))));
     const source = String(body.source ?? "web");
     const rawCampaign = typeof body.campaign_name === "string" ? body.campaign_name.trim().slice(0, 120) : "";
     const campaignName = rawCampaign || (source === "poll-auto" ? "Auto Boost — new post" : null);
