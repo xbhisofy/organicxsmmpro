@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Eye, Heart, MessageCircle, Bookmark, Share2, Repeat2, Loader2, Save, Zap, Timer } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageMeta } from "@/components/seo/PageMeta";
+import logo from "@/assets/logo.png";
 
 type Preset = {
   views: number;
@@ -125,17 +126,35 @@ export default function AutoBoost() {
         description="Set how many views, likes, comments, saves and shares are sent automatically on every new Instagram post."
       />
 
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <h1 className="text-2xl font-bold">Auto Boost</h1>
-          <p className="text-muted-foreground text-sm">
-            New post par kitne views / likes / comments / saves / shares jaane chahiye — yahin se manage karo.
-          </p>
+      <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/15 via-background to-background p-4 sm:p-5">
+        <div aria-hidden className="absolute -top-14 -right-10 w-48 h-48 rounded-full bg-primary/20 blur-3xl" />
+        <div className="relative flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <Link
+              to="/engagement-order"
+              aria-label="OrganicSMM Pro — Full Engagement"
+              className="shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden ring-1 ring-primary/40 shadow-[0_0_24px_hsl(var(--primary)/0.3)] transition-transform hover:scale-105"
+            >
+              <img src={logo} alt="OrganicSMM Pro logo" className="w-full h-full object-cover" />
+            </Link>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Auto Boost</h1>
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40">
+                  <Zap className="w-2.5 h-2.5" /> New post → auto order
+                </span>
+              </div>
+              <p className="text-muted-foreground text-xs sm:text-sm mt-1">
+                New post par kitne views / likes / comments / saves / shares jaane chahiye — yahin se manage karo.
+              </p>
+            </div>
+          </div>
+          <Button asChild variant="outline" size="sm" className="shrink-0">
+            <Link to="/engagement-order"><ArrowLeft className="w-4 h-4 mr-1" /> Home</Link>
+          </Button>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link to="/engagement-order"><ArrowLeft className="w-4 h-4 mr-1" /> Home</Link>
-        </Button>
       </div>
+
 
       {loading ? (
         <div className="flex items-center justify-center py-16 text-muted-foreground">
