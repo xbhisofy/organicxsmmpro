@@ -5,7 +5,9 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 
-const IG_API_BASE = 'https://w-ig-rose.vercel.app';
+const IG_API_BASE = 'https://insta-scraper-api-alpha.vercel.app';
+const igProfileUrl = (u: string) => `${IG_API_BASE}/api/instagram/${u}/profile`;
+const igPostsUrl = (u: string) => `${IG_API_BASE}/api/instagram/${u}/posts`;
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
 async function fetchWithRetry(url: string, timeoutMs = 25_000): Promise<any> {
