@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock, Zap } from 'lucide-react';
+import { Loader2, Plus, Trash2, CheckCircle2, ShieldAlert, Lock, Zap, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { igQueryKeys } from '@/lib/instagramCache';
@@ -136,6 +136,26 @@ export function InstagramAccountsPanel() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [checking, setChecking] = useState<string | null>(null);
+  const checkMut = useMutation({
+    mutationFn: async (id: string) => {
+      setChecking(id);
+      const { data, error } = await supabase.functions.invoke('instagram-poll', { body: { account_id: id } });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: (d: any) => {
+      const ordered = Number(d?.ordersPlaced ?? 0);
+      if (ordered > 0) toast.success(`${ordered} new post detect hua — order lag gaya`);
+      else toast.info('Koi naya post nahi mila — data refresh ho gaya');
+      qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
+      qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
+    },
+    onError: (e: Error) => toast.error(e.message),
+    onSettled: () => setChecking(null),
+  });
+
   const removeMut = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('instagram_accounts').delete().eq('id', id);
@@ -147,6 +167,7 @@ export function InstagramAccountsPanel() {
       qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
     },
   });
+
 
 
   return (
@@ -211,12 +232,16 @@ export function InstagramAccountsPanel() {
       </div>
 
       <div className="space-y-3">
-        {!isLoading && accounts.length > 0 && !accounts.some((a: any) => a.auto_boost_enabled === true) && (
-          <div className="rounded-2xl p-3 bg-amber-500/10 border border-amber-400/30 text-[12px] text-amber-100 flex items-center gap-2">
-            <Zap className="w-4 h-4 shrink-0" />
-            <span>Auto Boost kisi account par ON nahi hai — neeche <b>Auto</b> toggle ON karo, warna new post par order nahi lagega.</span>
+        {!isLoading && accounts.length > 0 && (
+          <div className="rounded-2xl p-3 bg-sky-500/10 border border-sky-400/30 text-[12px] text-sky-100 flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 shrink-0" />
+            <span>
+              Auto check band hai (API requests bachane ke liye). Naya post upload karne ke baad us account ka{' '}
+              <b>Check</b> button dabao — tabhi new post detect hoga aur order lagega.
+            </span>
           </div>
         )}
+
         {isLoading && accounts.length === 0 && <div className="text-center text-white/80 py-8">Loading...</div>}
         {pending
           .filter((u) => !accounts.some((a: any) => String(a.username).toLowerCase() === u))
@@ -294,7 +319,17 @@ export function InstagramAccountsPanel() {
                   </button>
                 );
               })()}
+              <button
+                onClick={() => checkMut.mutate(a.id)}
+                disabled={checking === a.id}
+                title="New post check karo — naya post mila to order lag jayega"
+                className="h-9 px-3 rounded-lg text-[12px] font-semibold bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-sky-100 flex items-center gap-2 disabled:opacity-60"
+              >
+                {checking === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                Check
+              </button>
               <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 flex items-center">
+
                 View Posts
               </Link>
 
