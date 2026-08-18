@@ -13,7 +13,6 @@ const userNavItems = [
   { icon: Sparkles, label: 'Engagement Orders', path: '/engagement-orders' },
   { icon: Instagram, label: 'Instagram Accounts', path: '/instagram' },
   { icon: Wallet, label: 'Wallet', path: '/wallet' },
-  { icon: Zap, label: 'Auto Boost', path: '/auto-boost' },
   { icon: LifeBuoy, label: 'Support', path: '/support' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
