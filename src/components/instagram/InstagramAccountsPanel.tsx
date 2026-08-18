@@ -136,6 +136,26 @@ export function InstagramAccountsPanel() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [checking, setChecking] = useState<string | null>(null);
+  const checkMut = useMutation({
+    mutationFn: async (id: string) => {
+      setChecking(id);
+      const { data, error } = await supabase.functions.invoke('instagram-poll', { body: { account_id: id } });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: (d: any) => {
+      const ordered = Number(d?.ordersPlaced ?? 0);
+      if (ordered > 0) toast.success(`${ordered} new post detect hua — order lag gaya`);
+      else toast.info('Koi naya post nahi mila — data refresh ho gaya');
+      qc.invalidateQueries({ queryKey: igQueryKeys.accounts() });
+      qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
+    },
+    onError: (e: Error) => toast.error(e.message),
+    onSettled: () => setChecking(null),
+  });
+
   const removeMut = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('instagram_accounts').delete().eq('id', id);
@@ -147,6 +167,7 @@ export function InstagramAccountsPanel() {
       qc.invalidateQueries({ queryKey: igQueryKeys.postsSummary() });
     },
   });
+
 
 
   return (
