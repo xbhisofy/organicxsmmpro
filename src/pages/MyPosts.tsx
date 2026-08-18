@@ -52,7 +52,8 @@ export default function MyPosts() {
         .from('instagram_media')
         .select('media_id,shortcode,permalink,thumbnail_url,media_type,caption,posted_at,account_id,instagram_accounts!inner(username)')
         .eq('user_id', user!.id)
-        .order('posted_at', { ascending: false, nullsFirst: false });
+        .order('posted_at', { ascending: false, nullsFirst: false })
+        .limit(60);
 
       if (selectedAccountId) mediaQuery = mediaQuery.eq('account_id', selectedAccountId);
 
@@ -62,14 +63,23 @@ export default function MyPosts() {
       const { data: orders, error: ordersError } = await supabase
         .from('engagement_orders')
         .select('link,status,total_price')
-        .eq('user_id', user!.id);
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(500);
       if (ordersError) throw ordersError;
 
+      // Index orders by shortcode once -> O(n+m) instead of O(n*m)
+      const byShortcode = new Map<string, any[]>();
+      for (const o of orders ?? []) {
+        const code = String((o as any).link ?? '').match(/\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/)?.[1];
+        if (!code) continue;
+        const key = code.toLowerCase();
+        const list = byShortcode.get(key);
+        if (list) list.push(o); else byShortcode.set(key, [o]);
+      }
+
       return (media ?? []).map((m: any) => {
-        const matchingOrders = (orders ?? []).filter((o: any) => {
-          if (!m.shortcode || !o.link) return false;
-          return String(o.link).toLowerCase().includes(String(m.shortcode).toLowerCase());
-        });
+        const matchingOrders = m.shortcode ? (byShortcode.get(String(m.shortcode).toLowerCase()) ?? []) : [];
 
         return {
           media_id: m.media_id,

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -62,43 +62,52 @@ export default function EngagementOrders() {
   }, [searchParams]);
 
 
-  // Instant load with cache + moderate refresh
-  const { data: orders, refetch } = useQuery({
-    queryKey: ['engagement-orders', user?.id],
+  // Debounced server-side search (scales to lakhs of orders)
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 350);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  const PAGE_SIZE = 20;
+  const [page, setPage] = useState(0);
+  useEffect(() => setPage(0), [debouncedSearch]);
+
+  // Server-aggregated page: one light row per order (no nested runs payload)
+  const { data: pages, refetch, isFetching } = useQuery({
+    queryKey: ['engagement-orders', user?.id, debouncedSearch, page],
     queryFn: async () => {
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from('engagement_orders')
-        .select(`
-          id, order_number, status, total_price, link, base_quantity, created_at, updated_at, is_organic_mode, campaign_name,
-          items:engagement_order_items(
-            id, engagement_type, quantity, status,
-            runs:organic_run_schedule(id, status, quantity_to_send, scheduled_at, run_number, provider_status, provider_remains)
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(100);
+      const { data, error } = await supabase.rpc('get_engagement_orders_page', {
+        _limit: PAGE_SIZE,
+        _offset: 0,
+        _search: debouncedSearch || null,
+      } as never);
       if (error) throw error;
-      return data;
+      const first = (data ?? []) as any[];
+      if (page === 0) return first;
+      const rest: any[] = [];
+      for (let p = 1; p <= page; p++) {
+        const { data: more, error: e2 } = await supabase.rpc('get_engagement_orders_page', {
+          _limit: PAGE_SIZE,
+          _offset: p * PAGE_SIZE,
+          _search: debouncedSearch || null,
+        } as never);
+        if (e2) throw e2;
+        rest.push(...((more ?? []) as any[]));
+      }
+      return [...first, ...rest];
     },
     enabled: !!user,
-    staleTime: 15000, // Cache for 15s
+    staleTime: 15000,
+    placeholderData: (prev) => prev,
     refetchOnWindowFocus: false,
-    refetchInterval: 15000, // Refresh every 15s (was 5s)
+    refetchInterval: 20000,
   });
 
-  // Filter orders based on search query
-  const filteredOrders = useMemo(() => {
-    if (!orders || !searchQuery.trim()) return orders;
-    
-    const query = searchQuery.toLowerCase().trim();
-    return orders.filter(order => 
-      order.order_number?.toString().includes(query) ||
-      order.campaign_name?.toLowerCase().includes(query) ||
-      order.link?.toLowerCase().includes(query)
-    );
-  }, [orders, searchQuery]);
+  const orders = pages;
+  const filteredOrders = orders;
+  const hasMore = (orders?.length ?? 0) >= (page + 1) * PAGE_SIZE;
+
 
   // INSTANT RENDER - no loading state
   if (!user && !authLoading) {
@@ -179,6 +188,14 @@ export default function EngagementOrders() {
             {filteredOrders?.map((order) => (
               <OrderCard key={order.id} order={order} onClick={() => navigate(`/engagement-orders/${order.order_number}`)} />
             ))}
+            {hasMore && (
+              <div className="flex justify-center pt-2">
+                <Button variant="outline" disabled={isFetching} onClick={() => setPage((p) => p + 1)}>
+                  {isFetching ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                  Load more
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -188,43 +205,21 @@ export default function EngagementOrders() {
 
 function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
   const { formatPrice } = useCurrency();
-  // Calculate progress
-  const allRuns = order.items?.flatMap((item: any) => item.runs || []) || [];
-  const completedRuns = allRuns.filter((r: any) => r.status === 'completed').length;
-  const totalRuns = allRuns.length;
+  // All heavy aggregation is done server-side in get_engagement_orders_page()
+  const completedRuns = Number(order.completed_runs ?? 0);
+  const totalRuns = Number(order.total_runs ?? 0);
+  const pendingCount = Number(order.pending_runs ?? 0);
+  const activeRuns = Number(order.active_runs ?? 0);
+  const totalDelivered = Number(order.delivered ?? 0);
+  const totalQuantity = Number(order.total_quantity ?? 0);
   const progressPercent = totalRuns > 0 ? (completedRuns / totalRuns) * 100 : 0;
+  const nextRun = order.next_run_at ? { scheduled_at: order.next_run_at } : null;
 
-  // Calculate delivered using provider truth (matches Live Stats on detail page)
-  const normalizeProviderStatus = (s: any): string => (s ?? '').toString().toLowerCase().trim();
-  const calculateActualDelivered = (run: any): number => {
-    const ps = normalizeProviderStatus(run.provider_status);
-    if (ps === 'completed' || ps === 'complete') return run.quantity_to_send;
-    if (run.provider_remains !== null && run.provider_remains !== undefined) {
-      return Math.max(0, run.quantity_to_send - run.provider_remains);
-    }
-    if (run.status === 'completed') return run.quantity_to_send;
-    return 0;
-  };
-  const totalDelivered = allRuns.reduce((sum: number, r: any) => sum + calculateActualDelivered(r), 0);
-
-  const totalQuantity = order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
-
-  // Find next run
-  const pendingRuns = allRuns
-    .filter((r: any) => r.status === 'pending')
-    .sort((a: any, b: any) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime());
-  const nextRun = pendingRuns[0];
-
-  // Active runs
-  const activeRuns = allRuns.filter((r: any) => r.status === 'started').length;
-
-  // Derive effective status: if provider delivered everything, treat as completed
-  // regardless of stale DB status (real-time accuracy).
   let effectiveStatus = order.status as string;
   if (effectiveStatus !== 'cancelled' && effectiveStatus !== 'failed' && effectiveStatus !== 'paused') {
     if (totalQuantity > 0 && totalDelivered >= totalQuantity) {
       effectiveStatus = 'completed';
-    } else if (activeRuns > 0 || pendingRuns.length > 0 || totalDelivered > 0) {
+    } else if (activeRuns > 0 || pendingCount > 0 || totalDelivered > 0) {
       effectiveStatus = 'processing';
     }
   }
@@ -294,7 +289,7 @@ function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
           </div>
           <div className="p-3 bg-secondary rounded-xl border border-border">
             <Clock className="h-4 w-4 mx-auto mb-1 text-foreground" />
-            <p className="text-sm font-bold text-foreground">{pendingRuns.length}</p>
+            <p className="text-sm font-bold text-foreground">{pendingCount}</p>
             <p className="text-[10px] text-muted-foreground">Pending</p>
           </div>
           <div className="p-3 bg-secondary rounded-xl border border-border">
@@ -329,12 +324,9 @@ function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
         <div className="flex flex-wrap gap-2">
           {order.items?.map((item: any) => {
             const Icon = ENGAGEMENT_ICONS[item.engagement_type as keyof typeof ENGAGEMENT_ICONS] || Eye;
-            const itemRuns = item.runs || [];
-            const itemCompleted = itemRuns.filter((r: any) => r.status === 'completed').length;
-            const itemDelivered = itemRuns.reduce(
-              (sum: number, r: any) => sum + calculateActualDelivered(r),
-              0
-            );
+            const itemCompleted = Number(item.completed_runs ?? 0);
+            const itemTotalRuns = Number(item.total_runs ?? 0);
+            const itemDelivered = Number(item.delivered ?? 0);
 
             return (
               <Badge 
@@ -345,7 +337,7 @@ function OrderCard({ order, onClick }: { order: any; onClick: () => void }) {
                 <Icon className="h-3.5 w-3.5" />
                 <span className="capitalize">{item.engagement_type}:</span>
                 <span className="font-mono">{itemDelivered.toLocaleString()}/{item.quantity.toLocaleString()}</span>
-                <span className="text-muted-foreground">({itemCompleted}/{itemRuns.length})</span>
+                <span className="text-muted-foreground">({itemCompleted}/{itemTotalRuns})</span>
               </Badge>
             );
           })}
