@@ -20,8 +20,8 @@ const primary = [
 const more = [
   { icon: Instagram, label: 'Instagram', path: '/instagram' },
   { icon: Zap, label: 'Auto Boost', path: '/auto-boost' },
-  { icon: Droplets, label: 'Mass Order', path: '/mass-order' },
   { icon: Sparkles, label: 'Engagement Orders', path: '/engagement-orders' },
+  { icon: Droplets, label: 'Mass Order', path: '/mass-order' },
   { icon: LifeBuoy, label: 'Support', path: '/support' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
