@@ -37,8 +37,30 @@ set_in_file "$SECRETS_FILE"
 set_in_file "$ENV_FILE"
 
 if [[ -d /opt/supabase ]]; then
+  # The official Supabase compose file only forwards a fixed list of env vars to
+  # the edge runtime, so custom keys in .env are invisible inside the container.
+  # An override file makes the whole .env available to the functions service.
+  OVERRIDE="/opt/supabase/docker-compose.override.yml"
+  if ! grep -q 'env_file' "$OVERRIDE" 2>/dev/null; then
+    cat > "$OVERRIDE" <<'YAML'
+services:
+  functions:
+    env_file:
+      - .env
+YAML
+    echo "  wrote ${OVERRIDE} (forwards .env to edge functions)"
+  fi
+
   echo "Restarting edge functions..."
   (cd /opt/supabase && docker compose up -d --force-recreate functions)
+
+  echo "Checking key is visible inside container..."
+  if (cd /opt/supabase && docker compose exec -T functions printenv "$NAME" >/dev/null 2>&1); then
+    echo "  OK: ${NAME} present in edge runtime"
+  else
+    echo "  WARN: ${NAME} not visible inside the functions container"
+  fi
 fi
 
 echo "Done. ${NAME} is live (value hidden)."
+
