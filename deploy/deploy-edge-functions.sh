@@ -26,11 +26,14 @@ ENVF="$SUPA_DIR/.env"
 set_env() {
   local k="$1" v="$2"
   [ -n "$v" ] || return 0
-  if grep -qE "^${k}=" "$ENVF"; then
-    sed -i "s|^${k}=.*|${k}=${v}|" "$ENVF"
-  else
-    printf '%s=%s\n' "$k" "$v" >> "$ENVF"
-  fi
+  touch "$ENVF"
+  # Rewrite without sed so values containing | & / \ or = stay intact
+  local tmp
+  tmp="$(mktemp)"
+  grep -v -E "^${k}=" "$ENVF" > "$tmp" || true
+  printf '%s=%s\n' "$k" "$v" >> "$tmp"
+  cat "$tmp" > "$ENVF"
+  rm -f "$tmp"
 }
 
 # Secrets you must provide once (leave blank to keep existing values).
