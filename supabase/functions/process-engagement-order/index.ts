@@ -50,6 +50,9 @@ function uniquifyScheduledRuns(
   providerMin: number,
   maxBatchCap: number
 ) {
+  // Respect the exact schedule the user previewed: same number of runs,
+  // same (random) quantities. We only nudge values so no two runs are equal
+  // and every run stays within provider limits.
   const normalizedRuns = runs
     .map((run, index) => ({
       run_number: index + 1,
@@ -62,67 +65,53 @@ function uniquifyScheduledRuns(
     }))
     .filter((run) => run.quantity_to_send > 0)
 
+  if (normalizedRuns.length === 0) return normalizedRuns
+
+  // The cap must never shrink the previewed run sizes.
+  const previewMax = normalizedRuns.reduce((m, r) => Math.max(m, r.quantity_to_send), 0)
+  const avgNeeded = Math.ceil(totalTargetQty / normalizedRuns.length)
+  const cap = Math.max(maxBatchCap, previewMax, avgNeeded * 3)
+  const floor = Math.max(1, Math.min(providerMin, avgNeeded))
+
   const used = new Set<number>()
-
-  normalizedRuns.forEach((run, index) => {
-    const previous = index > 0 ? normalizedRuns[index - 1].quantity_to_send : null
-    let candidate = run.quantity_to_send
-    let fallback = candidate
-
-    for (let step = 0; step <= Math.max(1, maxBatchCap - providerMin); step++) {
-      const options = step === 0 ? [candidate] : [candidate + step, candidate - step]
-      let applied = false
-
-      for (const option of options) {
-        if (option < providerMin || option > maxBatchCap) continue
-        if (used.has(option)) continue
-        if (previous !== null && Math.abs(option - previous) < 2) continue
-        if (option % 5 === 0 && option !== providerMin) continue
-
-        run.quantity_to_send = option
-        run.base_quantity = option
-        applied = true
-        break
-      }
-
-      if (applied) break
-
-      for (const option of options) {
-        if (option < providerMin || option > maxBatchCap) continue
-        if (used.has(option)) continue
-        fallback = option
-      }
+  for (const run of normalizedRuns) {
+    let qty = Math.max(floor, Math.min(cap, run.quantity_to_send))
+    // ensure uniqueness (no repeated quantities) with the smallest possible nudge
+    let step = 0
+    while (used.has(qty) && step < 5000) {
+      step++
+      const up = qty + step
+      const down = qty - step
+      if (!used.has(up) && up <= cap) { qty = up; break }
+      if (!used.has(down) && down >= floor) { qty = down; break }
     }
+    used.add(qty)
+    run.quantity_to_send = qty
+    run.base_quantity = qty
+  }
 
-    run.quantity_to_send = fallback
-    run.base_quantity = fallback
-    used.add(run.quantity_to_send)
-  })
-
-  let drift = totalTargetQty - normalizedRuns.reduce((sum, run) => sum + run.quantity_to_send, 0)
+  // Reconcile total by spreading the drift across runs (never adding/removing runs).
+  let drift = totalTargetQty - normalizedRuns.reduce((s, r) => s + r.quantity_to_send, 0)
   let guard = 0
-
-  while (drift !== 0 && guard < 10000) {
+  while (drift !== 0 && guard < 20000) {
     let changed = false
-    const indexes = normalizedRuns
+    const order = normalizedRuns
       .map((run, index) => ({ index, quantity: run.quantity_to_send }))
       .sort((a, b) => drift > 0 ? a.quantity - b.quantity : b.quantity - a.quantity)
-      .map((item) => item.index)
+      .map((i) => i.index)
 
-    for (const index of indexes) {
-      const step = drift > 0 ? 1 : -1
-      const nextQty = normalizedRuns[index].quantity_to_send + step
-      const previous = index > 0 ? normalizedRuns[index - 1].quantity_to_send : null
-
-      if (nextQty < providerMin || nextQty > maxBatchCap) continue
-      if (normalizedRuns.some((run, runIndex) => runIndex !== index && run.quantity_to_send === nextQty)) continue
-      if (previous !== null && Math.abs(nextQty - previous) < 2) continue
-
-      normalizedRuns[index].quantity_to_send = nextQty
-      normalizedRuns[index].base_quantity = nextQty
-      drift += drift > 0 ? -1 : 1
+    for (const index of order) {
+      const stepSize = Math.max(1, Math.min(Math.abs(drift), Math.ceil(Math.abs(drift) / normalizedRuns.length)))
+      const delta = drift > 0 ? stepSize : -stepSize
+      const next = normalizedRuns[index].quantity_to_send + delta
+      if (next < floor || next > cap) continue
+      if (used.has(next)) continue
+      used.delete(normalizedRuns[index].quantity_to_send)
+      used.add(next)
+      normalizedRuns[index].quantity_to_send = next
+      normalizedRuns[index].base_quantity = next
+      drift -= delta
       changed = true
-
       if (drift === 0) break
     }
 
@@ -130,14 +119,15 @@ function uniquifyScheduledRuns(
     guard++
   }
 
-  if (drift !== 0 && normalizedRuns.length > 0) {
-    const lastRun = normalizedRuns[normalizedRuns.length - 1]
-    lastRun.quantity_to_send = Math.max(providerMin, Math.min(maxBatchCap, lastRun.quantity_to_send + drift))
-    lastRun.base_quantity = lastRun.quantity_to_send
+  if (drift !== 0) {
+    const last = normalizedRuns[normalizedRuns.length - 1]
+    last.quantity_to_send = Math.max(floor, last.quantity_to_send + drift)
+    last.base_quantity = last.quantity_to_send
   }
 
   return normalizedRuns
 }
+
 
 // COMPLETE SERVICE-SPECIFIC CONFIGS
 const MAX_BATCH_CAPS: Record<string, number> = {
