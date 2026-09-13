@@ -41,9 +41,14 @@ set_env() {
 SECRETS_FILE="${SECRETS_FILE:-/etc/smmpanel.secrets}"
 if [ -f "$SECRETS_FILE" ]; then
   # shellcheck disable=SC1090
-  while IFS='=' read -r k v; do
-    [ -z "${k// }" ] && continue
-    case "$k" in \#*) continue;; esac
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%$'\r'}"
+    case "$line" in ''|\#*) continue;; esac
+    case "$line" in *=*) ;; *) continue;; esac
+    k="${line%%=*}"
+    v="${line#*=}"
+    k="$(printf '%s' "$k" | tr -d '[:space:]')"
+    [ -n "$k" ] || continue
     set_env "$k" "$v"
   done < "$SECRETS_FILE"
   echo "      merged secrets from $SECRETS_FILE"
