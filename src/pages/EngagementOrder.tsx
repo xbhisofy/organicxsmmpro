@@ -391,7 +391,7 @@ export default function EngagementOrder() {
           serviceId: serviceData?.serviceId ?? prev[type]?.serviceId ?? null,
           minQuantity: serviceData?.minQuantity ?? prev[type]?.minQuantity,
           // Per-type organic settings
-          timeLimitHours: prev[type]?.timeLimitHours ?? DEFAULT_ORGANIC_SETTINGS.timeLimitHours,
+          timeLimitHours: prev[type]?.timeLimitHours ?? globalHours ?? DEFAULT_ORGANIC_SETTINGS.timeLimitHours,
           variancePercent: prev[type]?.variancePercent ?? DEFAULT_ORGANIC_SETTINGS.variancePercent,
           peakHoursEnabled: prev[type]?.peakHoursEnabled ?? DEFAULT_ORGANIC_SETTINGS.peakHoursEnabled,
         };
