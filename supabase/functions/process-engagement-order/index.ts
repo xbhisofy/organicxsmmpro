@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { normalizePreviewRuns, type ScheduledRunInput } from '../_shared/schedule-runs.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,100 +35,6 @@ interface OrganicServiceConfig {
   targetHumanScore: [number, number]
   defaultMinQty: number
 }
-
-interface ScheduledRunInput {
-  run_number?: number
-  scheduled_at: string
-  quantity_to_send: number
-  base_quantity?: number
-  variance_applied?: number
-  peak_multiplier?: number
-}
-
-function uniquifyScheduledRuns(
-  runs: ScheduledRunInput[],
-  totalTargetQty: number,
-  providerMin: number,
-  maxBatchCap: number
-) {
-  // Respect the exact schedule the user previewed: same number of runs,
-  // same (random) quantities. We only nudge values so no two runs are equal
-  // and every run stays within provider limits.
-  const normalizedRuns = runs
-    .map((run, index) => ({
-      run_number: index + 1,
-      scheduled_at: new Date(run.scheduled_at).toISOString(),
-      quantity_to_send: Math.max(0, Math.round(Number(run.quantity_to_send) || 0)),
-      base_quantity: Math.max(0, Math.round(Number(run.base_quantity ?? run.quantity_to_send) || 0)),
-      variance_applied: Number(run.variance_applied ?? 0),
-      peak_multiplier: Number(run.peak_multiplier ?? 1),
-      status: 'pending'
-    }))
-    .filter((run) => run.quantity_to_send > 0)
-
-  if (normalizedRuns.length === 0) return normalizedRuns
-
-  // The cap must never shrink the previewed run sizes.
-  const previewMax = normalizedRuns.reduce((m, r) => Math.max(m, r.quantity_to_send), 0)
-  const avgNeeded = Math.ceil(totalTargetQty / normalizedRuns.length)
-  const cap = Math.max(maxBatchCap, previewMax, avgNeeded * 3)
-  const floor = Math.max(1, Math.min(providerMin, avgNeeded))
-
-  const used = new Set<number>()
-  for (const run of normalizedRuns) {
-    let qty = Math.max(floor, Math.min(cap, run.quantity_to_send))
-    // ensure uniqueness (no repeated quantities) with the smallest possible nudge
-    let step = 0
-    while (used.has(qty) && step < 5000) {
-      step++
-      const up = qty + step
-      const down = qty - step
-      if (!used.has(up) && up <= cap) { qty = up; break }
-      if (!used.has(down) && down >= floor) { qty = down; break }
-    }
-    used.add(qty)
-    run.quantity_to_send = qty
-    run.base_quantity = qty
-  }
-
-  // Reconcile total by spreading the drift across runs (never adding/removing runs).
-  let drift = totalTargetQty - normalizedRuns.reduce((s, r) => s + r.quantity_to_send, 0)
-  let guard = 0
-  while (drift !== 0 && guard < 20000) {
-    let changed = false
-    const order = normalizedRuns
-      .map((run, index) => ({ index, quantity: run.quantity_to_send }))
-      .sort((a, b) => drift > 0 ? a.quantity - b.quantity : b.quantity - a.quantity)
-      .map((i) => i.index)
-
-    for (const index of order) {
-      const stepSize = Math.max(1, Math.min(Math.abs(drift), Math.ceil(Math.abs(drift) / normalizedRuns.length)))
-      const delta = drift > 0 ? stepSize : -stepSize
-      const next = normalizedRuns[index].quantity_to_send + delta
-      if (next < floor || next > cap) continue
-      if (used.has(next)) continue
-      used.delete(normalizedRuns[index].quantity_to_send)
-      used.add(next)
-      normalizedRuns[index].quantity_to_send = next
-      normalizedRuns[index].base_quantity = next
-      drift -= delta
-      changed = true
-      if (drift === 0) break
-    }
-
-    if (!changed) break
-    guard++
-  }
-
-  if (drift !== 0) {
-    const last = normalizedRuns[normalizedRuns.length - 1]
-    last.quantity_to_send = Math.max(floor, last.quantity_to_send + drift)
-    last.base_quantity = last.quantity_to_send
-  }
-
-  return normalizedRuns
-}
-
 
 // COMPLETE SERVICE-SPECIFIC CONFIGS
 const MAX_BATCH_CAPS: Record<string, number> = {
@@ -548,7 +455,7 @@ serve(async (req) => {
           const totalTargetQty = engagement.quantity
 
           if (previewRuns.length > 0) {
-            validatedEntries = uniquifyScheduledRuns(previewRuns, totalTargetQty, providerMin, maxBatchCap)
+            validatedEntries = normalizePreviewRuns(previewRuns, totalTargetQty, providerMin)
               .map((run) => ({
                 engagement_order_item_id: itemId,
                 run_number: run.run_number,
