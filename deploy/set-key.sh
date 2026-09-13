@@ -24,11 +24,13 @@ ENV_FILE="/opt/supabase/.env"
 set_in_file() {
   local file="$1"
   [[ -f "$file" ]] || touch "$file"
-  if grep -q "^${NAME}=" "$file"; then
-    sed -i "s|^${NAME}=.*|${NAME}=${VALUE}|" "$file"
-  else
-    printf '%s=%s\n' "$NAME" "$VALUE" >> "$file"
-  fi
+  # No sed: keys/values may contain | & / \ = characters
+  local tmp
+  tmp="$(mktemp)"
+  grep -v -E "^${NAME}=" "$file" > "$tmp" || true
+  printf '%s=%s\n' "$NAME" "$VALUE" >> "$tmp"
+  cat "$tmp" > "$file"
+  rm -f "$tmp"
   echo "  updated ${file}"
 }
 

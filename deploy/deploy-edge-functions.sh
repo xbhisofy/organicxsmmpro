@@ -26,11 +26,14 @@ ENVF="$SUPA_DIR/.env"
 set_env() {
   local k="$1" v="$2"
   [ -n "$v" ] || return 0
-  if grep -qE "^${k}=" "$ENVF"; then
-    sed -i "s|^${k}=.*|${k}=${v}|" "$ENVF"
-  else
-    printf '%s=%s\n' "$k" "$v" >> "$ENVF"
-  fi
+  touch "$ENVF"
+  # Rewrite without sed so values containing | & / \ or = stay intact
+  local tmp
+  tmp="$(mktemp)"
+  grep -v -E "^${k}=" "$ENVF" > "$tmp" || true
+  printf '%s=%s\n' "$k" "$v" >> "$tmp"
+  cat "$tmp" > "$ENVF"
+  rm -f "$tmp"
 }
 
 # Secrets you must provide once (leave blank to keep existing values).
@@ -38,9 +41,14 @@ set_env() {
 SECRETS_FILE="${SECRETS_FILE:-/etc/smmpanel.secrets}"
 if [ -f "$SECRETS_FILE" ]; then
   # shellcheck disable=SC1090
-  while IFS='=' read -r k v; do
-    [ -z "${k// }" ] && continue
-    case "$k" in \#*) continue;; esac
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%$'\r'}"
+    case "$line" in ''|\#*) continue;; esac
+    case "$line" in *=*) ;; *) continue;; esac
+    k="${line%%=*}"
+    v="${line#*=}"
+    k="$(printf '%s' "$k" | tr -d '[:space:]')"
+    [ -n "$k" ] || continue
     set_env "$k" "$v"
   done < "$SECRETS_FILE"
   echo "      merged secrets from $SECRETS_FILE"
