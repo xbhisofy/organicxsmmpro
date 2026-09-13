@@ -98,6 +98,7 @@ export default function EngagementOrder() {
   }, []);
   const [showPreview, setShowPreview] = useState(false);
   const [baseQuantity, setBaseQuantity] = useState(10000);
+  const [globalHours, setGlobalHours] = useState<number | null>(null);
   // Debounce base quantity for expensive recalculations
   const debouncedBaseQuantity = useDebounce(baseQuantity, 200);
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
@@ -390,7 +391,7 @@ export default function EngagementOrder() {
           serviceId: serviceData?.serviceId ?? prev[type]?.serviceId ?? null,
           minQuantity: serviceData?.minQuantity ?? prev[type]?.minQuantity,
           // Per-type organic settings
-          timeLimitHours: prev[type]?.timeLimitHours ?? DEFAULT_ORGANIC_SETTINGS.timeLimitHours,
+          timeLimitHours: prev[type]?.timeLimitHours ?? globalHours ?? DEFAULT_ORGANIC_SETTINGS.timeLimitHours,
           variancePercent: prev[type]?.variancePercent ?? DEFAULT_ORGANIC_SETTINGS.variancePercent,
           peakHoursEnabled: prev[type]?.peakHoursEnabled ?? DEFAULT_ORGANIC_SETTINGS.peakHoursEnabled,
         };
@@ -418,6 +419,20 @@ export default function EngagementOrder() {
     setRefillApplied(true);
   }, [engagements, searchParams, refillApplied]);
 
+
+  // Optional global delivery time: applies to every engagement type at once.
+  // Users can still change any single type manually afterwards.
+  const handleGlobalHoursChange = useCallback((hours: number | null) => {
+    setGlobalHours(hours);
+    if (hours === null) return;
+    setEngagements(prev => {
+      const next: EngagementConfigs = {};
+      Object.entries(prev).forEach(([k, cfg]) => {
+        next[k] = { ...cfg, timeLimitHours: hours };
+      });
+      return next;
+    });
+  }, []);
 
   const handleEngagementChange = useCallback((type: EngagementType, config: EngagementConfig) => {
     setEngagements(prev => ({ ...prev, [type]: config }));
@@ -907,6 +922,8 @@ export default function EngagementOrder() {
               onChange={setBaseQuantity}
               min={100}
               max={1000000}
+              globalHours={globalHours}
+              onGlobalHoursChange={handleGlobalHoursChange}
             />
           </CardContent>
         </Card>

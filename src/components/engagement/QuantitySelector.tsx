@@ -2,13 +2,16 @@ import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Eye } from "lucide-react";
+import { Eye, Clock } from "lucide-react";
 
 interface QuantitySelectorProps {
   value: number;
   onChange: (quantity: number) => void;
   min?: number;
   max?: number;
+  /** Optional global delivery time (in hours) applied to every engagement type */
+  globalHours?: number | null;
+  onGlobalHoursChange?: (hours: number | null) => void;
 }
 
 const QUICK_OPTIONS = [
@@ -50,9 +53,25 @@ export const QuantitySelector = memo(function QuantitySelector({
   value, 
   onChange, 
   min = 0, 
-  max = 1000000 
+  max = 1000000,
+  globalHours = null,
+  onGlobalHoursChange,
 }: QuantitySelectorProps) {
   const [localValue, setLocalValue] = useState(value.toString());
+  const [timeUnit, setTimeUnit] = useState<"hours" | "days">("hours");
+  const [timeInput, setTimeInput] = useState<string>(globalHours ? String(globalHours) : "");
+
+  const applyTime = useCallback((raw: string, unit: "hours" | "days") => {
+    setTimeInput(raw);
+    if (!onGlobalHoursChange) return;
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed) || parsed <= 0) {
+      onGlobalHoursChange(null);
+      return;
+    }
+    const hours = unit === "days" ? parsed * 24 : parsed;
+    onGlobalHoursChange(Math.min(720, hours));
+  }, [onGlobalHoursChange]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
 
@@ -139,21 +158,60 @@ export const QuantitySelector = memo(function QuantitySelector({
         ))}
       </div>
 
-      {/* Custom Input */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-2">
-        <span className="text-sm text-muted-foreground font-medium">or custom:</span>
-        <div className="flex items-center gap-2">
-          <Input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={localValue}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            className="w-full sm:w-36 h-11 font-mono text-lg font-bold bg-secondary border-2 border-border focus:border-foreground text-foreground"
-          />
-          <span className="text-sm text-muted-foreground font-medium shrink-0">views</span>
+      {/* Custom Input + optional global delivery time */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+          <span className="text-sm text-muted-foreground font-medium">or custom:</span>
+          <div className="flex items-center gap-2">
+            <Input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={localValue}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className="w-full sm:w-36 h-11 font-mono text-lg font-bold bg-secondary border-2 border-border focus:border-foreground text-foreground"
+            />
+            <span className="text-sm text-muted-foreground font-medium shrink-0">views</span>
+          </div>
         </div>
+
+        {onGlobalHoursChange && (
+          <div className="flex flex-col gap-1 sm:items-end">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+              <Input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Auto"
+                value={timeInput}
+                onChange={(e) => applyTime(e.target.value.replace(/[^0-9]/g, ''), timeUnit)}
+                className="w-20 h-11 font-mono text-base font-bold bg-secondary border-2 border-border focus:border-foreground text-foreground text-center"
+              />
+              <div className="flex rounded-xl border-2 border-border overflow-hidden shrink-0">
+                {(["hours", "days"] as const).map((unit) => (
+                  <button
+                    key={unit}
+                    type="button"
+                    onClick={() => { setTimeUnit(unit); applyTime(timeInput, unit); }}
+                    className={cn(
+                      "px-3 h-[42px] text-xs font-bold transition-colors",
+                      timeUnit === unit
+                        ? "bg-foreground text-background"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {unit === "hours" ? "Hrs" : "Days"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <span className="text-[11px] text-muted-foreground sm:text-right">
+              Optional total delivery time — applies to all engagement types
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
