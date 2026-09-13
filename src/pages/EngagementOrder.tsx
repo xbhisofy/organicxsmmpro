@@ -98,6 +98,7 @@ export default function EngagementOrder() {
   }, []);
   const [showPreview, setShowPreview] = useState(false);
   const [baseQuantity, setBaseQuantity] = useState(10000);
+  const [globalHours, setGlobalHours] = useState<number | null>(null);
   // Debounce base quantity for expensive recalculations
   const debouncedBaseQuantity = useDebounce(baseQuantity, 200);
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
