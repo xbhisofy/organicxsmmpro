@@ -9,6 +9,9 @@ interface QuantitySelectorProps {
   onChange: (quantity: number) => void;
   min?: number;
   max?: number;
+  /** Optional global delivery time (in hours) applied to every engagement type */
+  globalHours?: number | null;
+  onGlobalHoursChange?: (hours: number | null) => void;
 }
 
 const QUICK_OPTIONS = [
