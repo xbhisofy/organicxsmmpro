@@ -593,6 +593,8 @@ export default function EngagementOrder() {
                 time_limit_hours: effectiveTimeLimit,
                 variance_percent: config.variancePercent,
                 peak_hours_enabled: config.peakHoursEnabled,
+                // Exact number of runs the user picked (0 / undefined = auto)
+                custom_run_count: config.customRunCount && config.customRunCount > 0 ? config.customRunCount : 0,
                 scheduled_runs: scheduledRuns,
               };
             }),
