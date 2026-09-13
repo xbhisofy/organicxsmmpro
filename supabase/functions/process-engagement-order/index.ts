@@ -525,16 +525,20 @@ serve(async (req) => {
             if (targetRuns < 2 && engagement.quantity >= providerMin * 2) targetRuns = 2
             
             const avgNeeded = Math.ceil(engagement.quantity / targetRuns)
-            maxBatchCap = Math.max(maxBatchCap, Math.min(avgNeeded * 2, providerMin * 4))
+            // Batch cap must allow the average run size, otherwise every run
+            // gets clipped to a tiny fixed number (the old "400 each" bug).
+            maxBatchCap = Math.max(maxBatchCap, avgNeeded * 3)
             baseInterval = Math.max(5, availableMinutes / Math.max(targetRuns - 1, 1))
             intervalRange = baseInterval * 0.15
             timeLimitApplied = true
             console.log(`  ⏱️ ${engType}: ${timeLimitHours}h | Stagger ${Math.round(initialDelayMinutes)}m | Int ${baseInterval.toFixed(1)}m | Runs ${targetRuns}`)
           } else {
-            targetRuns = Math.max(config.minRunsPerOrder, Math.ceil(engagement.quantity / maxBatchCap), Math.min(config.maxRunsPerOrder, idealRuns))
+            targetRuns = Math.max(config.minRunsPerOrder, Math.min(config.maxRunsPerOrder, idealRuns))
             targetRuns = Math.min(targetRuns, absoluteMaxRuns)
             if (targetRuns < 2 && engagement.quantity >= providerMin * 2) targetRuns = 2
+            maxBatchCap = Math.max(maxBatchCap, Math.ceil(engagement.quantity / targetRuns) * 3)
           }
+
 
           const previewRuns = Array.isArray(engagement.scheduled_runs)
             ? (engagement.scheduled_runs as ScheduledRunInput[])
