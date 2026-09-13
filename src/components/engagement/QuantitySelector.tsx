@@ -53,9 +53,25 @@ export const QuantitySelector = memo(function QuantitySelector({
   value, 
   onChange, 
   min = 0, 
-  max = 1000000 
+  max = 1000000,
+  globalHours = null,
+  onGlobalHoursChange,
 }: QuantitySelectorProps) {
   const [localValue, setLocalValue] = useState(value.toString());
+  const [timeUnit, setTimeUnit] = useState<"hours" | "days">("hours");
+  const [timeInput, setTimeInput] = useState<string>(globalHours ? String(globalHours) : "");
+
+  const applyTime = useCallback((raw: string, unit: "hours" | "days") => {
+    setTimeInput(raw);
+    if (!onGlobalHoursChange) return;
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed) || parsed <= 0) {
+      onGlobalHoursChange(null);
+      return;
+    }
+    const hours = unit === "days" ? parsed * 24 : parsed;
+    onGlobalHoursChange(Math.min(720, hours));
+  }, [onGlobalHoursChange]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
 
