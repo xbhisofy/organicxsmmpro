@@ -922,6 +922,8 @@ export default function EngagementOrder() {
               onChange={setBaseQuantity}
               min={100}
               max={1000000}
+              globalHours={globalHours}
+              onGlobalHoursChange={handleGlobalHoursChange}
             />
           </CardContent>
         </Card>
