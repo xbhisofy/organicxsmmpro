@@ -420,6 +420,20 @@ export default function EngagementOrder() {
   }, [engagements, searchParams, refillApplied]);
 
 
+  // Optional global delivery time: applies to every engagement type at once.
+  // Users can still change any single type manually afterwards.
+  const handleGlobalHoursChange = useCallback((hours: number | null) => {
+    setGlobalHours(hours);
+    if (hours === null) return;
+    setEngagements(prev => {
+      const next: EngagementConfigs = {};
+      Object.entries(prev).forEach(([k, cfg]) => {
+        next[k] = { ...cfg, timeLimitHours: hours };
+      });
+      return next;
+    });
+  }, []);
+
   const handleEngagementChange = useCallback((type: EngagementType, config: EngagementConfig) => {
     setEngagements(prev => ({ ...prev, [type]: config }));
     // Reset draw mode when user manually changes quantity
