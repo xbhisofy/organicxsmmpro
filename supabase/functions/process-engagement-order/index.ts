@@ -416,12 +416,25 @@ serve(async (req) => {
 
           let idealRuns = Math.round((engagement.quantity / 1000) * config.runsPerThousand)
           const maxPosForQty = Math.max(1, Math.floor(engagement.quantity / providerMin))
-          const absoluteMaxRuns = Math.max(1, Math.floor(maxPosForQty * 0.8))
-          
+          const absoluteMaxRuns = Math.max(1, maxPosForQty)
+
+          // User-selected exact number of runs (from the order form / preview).
+          const requestedRuns = Math.max(0, Math.floor(Number(engagement.custom_run_count ?? 0) || 0))
+
           let targetRuns: number
           let timeLimitApplied = false
 
-          if (timeLimitHours > 0) {
+          if (requestedRuns > 0) {
+            targetRuns = Math.max(1, Math.min(requestedRuns, absoluteMaxRuns))
+            const windowHours = timeLimitHours > 0 ? timeLimitHours : 24
+            const availableMinutes = Math.max(30, windowHours * 60 - initialDelayMinutes)
+            const avgNeeded = Math.ceil(engagement.quantity / targetRuns)
+            maxBatchCap = Math.max(maxBatchCap, avgNeeded * 3)
+            baseInterval = Math.max(1, availableMinutes / Math.max(targetRuns - 1, 1))
+            intervalRange = baseInterval * 0.15
+            timeLimitApplied = true
+            console.log(`  🎯 ${engType}: exact ${targetRuns} runs over ${windowHours}h | Int ${baseInterval.toFixed(1)}m`)
+          } else if (timeLimitHours > 0) {
             const totalMinutes = timeLimitHours * 60
             const availableMinutes = Math.max(30, totalMinutes - initialDelayMinutes)
             const maxPosRuns = Math.floor(availableMinutes / 5)
