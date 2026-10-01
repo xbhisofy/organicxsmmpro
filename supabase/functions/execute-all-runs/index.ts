@@ -1314,7 +1314,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
             last_status_check: new Date().toISOString(),
           }).eq('id', run.id)
           skipped++
-          console.log(`⏳ Run #${run.run_number} postponed ${postponeMs / 60000}min (all providers pre-filtered as busy)`)
+          console.log(`⏳ Run #${run.run_number} waiting (all providers busy on this link, time kept)`)
           results.push({ run_id: run.id, run_number: run.run_number, type: item.engagement_type,
             success: false, skipped: true, reason: `All providers busy - postponed ${postponeMs / 60000}min` })
         } else {
@@ -1799,7 +1799,8 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
           error_message: `[Auto-retry #${retryCount}/${MAX_BUSY_RETRIES}] All ${accountsToTry.length} accounts busy: ${lastError}`,
           provider_response: {
             ...(providerResult || {}),
-            tried_providers: triedProviderIds,
+            // Busy (active order) is temporary — don't permanently exclude those providers
+            tried_providers: isActiveOrderError ? [] : triedProviderIds,
           },
           provider_account_id: null,
           provider_account_name: null,
