@@ -1688,7 +1688,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         }
         
         // Update run + item + order in parallel
-        const providerDeliveredAll = verifiedRemains === 0 && !isFailedProviderStatus(verifiedStatus)
+        const providerDeliveredAll = verifiedRemains === 0 && !isFailedProviderStatus(verifiedStatus) && !['pending','in progress','inprogress','processing'].includes(String(verifiedStatus||'').toLowerCase())
         const providerIsTerminal = isTerminalProviderStatus(verifiedStatus) || providerDeliveredAll
 
         const updatePromises = [
