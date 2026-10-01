@@ -68,7 +68,7 @@ const TEMPORARY_ERRORS = [
   'active order with this link', 'wait until order being completed',
   'rate limit', 'timeout', 'temporarily', 'too many requests',
   'already has an order', 'order in progress', 'link currently active',
-  'processing previous order', 'wait for completion',
+  'processing previous order', 'wait for completion', 'duplicate order', 'existing order',
 ]
 
 /**
