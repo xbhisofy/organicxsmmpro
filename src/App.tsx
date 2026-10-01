@@ -20,6 +20,7 @@ import Wallet from "./pages/Wallet";
 // Lazy — landing, auth, secondary, legal, all admin pages
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Services = lazy(() => import("./pages/Services"));
@@ -135,6 +136,7 @@ const App = () => {
                     <Route path="/" element={<Index />} />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/auth" element={<Auth />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     
                     <Route path="/dashboard" element={<Navigate to="/engagement-order" replace />} />
                     <Route path="/services" element={<Services />} />
