@@ -266,12 +266,13 @@ Deno.serve(async (req) => {
 
         const providerStatus = (result.status || '').toLowerCase()
         const startCount = parseInt(result.start_count) || null
-        const remains = parseInt(result.remains) || 0
+        const _rem = Number.parseInt(result.remains)
+        const remains: number | null = Number.isFinite(_rem) ? _rem : null
         const charge = parseFloat(result.charge) || null
         
         // Calculate delivery progress
-        const delivered = startCount !== null ? (run.quantity_to_send - remains) : null
-        const progressPercent = run.quantity_to_send > 0 ? ((run.quantity_to_send - remains) / run.quantity_to_send * 100).toFixed(1) : 0
+        const delivered = startCount !== null ? (run.quantity_to_send - (remains ?? run.quantity_to_send)) : null
+        const progressPercent = run.quantity_to_send > 0 ? ((run.quantity_to_send - (remains ?? run.quantity_to_send)) / run.quantity_to_send * 100).toFixed(1) : 0
 
         console.log(`Provider status: ${providerStatus}, Start: ${startCount}, Remains: ${remains}, Delivered: ${delivered} (${progressPercent}%)`)
         
@@ -292,7 +293,7 @@ Deno.serve(async (req) => {
           last_status_check: new Date().toISOString()
         }
 
-        const deliveredAll = remains === 0 && !['cancelled', 'canceled', 'refunded', 'refund', 'failed', 'error', 'canscelled'].includes(providerStatus)
+        const deliveredAll = remains === 0 && !['cancelled', 'canceled', 'refunded', 'refund', 'failed', 'error', 'canscelled', 'pending', 'in progress', 'inprogress', 'processing'].includes(providerStatus)
 
         if (providerStatus === 'completed' || providerStatus === 'complete' || providerStatus === 'success' || deliveredAll) {
           const orderStatus = run.engagement_order_item?.engagement_order?.status
@@ -573,7 +574,8 @@ Deno.serve(async (req) => {
 
           const providerStatus = (result.status || '').toLowerCase()
           const startCount = parseInt(result.start_count) || null
-          const remains = parseInt(result.remains) || 0
+          const _rem = Number.parseInt(result.remains)
+        const remains: number | null = Number.isFinite(_rem) ? _rem : null
           const charge = parseFloat(result.charge) || null
 
           // Always update tracking data
@@ -586,7 +588,7 @@ Deno.serve(async (req) => {
             last_status_check: new Date().toISOString()
           }
 
-          const deliveredAll = remains === 0 && !['cancelled', 'canceled', 'refunded', 'refund', 'failed', 'error', 'canscelled'].includes(providerStatus)
+          const deliveredAll = remains === 0 && !['cancelled', 'canceled', 'refunded', 'refund', 'failed', 'error', 'canscelled', 'pending', 'in progress', 'inprogress', 'processing'].includes(providerStatus)
 
           if (providerStatus === 'completed' || providerStatus === 'complete' || providerStatus === 'success' || deliveredAll) {
             await supabase.from('organic_run_schedule').update({
