@@ -1752,7 +1752,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
       } else if (lastError !== null) {
         const lastErr = (lastError || '').toLowerCase()
         const isActiveOrderError = lastErr.includes('active order') || lastErr.includes('wait until order') || 
-          lastErr.includes('already has an order') || lastErr.includes('in progress')
+          lastErr.includes('already has an order') || lastErr.includes('in progress') || lastErr.includes('duplicate order') || lastErr.includes('existing order')
         // Active-order (provider busy on link) is not a real failure — don't count it
         const retryCount = (run.retry_count || 0) + (isActiveOrderError ? 0 : 1)
 
