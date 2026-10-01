@@ -12,10 +12,13 @@ export function useMaintenanceMode() {
       if (error) return false;
       return data ?? false;
     },
-    staleTime: 60000, // Cache for 60s - realtime handles instant updates
+    staleTime: 60000, // Cache for 60s
     gcTime: 5 * 60 * 1000,
     refetchOnMount: false, // Don't refetch on every component mount
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    // Settings table is admin-only now, so realtime only reaches admins.
+    // Poll as a fallback so every user picks up maintenance mode changes.
+    refetchInterval: 60000,
   });
 
   // Realtime subscription for INSTANT updates - no polling needed
