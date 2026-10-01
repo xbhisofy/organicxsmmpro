@@ -47,6 +47,37 @@ export function normalizePreviewRuns(
 
   if (normalized.length === 0) return []
 
+  // When the total is too small for this many runs, most runs get clamped to
+  // the provider minimum and look identical (100, 100, 100...). Drop evenly
+  // spaced runs so every remaining run has room for a random, unique size.
+  const floorMin = Math.max(1, providerMin)
+  const maxRuns = Math.max(1, Math.floor(totalTargetQty / (floorMin * 1.6)))
+  if (providerMin > 1 && normalized.length > maxRuns && totalTargetQty >= floorMin) {
+    const keep: typeof normalized = []
+    const step = normalized.length / maxRuns
+    for (let i = 0; i < maxRuns; i++) keep.push(normalized[Math.floor(i * step)])
+    const weights = keep.map(() => 0.4 + Math.random())
+    const wSum = weights.reduce((a, b) => a + b, 0)
+    const spare = totalTargetQty - floorMin * keep.length
+    const qty = weights.map((w) => floorMin + Math.floor((w / wSum) * spare))
+    let rest = totalTargetQty - qty.reduce((a, b) => a + b, 0)
+    for (let i = 0; rest > 0; i = (i + 1) % qty.length) { qty[i]++; rest-- }
+    for (let i = 1; i < qty.length; i++) {
+      let guard = 0
+      while (qty.slice(0, i).includes(qty[i]) && guard++ < 1000) {
+        const d = qty.findIndex((q, j) => j !== i && q > floorMin + 1 && !qty.includes(q - 1))
+        if (d < 0) break
+        qty[i]++; qty[d]--
+      }
+    }
+    return keep.map((run, index) => ({
+      ...run,
+      run_number: index + 1,
+      quantity_to_send: qty[index],
+      base_quantity: qty[index],
+    }))
+  }
+
   const minimum = Math.max(1, Math.min(providerMin, Math.floor(totalTargetQty / normalized.length)))
   const previewTotal = normalized.reduce((sum, run) => sum + run.quantity_to_send, 0)
   const previewQuantities = normalized.map((run) => run.quantity_to_send)
