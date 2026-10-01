@@ -29,6 +29,8 @@ const ENGAGEMENT_CONFIG = {
   comments: { icon: MessageCircle, label: "Comments" },
   saves: { icon: Bookmark, label: "Saves" },
   shares: { icon: Share2, label: "Shares" },
+  reposts: { icon: Repeat2, label: "Reposts" },
+  followers: { icon: UserPlus, label: "Followers" },
 };
 
 interface Run {
