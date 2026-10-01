@@ -1191,7 +1191,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         for (const stuckRun of startedRunsForLink) {
           const terminalStatuses = ['Completed', 'Complete', 'Partial', 'Refunded', 'Canceled', 'Cancelled', 'Error', 'Failed', 'Success', 'Refund', 'Canscelled']
           const isTerminal = stuckRun.provider_status && terminalStatuses.includes(stuckRun.provider_status)
-          const hasNoRemains = typeof stuckRun.provider_remains === 'number' && stuckRun.provider_remains <= 0 && !!stuckRun.provider_order_id
+          const hasNoRemains = typeof stuckRun.provider_remains === 'number' && stuckRun.provider_remains <= 0 && !!stuckRun.provider_order_id && !['pending','in progress','inprogress','processing'].includes(String(stuckRun.provider_status||'').toLowerCase())
           
           const startedAt = new Date(stuckRun.started_at || 0)
           const runAge = Math.round((Date.now() - startedAt.getTime()) / 1000)
@@ -1688,7 +1688,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         }
         
         // Update run + item + order in parallel
-        const providerDeliveredAll = verifiedRemains === 0 && !isFailedProviderStatus(verifiedStatus)
+        const providerDeliveredAll = verifiedRemains === 0 && !isFailedProviderStatus(verifiedStatus) && !['pending','in progress','inprogress','processing'].includes(String(verifiedStatus||'').toLowerCase())
         const providerIsTerminal = isTerminalProviderStatus(verifiedStatus) || providerDeliveredAll
 
         const updatePromises = [
