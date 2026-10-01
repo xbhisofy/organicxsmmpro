@@ -130,35 +130,14 @@ export default function AdminUsers() {
       if (!inrAmount || inrAmount <= 0) throw new Error('Enter a valid INR amount');
       // Convert INR → USD because wallets are stored in USD internally
       const amount = Math.trunc((inrAmount / INR_RATE) * 10000) / 10000;
-      const currentBalance = selectedUser.wallet?.balance || 0;
-      const newBalance =
-        balanceAction === 'add' ? currentBalance + amount : currentBalance - amount;
-
-      if (newBalance < 0) throw new Error('Balance cannot be negative');
-
-      const { error: walletError } = await supabase
-        .from('wallets')
-        .update({
-          balance: newBalance,
-          total_deposited:
-            balanceAction === 'add'
-              ? (selectedUser.wallet?.total_deposited || 0) + amount
-              : selectedUser.wallet?.total_deposited || 0,
-        })
-        .eq('user_id', selectedUser.user_id);
-
-      if (walletError) throw walletError;
-
-      const { error: txError } = await supabase.from('transactions').insert({
-        user_id: selectedUser.user_id,
-        type: balanceAction === 'add' ? 'deposit' : 'withdrawal',
-        amount: balanceAction === 'add' ? amount : -amount,
-        balance_after: newBalance,
-        description: `Admin ${balanceAction === 'add' ? 'deposit' : 'withdrawal'} — ₹${inrAmount.toFixed(2)}`,
-        status: 'completed',
+      const { data, error } = await supabase.rpc('admin_adjust_wallet' as any, {
+        p_user_id: selectedUser.user_id,
+        p_amount_usd: amount,
+        p_action: balanceAction === 'add' ? 'add' : 'deduct',
+        p_note: `Admin ${balanceAction === 'add' ? 'deposit' : 'withdrawal'} — ₹${inrAmount.toFixed(2)}`,
       });
-
-      if (txError) throw txError;
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       toast.success('Balance updated successfully!');
