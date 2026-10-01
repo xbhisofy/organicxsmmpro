@@ -832,7 +832,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
 
     // Fairness: give each item's earliest due run a chance before taking more runs from the same item
     const itemRunCount = new Map<string, number>()
-    const MAX_CONCURRENT_PER_ITEM = 1
+    const MAX_CONCURRENT_PER_ITEM = 4 // = number of providers; each run goes to a different provider
     const executionProviderMap = new Map<string, Set<string>>()
     // Track link+type combos where ALL providers returned "active order" — only skip same type
     const activeOrderLinkTypes = new Set<string>()
@@ -923,13 +923,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
       const runType = (run.engagement_order_item?.engagement_type || '').toLowerCase()
       const linkTypeKey = `${runLink}|${runType}`
       if (runLink && activeOrderLinkTypes.has(linkTypeKey)) {
-        const newScheduledAt = new Date(Date.now() + ACTIVE_ORDER_RETRY_MS).toISOString()
-        await supabase.from('organic_run_schedule').update({
-          status: 'pending',
-          scheduled_at: newScheduledAt,
-          error_message: `[Postponed] Active order on link for ${runType}`,
-          last_status_check: new Date().toISOString(),
-        }).eq('id', run.id)
+        // Do NOT reschedule — keep original time, just wait for a free provider
         skipped++
         continue
       }
@@ -1314,9 +1308,9 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
           // POSTPONE: All providers busy — push scheduled_at forward so we don't waste cycles
           const postponeMs = ACTIVE_ORDER_RETRY_MS
           const newScheduledAt = new Date(Date.now() + postponeMs).toISOString()
+          void newScheduledAt
           await supabase.from('organic_run_schedule').update({
-            scheduled_at: newScheduledAt,
-            error_message: `[Postponed] All providers busy for this link`,
+            error_message: `[Waiting] All providers busy for this link`,
             last_status_check: new Date().toISOString(),
           }).eq('id', run.id)
           skipped++
@@ -1756,10 +1750,11 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
           await updateEngagementOrderStatus(supabase, item.engagement_order_id, item.id)
         }
       } else if (lastError !== null) {
-        const retryCount = (run.retry_count || 0) + 1
         const lastErr = (lastError || '').toLowerCase()
         const isActiveOrderError = lastErr.includes('active order') || lastErr.includes('wait until order') || 
           lastErr.includes('already has an order') || lastErr.includes('in progress')
+        // Active-order (provider busy on link) is not a real failure — don't count it
+        const retryCount = (run.retry_count || 0) + (isActiveOrderError ? 0 : 1)
 
         // HARD STOP: permanent provider errors (min/max quantity, bad link, unmapped service)
         // ya bahut zyada retries → run ko permanently fail karo, warna order infinite
@@ -1793,7 +1788,10 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         const postponeMs = isActiveOrderError
           ? ACTIVE_ORDER_RETRY_MS
           : Math.min(TEMPORARY_RETRY_MS * retryCount, MAX_BUSY_BACKOFF_MS)
-        const newScheduledAt = new Date(Date.now() + postponeMs).toISOString()
+        // Busy link: keep original scheduled time (no visible reschedule)
+        const newScheduledAt = isActiveOrderError
+          ? (run.scheduled_at || new Date().toISOString())
+          : new Date(Date.now() + postponeMs).toISOString()
         
         await supabase.from('organic_run_schedule').update({
           status: 'pending', started_at: null,
@@ -1815,14 +1813,7 @@ async function processAllRuns(supabase: any, executionId: string, startTime: num
         if (isActiveOrderError && sameLink) {
           const linkTypeKey = `${sameLink}|${currentTypeNormalized}`
           activeOrderLinkTypes.add(linkTypeKey)
-          const batchCount = await batchPostponeEngagementRunsForLink(
-            supabase,
-            sameLink,
-            currentTypeNormalized,
-            newScheduledAt,
-            `[Batch postponed] Active order on link for ${currentTypeNormalized}`,
-          )
-          console.log(`⏳ Link+type batch-postponed ${postponeMs / 60000}min: ${batchCount} matching ${currentTypeNormalized} runs (active order)`)
+          // No batch reschedule of other runs anymore — they keep their times
         }
         results.push({ run_id: run.id, type: item.engagement_type, run_number: run.run_number, 
           success: false, error: lastError, will_retry: true, retry_attempt: retryCount, postponed_min: postponeMs / 60000 })
