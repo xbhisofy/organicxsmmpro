@@ -53,7 +53,7 @@ export default function Auth() {
       if (!trimmedEmail || !z.string().email().safeParse(trimmedEmail).success) {
         setError('Please enter a valid email address'); setIsSubmitting(false); return;
       }
-      const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, { redirectTo: `${window.location.origin}/auth` });
+      const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, { redirectTo: `${window.location.origin}/reset-password` });
       if (error) setError(error.message); else setSuccessMessage('Password reset email sent! Check your inbox.');
     } catch { setError('Something went wrong.'); }
     finally { setIsSubmitting(false); }
