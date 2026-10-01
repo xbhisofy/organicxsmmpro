@@ -10,6 +10,31 @@ import { CurrencyProvider } from "@/hooks/useCurrency";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { toast } from "sonner";
 import { AppErrorBoundary } from "@/components/app/AppErrorBoundary";
+import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+
+// Captured before the auth client consumes the URL hash
+const IS_RECOVERY_LINK =
+  typeof window !== "undefined" &&
+  /type=recovery/.test(window.location.hash + window.location.search);
+
+function RecoveryRedirect() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if (IS_RECOVERY_LINK && location.pathname !== "/reset-password") {
+      navigate("/reset-password" + window.location.hash, { replace: true });
+    }
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY" && window.location.pathname !== "/reset-password") {
+        navigate("/reset-password", { replace: true });
+      }
+    });
+    return () => data.subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+}
 
 // Eager — frequently-used dashboard pages stay fast on navigation
 import EngagementOrder from "./pages/EngagementOrder";
@@ -124,6 +149,7 @@ const App = () => {
             <Sonner />
             <AppErrorBoundary>
               <BrowserRouter>
+                <RecoveryRedirect />
                 <ScrollToTop />
                 <Suspense fallback={
                   <div className="min-h-screen flex items-center justify-center bg-background">
