@@ -54,7 +54,7 @@ YAML
   fi
 
   echo "Restarting edge functions..."
-  (cd /opt/supabase && docker compose up -d --force-recreate functions)
+  (cd /opt/supabase && docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --force-recreate functions)
 
   echo "Checking key is visible inside container..."
   if (cd /opt/supabase && docker compose exec -T functions printenv "$NAME" >/dev/null 2>&1); then
