@@ -936,6 +936,9 @@ export type Database = {
           quantity: number
           remains: number | null
           service_id: string | null
+          single_order_provider_account_id: string | null
+          single_order_request_id: string | null
+          single_order_service_id: string | null
           start_count: number | null
           status: string | null
           updated_at: string | null
@@ -965,6 +968,9 @@ export type Database = {
           quantity: number
           remains?: number | null
           service_id?: string | null
+          single_order_provider_account_id?: string | null
+          single_order_request_id?: string | null
+          single_order_service_id?: string | null
           start_count?: number | null
           status?: string | null
           updated_at?: string | null
@@ -994,6 +1000,9 @@ export type Database = {
           quantity?: number
           remains?: number | null
           service_id?: string | null
+          single_order_provider_account_id?: string | null
+          single_order_request_id?: string | null
+          single_order_service_id?: string | null
           start_count?: number | null
           status?: string | null
           updated_at?: string | null
@@ -1006,6 +1015,20 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_single_order_provider_account_id_fkey"
+            columns: ["single_order_provider_account_id"]
+            isOneToOne: false
+            referencedRelation: "provider_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_single_order_service_id_fkey"
+            columns: ["single_order_service_id"]
+            isOneToOne: false
+            referencedRelation: "single_order_services"
             referencedColumns: ["id"]
           },
         ]
@@ -1751,6 +1774,93 @@ export type Database = {
           },
         ]
       }
+      single_order_services: {
+        Row: {
+          cancel_allowed: string | null
+          category: string
+          created_at: string
+          description: string | null
+          drop_type: string | null
+          id: string
+          is_active: boolean
+          max_quantity: number
+          min_quantity: number
+          name: string
+          platform: string
+          price_per_k: number
+          provider_account_id: string
+          provider_name: string
+          provider_rate_usd: number
+          provider_service_number: string
+          quality: string | null
+          refill: string | null
+          service_id: string
+          speed: string | null
+          updated_at: string
+        }
+        Insert: {
+          cancel_allowed?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          drop_type?: string | null
+          id?: string
+          is_active?: boolean
+          max_quantity?: number
+          min_quantity?: number
+          name: string
+          platform?: string
+          price_per_k?: number
+          provider_account_id: string
+          provider_name: string
+          provider_rate_usd?: number
+          provider_service_number: string
+          quality?: string | null
+          refill?: string | null
+          service_id: string
+          speed?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cancel_allowed?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          drop_type?: string | null
+          id?: string
+          is_active?: boolean
+          max_quantity?: number
+          min_quantity?: number
+          name?: string
+          platform?: string
+          price_per_k?: number
+          provider_account_id?: string
+          provider_name?: string
+          provider_rate_usd?: number
+          provider_service_number?: string
+          quality?: string | null
+          refill?: string | null
+          service_id?: string
+          speed?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "single_order_services_provider_account_id_fkey"
+            columns: ["provider_account_id"]
+            isOneToOne: false
+            referencedRelation: "provider_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "single_order_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: true
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_requests: {
         Row: {
           admin_notes: string | null
@@ -2164,6 +2274,16 @@ export type Database = {
         Returns: Json
       }
       cleanup_old_completed_engagement_orders: { Args: never; Returns: Json }
+      create_single_order: {
+        Args: {
+          p_catalogue_id: string
+          p_link: string
+          p_quantity: number
+          p_request_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       credit_wallet_oxapay: {
         Args: {
           p_amount_usd: number
@@ -2341,6 +2461,10 @@ export type Database = {
       redeem_telegram_link_code: {
         Args: { p_chat_id: number; p_code: string; p_username: string }
         Returns: Json
+      }
+      refund_rejected_single_order: {
+        Args: { p_order_id: string; p_reason: string }
+        Returns: undefined
       }
       reschedule_organic_run: {
         Args: { p_quantity: number; p_run_id: string; p_scheduled_at: string }
