@@ -426,6 +426,15 @@ export default function Admin() {
           </Link>
 
 
+          <Link to="/admin/single-order-services">
+            <Card className="h-full border-border bg-card rounded-lg">
+              <CardContent className="p-5 flex items-center gap-4">
+                <ShoppingCart className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold">Single Order Services</h3>
+                <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
           <Link to="/admin/subscriptions">
             <Card className="glass-card h-full hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer group border-2 border-primary/30">
               <CardContent className="p-5">
