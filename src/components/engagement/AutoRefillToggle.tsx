@@ -46,15 +46,15 @@ export function AutoRefillToggle({ itemId, orderId, enabled, threshold, maxRefil
   };
 
   return (
-    <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-3">
+    <div className="rounded-xl border border-success/30 bg-success/10 p-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-400/20 flex items-center justify-center">
-            <Shield className="w-4 h-4 text-emerald-300" />
+          <div className="w-8 h-8 rounded-lg bg-success/20 flex items-center justify-center">
+            <Shield className="w-4 h-4 text-success" />
           </div>
           <div>
-            <p className="text-[13px] font-bold text-emerald-100">Auto-Refill Insurance</p>
-            <p className="text-[10px] text-emerald-200/80">
+            <p className="text-[13px] font-bold text-success">Auto-Refill Insurance</p>
+            <p className="text-[10px] text-success">
               {count > 0 ? `Refilled ${count}/${maxRefills} times` : "Auto-tops up if drop exceeds threshold"}
             </p>
           </div>
@@ -72,7 +72,7 @@ export function AutoRefillToggle({ itemId, orderId, enabled, threshold, maxRefil
       {localEnabled && (
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div>
-            <Label className="text-[10px] text-emerald-200">Drop threshold (%)</Label>
+            <Label className="text-[10px] text-success">Drop threshold (%)</Label>
             <Input
               type="number"
               min={1}
@@ -84,7 +84,7 @@ export function AutoRefillToggle({ itemId, orderId, enabled, threshold, maxRefil
             />
           </div>
           <div>
-            <Label className="text-[10px] text-emerald-200">Max refills</Label>
+            <Label className="text-[10px] text-success">Max refills</Label>
             <Input
               type="number"
               min={1}
@@ -97,7 +97,7 @@ export function AutoRefillToggle({ itemId, orderId, enabled, threshold, maxRefil
           </div>
         </div>
       )}
-      {busy && <Loader2 className="w-3 h-3 animate-spin text-emerald-300 mt-2" />}
+      {busy && <Loader2 className="w-3 h-3 animate-spin text-success mt-2" />}
     </div>
   );
 }
