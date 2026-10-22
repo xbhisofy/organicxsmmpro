@@ -8,4 +8,3 @@
 # Light website theme
 - [x] Apply light semantic colors, packaged typography, sidebar, login, wallet, ordering and admin surfaces in Lovable only.
 - [x] Check signed-in customer/admin pages and mobile layout; no runtime errors or desktop overflow observed.
-- [x] Refine the heavy appearance with subtle shared surfaces, an unframed Full Engagement form, quieter service rows and balanced controls; verify quantity input and mobile layout.

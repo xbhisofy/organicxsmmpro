@@ -129,7 +129,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
           type="button"
           variant="outline"
           size="sm"
-          className="gap-1.5 border-border bg-card text-muted-foreground hover:bg-secondary hover:text-foreground"
+          className="gap-1.5 border-warning bg-warning text-warning hover:bg-warning"
         >
           <Brain className="w-3.5 h-3.5" />
           Ask AI

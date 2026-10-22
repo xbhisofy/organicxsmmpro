@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,18 +34,18 @@ const QuickButton = memo(function QuickButton({
   onClick: () => void;
 }) {
   return (
-    <Button variant="ghost"
+    <button
       onClick={onClick}
       className={cn(
-        "px-3 sm:px-5 py-2.5 sm:py-3 rounded-lg font-semibold text-sm transition-colors",
-        "border",
+        "px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl font-bold text-sm transition-colors",
+        "border-2 will-change-transform",
         isSelected
-          ? "bg-primary/10 text-primary border-primary/25 hover:bg-primary/15 hover:text-primary"
-          : "bg-card text-muted-foreground border-border hover:border-primary/30 hover:bg-secondary"
+          ? "bg-foreground text-background border-foreground"
+          : "bg-secondary text-foreground border-border hover:border-foreground/50 hover:bg-muted"
       )}
     >
       {option.label}
-    </Button>
+    </button>
   );
 });
 
@@ -139,10 +138,10 @@ export const QuantitySelector = memo(function QuantitySelector({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-foreground/10 flex items-center justify-center">
           <Eye className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
         </div>
-        <Label className="text-sm font-semibold tracking-normal text-foreground">
+        <Label className="text-base sm:text-lg font-bold tracking-tight text-foreground">
           Base Views Quantity
         </Label>
       </div>
@@ -171,7 +170,7 @@ export const QuantitySelector = memo(function QuantitySelector({
               value={localValue}
               onChange={handleInputChange}
               onBlur={handleBlur}
-              className="w-full sm:w-36 h-11 font-mono text-lg font-semibold bg-card border border-input focus:border-primary text-foreground"
+              className="w-full sm:w-36 h-11 font-mono text-lg font-bold bg-secondary border-2 border-border focus:border-foreground text-foreground"
             />
             <span className="text-sm text-muted-foreground font-medium shrink-0">views</span>
           </div>
@@ -188,23 +187,23 @@ export const QuantitySelector = memo(function QuantitySelector({
                 placeholder="Auto"
                 value={timeInput}
                 onChange={(e) => applyTime(e.target.value.replace(/[^0-9]/g, ''), timeUnit)}
-                className="w-20 h-11 font-mono text-base font-semibold bg-card border border-input focus:border-primary text-foreground text-center"
+                className="w-20 h-11 font-mono text-base font-bold bg-secondary border-2 border-border focus:border-foreground text-foreground text-center"
               />
-              <div className="flex rounded-lg border border-border overflow-hidden shrink-0">
+              <div className="flex rounded-xl border-2 border-border overflow-hidden shrink-0">
                 {(["hours", "days"] as const).map((unit) => (
-                  <Button variant="ghost"
+                  <button
                     key={unit}
                     type="button"
                     onClick={() => { setTimeUnit(unit); applyTime(timeInput, unit); }}
                     className={cn(
-                      "px-3 h-[42px] text-xs font-semibold transition-colors",
+                      "px-3 h-[42px] text-xs font-bold transition-colors",
                       timeUnit === unit
-                        ? "bg-primary/10 text-primary"
+                        ? "bg-foreground text-background"
                         : "bg-secondary text-muted-foreground hover:text-foreground"
                     )}
                   >
                     {unit === "hours" ? "Hrs" : "Days"}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
