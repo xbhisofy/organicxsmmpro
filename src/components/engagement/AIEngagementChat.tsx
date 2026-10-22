@@ -129,7 +129,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
           type="button"
           variant="outline"
           size="sm"
-          className="gap-1.5 border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+          className="gap-1.5 border-warning bg-warning text-warning hover:bg-warning"
         >
           <Brain className="w-3.5 h-3.5" />
           Ask AI
@@ -138,7 +138,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
       <DialogContent className="max-w-lg p-0 overflow-hidden">
         <DialogHeader className="px-4 pt-4 pb-2 border-b">
           <DialogTitle className="flex items-center gap-2 text-base">
-            <Sparkles className="w-4 h-4 text-amber-700" />
+            <Sparkles className="w-4 h-4 text-warning" />
             Organic AI Assistant
           </DialogTitle>
           <DialogDescription className="text-xs">
@@ -154,7 +154,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
             {linkOk ? (
               <span className="text-muted-foreground truncate max-w-[260px]">{link}</span>
             ) : (
-              <span className="text-amber-600 flex items-center gap-1"><AlertTriangle className="w-3 h-3" />paste a link</span>
+              <span className="text-warning flex items-center gap-1"><AlertTriangle className="w-3 h-3" />paste a link</span>
             )}
           </div>
           {Object.keys(perType).length > 0 && (
@@ -175,7 +175,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
           )}
           {Object.keys(perType).length > 0 && perType.views > 0 && (
             <div className="flex items-center gap-2 text-[11px]">
-              <ShieldCheck className={`w-3.5 h-3.5 ${report.bottingPct >= 40 ? "text-red-500" : report.bottingPct >= 20 ? "text-amber-500" : "text-emerald-600"}`} />
+              <ShieldCheck className={`w-3.5 h-3.5 ${report.bottingPct >= 40 ? "text-destructive" : report.bottingPct >= 20 ? "text-warning" : "text-success"}`} />
               <span>Health: <strong>{report.healthScore}/100</strong></span>
               <span>•</span>
               <span>Botting risk: <strong>{report.bottingPct}%</strong></span>
@@ -187,9 +187,9 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
         <div ref={scrollRef} className="px-4 py-3 max-h-[300px] overflow-y-auto space-y-3">
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+              <div className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                 m.role === "user"
-                  ? "bg-amber-700 text-white rounded-br-sm"
+                  ? "bg-warning text-primary-foreground rounded-br-sm"
                   : "bg-muted text-foreground rounded-bl-sm"
               }`}>
                 <div className="prose prose-sm max-w-none prose-p:my-1 prose-strong:text-current">
@@ -200,7 +200,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
           ))}
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-muted rounded-2xl px-3 py-2 flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="bg-muted rounded-lg px-3 py-2 flex items-center gap-2 text-xs text-muted-foreground">
                 <Loader2 className="w-3 h-3 animate-spin" /> thinking…
               </div>
             </div>
@@ -215,7 +215,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
                 key={q}
                 onClick={() => send(q)}
                 disabled={loading}
-                className="text-[11px] px-2 py-1 rounded-full border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 disabled:opacity-50"
+                className="text-[11px] px-2 py-1 rounded-full border border-warning bg-warning text-warning hover:bg-warning disabled:opacity-50"
               >
                 {q}
               </button>
@@ -236,7 +236,7 @@ export function AIEngagementChat({ link, platform, engagements, totalQuantity }:
             disabled={loading}
             className="h-9"
           />
-          <Button type="submit" size="sm" disabled={loading || !input.trim()} className="bg-amber-700 hover:bg-amber-800">
+          <Button type="submit" size="sm" disabled={loading || !input.trim()} className="bg-warning hover:bg-warning">
             <Send className="w-4 h-4" />
           </Button>
         </form>

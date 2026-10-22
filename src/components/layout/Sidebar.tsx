@@ -46,7 +46,7 @@ export function Sidebar({ onClose }: SidebarProps) {
             <span className="text-[9px] font-semibold uppercase tracking-[0.18em] leading-tight text-primary">✦ v2.0</span>
           </div>
         </Link>
-        <Button variant="ghost" onClick={onClose} className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary">
+        <Button aria-label="Close menu" variant="ghost" onClick={onClose} className="lg:hidden mr-6 w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary">
           <X className="w-4 h-4" />
         </Button>
       </div>
