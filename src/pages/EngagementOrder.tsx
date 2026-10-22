@@ -795,93 +795,43 @@ export default function EngagementOrder() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 space-y-3 sm:space-y-6 pb-8">
-        {/* Mission Console — unique compact hero with inline AI controls */}
-        <div className="relative overflow-hidden rounded-lg border border-border bg-card backdrop-blur-xl">
-          <div className="relative z-10 p-4 sm:p-6">
-            {/* Top row: status + title + live dot */}
-            <div className="flex items-start justify-between gap-3 mb-4 sm:mb-5">
-              <div className="min-w-0">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-secondary border border-border mb-2.5">
-                  <span className="relative flex w-1.5 h-1.5">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-success opacity-75 animate-ping" />
-                    <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-success" />
-                  </span>
-                  <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-muted-foreground">Engagement Console</span>
-                </div>
-                <h1 className="text-xl sm:text-3xl font-bold tracking-normal text-foreground leading-tight">
-                  Organic <span className="italic font-serif text-primary">Full Engagement</span>
-                </h1>
-                <p className="text-[12px] sm:text-[13px] text-muted-foreground mt-1 max-w-md">
-                  One link — every engagement type, dispatched with humanlike organic pacing.
-                </p>
-              </div>
-              <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-lg items-center justify-center bg-gradient-to-br from-primary/30 to-primary/20 border border-border shadow-sm">
-                <Rocket className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-
-            {/* Auto Boost entry */}
-            <Link
-              to="/auto-boost"
-              className="group relative block rounded-lg p-[1.5px] bg-primary/10 border border-primary/20 transition-all hover:from-primary hover:via-primary/70 hover:shadow-sm"
-            >
-              <div className="relative rounded-[14px] bg-card backdrop-blur-sm p-3.5 sm:p-4 overflow-hidden">
-
-                <div className="relative flex items-center gap-3 sm:gap-4">
-                  <div className="shrink-0 relative w-11 h-11 sm:w-12 sm:h-12 rounded-lg overflow-hidden ring-1 ring-primary/40 bg-secondary shadow-sm">
-                    <img src={logo} alt="OrganicSMM Pro logo" className="w-full h-full object-cover" loading="lazy" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <span className="text-[14px] sm:text-[15px] font-extrabold text-foreground tracking-normal">Auto Boost</span>
-                      <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40">
-                        <Zap className="h-2.5 w-2.5" />
-                        New post → auto order
-                      </span>
-                    </div>
-                    <p className="text-[11px] sm:text-[12px] text-muted-foreground leading-snug">
-                      Set quantity + delivery time for every new post — manage it here.
-                    </p>
-                  </div>
-                  <span className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/15 border border-primary/40 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-
+      <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 pb-8">
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-1.5">OrganicSMM Pro</p>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Full Engagement</h1>
           </div>
-        </div>
-
+          <Button asChild variant="outline" className="gap-2 self-start sm:self-auto bg-card">
+            <Link to="/auto-boost"><Zap className="h-4 w-4 text-primary" />Auto Boost<ArrowRight className="h-4 w-4 text-muted-foreground" /></Link>
+          </Button>
+        </header>
 
         {/* Platform Selector */}
-        <Card className="glass-card border-2 border-border">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-foreground/10 flex items-center justify-center">
+        <section className="border-b border-border pb-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center">
                 <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
               </div>
-              <Label className="text-base sm:text-lg font-bold tracking-normal text-foreground">Select Platform</Label>
+              <Label className="text-sm font-semibold tracking-normal text-foreground">Select Platform</Label>
             </div>
             <PlatformSelector
               selected={platform}
               onSelect={setPlatform}
               availablePlatforms={availablePlatforms}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Link Input */}
-        <Card className="glass-card border-2 border-border">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-5">
+        <section className="border-b border-border pb-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-3 mb-3">
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-foreground/10 flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                   <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
                 </div>
-                <Label className="text-base sm:text-lg font-bold tracking-normal text-foreground truncate">Video/Post Link</Label>
+                <Label className="text-sm font-semibold tracking-normal text-foreground truncate">Video/Post Link</Label>
               </div>
               <AIEngagementChat
                 link={link}
@@ -894,14 +844,14 @@ export default function EngagementOrder() {
               placeholder={`https://${platform}.com/...`}
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              className="h-12 sm:h-14 text-base sm:text-lg rounded-lg border-2 border-border focus:border-foreground bg-secondary text-foreground font-medium placeholder:text-muted-foreground transition-all"
+              className="h-12 text-sm rounded-lg border border-input focus:border-primary bg-card text-foreground font-medium placeholder:text-muted-foreground transition-all"
             />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Base Quantity */}
-        <Card className="glass-card border-2 border-border">
-          <CardContent className="p-4 sm:p-6">
+        <section className="border-b border-border pb-6">
+          <div className="space-y-4">
             <QuantitySelector
               value={baseQuantity}
               onChange={setBaseQuantity}
@@ -910,8 +860,8 @@ export default function EngagementOrder() {
               globalHours={globalHours}
               onGlobalHoursChange={handleGlobalHoursChange}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Engagement Types with Per-Type Settings */}
         <div className="space-y-4 sm:space-y-5">
@@ -922,7 +872,7 @@ export default function EngagementOrder() {
                 Customize organic settings per type
               </p>
             </div>
-            <span className="text-xs sm:text-sm bg-foreground text-background px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-bold shrink-0">
+            <span className="text-xs text-muted-foreground bg-secondary px-2.5 py-1 rounded-lg font-medium shrink-0">
               {bundlesLoading ? (
                 <span className="flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" /> Loading...</span>
               ) : (
@@ -992,7 +942,7 @@ export default function EngagementOrder() {
         <PreOrderRatioWarning engagements={engagements as any} />
 
         {/* Order Summary - Compact on mobile */}
-        <Card className="glass-card border-2 border-primary/40 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 overflow-hidden">
+        <Card className="border border-border bg-card overflow-hidden">
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="space-y-1 sm:space-y-2">
@@ -1022,7 +972,7 @@ export default function EngagementOrder() {
                   size="lg"
                   onClick={handlePlaceOrder}
                   disabled={!link.trim() || placeOrderMutation.isPending || bundlesLoading}
-                  className="h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-bold rounded-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all duration-300"
+                  className="h-12 px-6 text-sm font-semibold rounded-lg bg-primary hover:bg-primary/90 shadow-none"
                 >
                   {placeOrderMutation.isPending ? (
                     <>

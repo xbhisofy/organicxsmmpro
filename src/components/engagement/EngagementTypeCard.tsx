@@ -304,14 +304,14 @@ export function EngagementTypeCard({
 
   return (
     <Card className={cn(
-      "three-d-card border-2",
+      "border shadow-none",
       hasError
         ? "border-border"
         : config.enabled
-          ? "border-primary/30"
+          ? "border-border"
           : "border-border opacity-60"
     )}>
-      <CardContent className="p-2 sm:p-3 overflow-hidden">
+      <CardContent className="p-3 sm:p-4 overflow-hidden">
         {/* Header Row - compact single line */}
         <div className="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
           {/* Left: Icon + Label */}
@@ -328,19 +328,19 @@ export function EngagementTypeCard({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
                 <span className={cn(
-                  "text-xs sm:text-sm font-extrabold tracking-normal truncate",
-                  engagementConfig.color
+                  "text-xs sm:text-sm font-semibold tracking-normal truncate",
+                  "text-foreground"
                 )}>
-                  {engagementConfig.emoji} {engagementConfig.label}
+                  {engagementConfig.label}
                 </span>
                 {type === 'views' && (
-                  <Badge className="text-[8px] sm:text-[9px] bg-primary text-primary-foreground font-black px-1 sm:px-1.5 py-0 uppercase tracking-wider border-none">
+                  <Badge className="text-[8px] sm:text-[9px] bg-primary/10 text-primary font-medium px-1 sm:px-1.5 py-0 uppercase tracking-wider border-none">
                     Base
                   </Badge>
                 )}
               </div>
               {config.enabled && scheduleData && (
-                <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 font-black uppercase tracking-wider">
+                <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 font-medium tracking-normal">
                   <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary shrink-0" />
                   <span>{scheduleData.runCount} runs</span>
                   <span className="opacity-20">•</span>
@@ -361,12 +361,12 @@ export function EngagementTypeCard({
                 onChange={(e) => handleQuantityChange(e.target.value)}
                 onBlur={handleQuantityBlur}
                 className={cn(
-                  "w-14 sm:w-20 h-7 sm:h-8 text-xs sm:text-sm text-right bg-secondary border-2 border-border text-foreground font-bold px-1.5",
+                  "w-14 sm:w-20 h-7 sm:h-8 text-xs sm:text-sm text-right bg-card border border-input text-foreground font-bold px-1.5",
                   hasError && "border-foreground"
                 )}
               />
             )}
-            <Badge variant="outline" className="font-black text-[10px] sm:text-xs border-border bg-secondary text-muted-foreground px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0">
+            <Badge variant="outline" className="font-medium text-[10px] sm:text-xs border-border bg-secondary text-muted-foreground px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0">
               {formatPrice(config.price)}
             </Badge>
             <div className="scale-90 sm:scale-100">
@@ -395,11 +395,11 @@ export function EngagementTypeCard({
         {config.enabled && !hasError && (
           <Collapsible>
             <CollapsibleTrigger asChild>
-              <button className="mt-2 w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors py-1 border-t border-border/40">
+              <Button variant="ghost" className="mt-2 w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors py-1 border-t border-border/40">
                 <Timer className="h-3 w-3" />
-                <span className="font-bold uppercase tracking-widest">Settings</span>
+                <span className="font-medium tracking-normal">Settings</span>
                 <ChevronDown className="h-3 w-3" />
-              </button>
+              </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 pt-2 border-t border-border space-y-3">
@@ -470,7 +470,7 @@ export function EngagementTypeCard({
                         min={1}
                         max={168}
                         step={1}
-                        className="w-20 sm:w-24 h-9 sm:h-10 text-sm sm:text-base bg-secondary border-2 border-border text-foreground font-bold"
+                        className="w-20 sm:w-24 h-9 sm:h-10 text-sm sm:text-base bg-card border border-input text-foreground font-bold"
                       />
                       <span className="text-xs sm:text-sm text-muted-foreground font-medium">hours</span>
                     </div>
@@ -498,7 +498,7 @@ export function EngagementTypeCard({
                       onChange={(e) => handleRunCountChange(e.target.value)}
                       onBlur={(e) => handleRunCountChange(e.target.value)}
                       className={cn(
-                        "w-20 sm:w-24 h-9 sm:h-10 text-sm sm:text-base bg-secondary border-2 border-border text-foreground font-bold",
+                        "w-20 sm:w-24 h-9 sm:h-10 text-sm sm:text-base bg-card border border-input text-foreground font-bold",
                         runsExceedMax && "border-destructive"
                       )}
                     />
