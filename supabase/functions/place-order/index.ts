@@ -66,6 +66,11 @@ Deno.serve(async (req) => {
       });
     }
 
+    const { data: singleCatalogue } = await supabaseAdmin.from('single_order_services').select('id').eq('service_id', serviceId).maybeSingle();
+    if (singleCatalogue) {
+      return new Response(JSON.stringify({ error: 'Use Single Order checkout for this service' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     const sanitizedOrder: Record<string, unknown> = {
       service_id: serviceId,
       link,

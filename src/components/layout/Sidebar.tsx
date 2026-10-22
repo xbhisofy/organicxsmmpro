@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils';
 interface SidebarProps { onClose?: () => void; }
 
 const userNavItems = [
+  { icon: ShoppingCart, label: 'Single Order', path: '/single-order' },
+  { icon: History, label: 'Order History', path: '/orders' },
   { icon: Rocket, label: 'Full Engagement', path: '/engagement-order', highlight: true },
   { icon: Sparkles, label: 'Engagement Orders', path: '/engagement-orders' },
   { icon: Droplets, label: 'Mass Order', path: '/mass-order', highlight: true },
@@ -17,7 +19,7 @@ const userNavItems = [
 ];
 
 
-const adminNavItems = [{ icon: Shield, label: 'Admin Panel', path: '/admin' }];
+const adminNavItems = [{ icon: Shield, label: 'Admin Panel', path: '/admin' }, { icon: Package, label: 'Single Order Services', path: '/admin/single-order-services' }];
 
 export function Sidebar({ onClose }: SidebarProps) {
   const location = useLocation();

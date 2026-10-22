@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Zap, Star, Clock, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useServices } from '@/hooks/useServices';
+import { useSingleOrderServices } from '@/hooks/useSingleOrderServices';
 import { useCurrency } from '@/hooks/useCurrency';
 import { PageMeta } from '@/components/seo/PageMeta';
 
@@ -24,7 +24,9 @@ export default function Services() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const { formatPrice } = useCurrency();
 
-  const { services } = useServices();
+  const { data: singleServices } = useSingleOrderServices();
+  const services = singleServices?.map(s => ({ ...s, price: Number(s.price_per_k), drip_feed_enabled: false }));
+  const categories = ['All', ...new Set(services?.map(s => s.category) || [])];
 
   const filteredServices = services?.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -146,7 +148,7 @@ export default function Services() {
                       <p className="text-2xl font-bold gradient-text">{formatPrice(service.price)}</p>
                       <p className="text-xs text-muted-foreground">per 1000</p>
                     </div>
-                    <Link to={`/order?service=${service.id}`}>
+                    <Link to={`/single-order?service=${service.id}`}>
                       <Button variant="gradient" size="sm" className="gap-1">
                         Order
                         <ArrowRight className="h-4 w-4" />

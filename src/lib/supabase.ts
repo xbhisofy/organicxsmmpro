@@ -60,6 +60,7 @@ export interface Service {
 }
 
 export interface Order {
+  single_order_service_id?: string | null;
   id: string;
   order_number: number;
   user_id: string;

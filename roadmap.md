@@ -1,0 +1,6 @@
+# Single Order
+- [x] Add separate admin import and editable Single Order service catalogue.
+- [x] Add customer Single Order form, validation, pricing and order-history links.
+- [x] Connect atomic wallet charging, idempotency, explicit rejection refunds and provider dispatch without changing Full Engagement.
+- [x] Verify actual provider-service import, admin Save, signed-in form, backend quantity rejection, history page and mobile layout; 17 tests pass. VPS untouched.
+- [ ] Confirm a paid provider order and provider status read-back: not run to avoid purchasing engagement on a post without a user-supplied test target and spending authorization.

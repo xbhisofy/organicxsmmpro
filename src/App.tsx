@@ -58,6 +58,8 @@ const MassOrder = lazy(() => import("./pages/MassOrder"));
 const InstagramPage = lazy(() => import("./pages/Instagram"));
 const MyPosts = lazy(() => import("./pages/MyPosts"));
 const AutoBoost = lazy(() => import("./pages/AutoBoost"));
+const SingleOrder = lazy(() => import("./pages/SingleOrder"));
+const AdminSingleOrderServices = lazy(() => import("./pages/admin/AdminSingleOrderServices"));
 
 const Admin = lazy(() => import("./pages/admin/Admin"));
 const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
@@ -166,7 +168,8 @@ const App = () => {
                     
                     <Route path="/dashboard" element={<Navigate to="/engagement-order" replace />} />
                     <Route path="/services" element={<Services />} />
-                    <Route path="/order" element={<Navigate to="/engagement-order" replace />} />
+                    <Route path="/order" element={<Navigate to="/single-order" replace />} />
+                    <Route path="/single-order" element={<SingleOrder />} />
                     <Route path="/orders" element={<Orders />} />
                     <Route path="/wallet" element={<Wallet />} />
                     <Route path="/settings" element={<Settings />} />
@@ -186,6 +189,7 @@ const App = () => {
                     {/* Admin — server-verified guard */}
                     <Route path="/admin" element={<AdminGuard><Admin /></AdminGuard>} />
                     <Route path="/admin/services" element={<AdminGuard><AdminServices /></AdminGuard>} />
+                    <Route path="/admin/single-order-services" element={<AdminGuard><AdminSingleOrderServices /></AdminGuard>} />
                     <Route path="/admin/users" element={<AdminGuard><AdminUsers /></AdminGuard>} />
                     <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                     <Route path="/admin/bundles" element={<AdminGuard><AdminBundles /></AdminGuard>} />

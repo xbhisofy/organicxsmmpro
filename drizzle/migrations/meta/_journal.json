@@ -8,6 +8,13 @@
       "when": 1790844613615,
       "tag": "0000_restrict_platform_settings_read",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792699029367,
+      "tag": "0001_single_order_catalogue_and_atomic_checkout",
+      "breakpoints": true
     }
   ]
 }
