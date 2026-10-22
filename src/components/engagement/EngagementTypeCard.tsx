@@ -306,10 +306,10 @@ export function EngagementTypeCard({
     <Card className={cn(
       "three-d-card border-2",
       hasError
-        ? "border-white/20"
+        ? "border-border"
         : config.enabled
           ? "border-primary/30"
-          : "border-white/5 opacity-60"
+          : "border-border opacity-60"
     )}>
       <CardContent className="p-2 sm:p-3 overflow-hidden">
         {/* Header Row - compact single line */}
@@ -317,30 +317,30 @@ export function EngagementTypeCard({
           {/* Left: Icon + Label */}
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
             <div className={cn(
-              "p-1 sm:p-1.5 rounded-lg sm:rounded-xl shrink-0",
-              config.enabled ? "bg-white/10" : "bg-white/5"
+              "p-1 sm:p-1.5 rounded-lg sm:rounded-lg shrink-0",
+              config.enabled ? "bg-secondary" : "bg-secondary"
             )}>
               <Icon className={cn(
                 "h-3.5 w-3.5 sm:h-4 sm:w-4",
-                config.enabled ? "text-primary" : "text-white/80"
+                config.enabled ? "text-primary" : "text-muted-foreground"
               )} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
                 <span className={cn(
-                  "text-xs sm:text-sm font-extrabold tracking-tight truncate",
+                  "text-xs sm:text-sm font-extrabold tracking-normal truncate",
                   engagementConfig.color
                 )}>
                   {engagementConfig.emoji} {engagementConfig.label}
                 </span>
                 {type === 'views' && (
-                  <Badge className="text-[8px] sm:text-[9px] bg-primary text-black font-black px-1 sm:px-1.5 py-0 uppercase tracking-wider border-none">
+                  <Badge className="text-[8px] sm:text-[9px] bg-primary text-primary-foreground font-black px-1 sm:px-1.5 py-0 uppercase tracking-wider border-none">
                     Base
                   </Badge>
                 )}
               </div>
               {config.enabled && scheduleData && (
-                <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10px] text-white/65 mt-0.5 font-black uppercase tracking-wider">
+                <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 font-black uppercase tracking-wider">
                   <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary shrink-0" />
                   <span>{scheduleData.runCount} runs</span>
                   <span className="opacity-20">•</span>
@@ -366,7 +366,7 @@ export function EngagementTypeCard({
                 )}
               />
             )}
-            <Badge variant="outline" className="font-black text-[10px] sm:text-xs border-white/10 bg-white/5 text-white/85 px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0">
+            <Badge variant="outline" className="font-black text-[10px] sm:text-xs border-border bg-secondary text-muted-foreground px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0">
               {formatPrice(config.price)}
             </Badge>
             <div className="scale-90 sm:scale-100">
@@ -499,7 +499,7 @@ export function EngagementTypeCard({
                       onBlur={(e) => handleRunCountChange(e.target.value)}
                       className={cn(
                         "w-20 sm:w-24 h-9 sm:h-10 text-sm sm:text-base bg-secondary border-2 border-border text-foreground font-bold",
-                        runsExceedMax && "border-red-500"
+                        runsExceedMax && "border-destructive"
                       )}
                     />
                     <span className="text-xs sm:text-sm text-muted-foreground font-medium">
@@ -507,7 +507,7 @@ export function EngagementTypeCard({
                     </span>
                   </div>
                   {runsExceedMax && (
-                    <p className="text-[10px] sm:text-xs text-red-500 font-bold flex items-center gap-1">
+                    <p className="text-[10px] sm:text-xs text-destructive font-bold flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
                       Max {maxAllowedRuns} runs allowed (quantity {config.quantity} ÷ min {providerMin})
                     </p>
@@ -530,10 +530,10 @@ export function EngagementTypeCard({
                     </span>
                     <span className={cn(
                       "font-mono text-sm font-bold px-2 py-0.5 rounded-lg",
-                      variancePercent <= 15 ? "text-red-400 bg-red-500/20"
-                        : variancePercent <= 25 ? "text-amber-400 bg-amber-500/20"
-                          : variancePercent <= 35 ? "text-emerald-400 bg-emerald-500/20"
-                            : "text-green-400 bg-green-400/20"
+                      variancePercent <= 15 ? "text-destructive bg-destructive/20"
+                        : variancePercent <= 25 ? "text-warning bg-warning/20"
+                          : variancePercent <= 35 ? "text-success bg-success/20"
+                            : "text-success bg-success/20"
                     )}>±{variancePercent}%</span>
                   </Label>
 
@@ -548,22 +548,22 @@ export function EngagementTypeCard({
                       className="w-full"
                       rangeClassName={cn(
                         variancePercent <= 15
-                          ? "from-red-600 to-red-500"
+                          ? "from-destructive to-destructive"
                           : variancePercent <= 25
-                            ? "from-amber-600 to-amber-500"
+                            ? "from-warning to-warning"
                             : variancePercent <= 35
-                              ? "from-emerald-600 to-emerald-500"
-                              : "from-green-500 to-green-400"
+                              ? "from-success to-success"
+                              : "from-success to-success"
                       )}
                       thumbClassName={cn(
                         "border-3",
                         variancePercent <= 15
-                          ? "border-red-500 shadow-red-500/30"
+                          ? "border-destructive shadow-destructive/30"
                           : variancePercent <= 25
-                            ? "border-amber-500 shadow-amber-500/30"
+                            ? "border-warning shadow-warning/30"
                             : variancePercent <= 35
-                              ? "border-emerald-500 shadow-emerald-500/30"
-                              : "border-green-400 shadow-green-400/30"
+                              ? "border-success shadow-success/30"
+                              : "border-success shadow-success/30"
                       )}
                     />
                   </div>
@@ -577,26 +577,26 @@ export function EngagementTypeCard({
 
                   {/* Detection Risk Level Indicator - Compact on mobile */}
                   <div className={cn(
-                    "rounded-xl border-2 p-2.5 sm:p-4 mt-2 sm:mt-3 space-y-2 sm:space-y-3 transition-all duration-300",
+                    "rounded-lg border-2 p-2.5 sm:p-4 mt-2 sm:mt-3 space-y-2 sm:space-y-3 transition-all duration-300",
                     variancePercent <= 15
-                      ? "border-red-500/60 bg-red-500/10"
+                      ? "border-destructive/60 bg-destructive/10"
                       : variancePercent <= 25
-                        ? "border-amber-500/60 bg-amber-500/10"
+                        ? "border-warning/60 bg-warning/10"
                         : variancePercent <= 35
-                          ? "border-emerald-500/60 bg-emerald-500/10"
-                          : "border-green-400/60 bg-green-400/10"
+                          ? "border-success/60 bg-success/10"
+                          : "border-success/60 bg-success/10"
                   )}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs sm:text-sm font-bold text-foreground">Detection Risk</span>
                       <Badge className={cn(
                         "text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 font-bold border-2",
                         variancePercent <= 15
-                          ? "bg-red-500 text-white border-red-400"
+                          ? "bg-destructive text-foreground border-destructive"
                           : variancePercent <= 25
-                            ? "bg-amber-500 text-black border-amber-400"
+                            ? "bg-warning text-primary-foreground border-warning"
                             : variancePercent <= 35
-                              ? "bg-emerald-500 text-white border-emerald-400"
-                              : "bg-green-400 text-black border-green-300"
+                              ? "bg-success text-foreground border-success"
+                              : "bg-success text-primary-foreground border-success"
                       )}>
                         {variancePercent <= 15
                           ? "⚠ High"
@@ -614,12 +614,12 @@ export function EngagementTypeCard({
                         className={cn(
                           "h-full rounded-full transition-all duration-300",
                           variancePercent <= 15
-                            ? "bg-red-500"
+                            ? "bg-destructive"
                             : variancePercent <= 25
-                              ? "bg-amber-500"
+                              ? "bg-warning"
                               : variancePercent <= 35
-                                ? "bg-emerald-500"
-                                : "bg-green-400"
+                                ? "bg-success"
+                                : "bg-success"
                         )}
                         style={{ width: `${Math.min(100, ((variancePercent - 10) / 40) * 100)}%` }}
                       />
@@ -629,12 +629,12 @@ export function EngagementTypeCard({
                     <p className={cn(
                       "text-xs sm:text-sm font-medium hidden sm:block",
                       variancePercent <= 15
-                        ? "text-red-400"
+                        ? "text-destructive"
                         : variancePercent <= 25
-                          ? "text-amber-400"
+                          ? "text-warning"
                           : variancePercent <= 35
-                            ? "text-emerald-400"
-                            : "text-green-400"
+                            ? "text-success"
+                            : "text-success"
                     )}>
                       {variancePercent <= 15
                         ? "⚠ High bot detection risk - increase variance"
@@ -648,7 +648,7 @@ export function EngagementTypeCard({
 
                   {/* Per run range - Compact on mobile */}
                   {scheduleData && scheduleData.runCount > 0 && (
-                    <div className="flex items-center justify-between text-xs sm:text-sm bg-secondary rounded-xl px-3 sm:px-4 py-2 sm:py-3 border-2 border-border">
+                    <div className="flex items-center justify-between text-xs sm:text-sm bg-secondary rounded-lg px-3 sm:px-4 py-2 sm:py-3 border-2 border-border">
                       <span className="text-muted-foreground font-medium">Per run:</span>
                       <div className="flex items-center gap-1.5 sm:gap-3">
                         <span className="text-foreground/60 font-bold font-mono text-xs sm:text-sm">
@@ -664,7 +664,7 @@ export function EngagementTypeCard({
                 </div>
 
                 {/* Peak Hours Toggle - compact */}
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-secondary border border-border gap-3">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-secondary border border-border gap-3">
                   <div className="min-w-0">
                     <Label className="text-[10px] font-bold flex items-center gap-1.5 text-foreground uppercase tracking-widest">
                       <Flame className="h-3 w-3 text-foreground shrink-0" />
@@ -677,18 +677,18 @@ export function EngagementTypeCard({
 
                 {/* Schedule Preview - Compact on mobile */}
                 {scheduleData && (
-                  <div className="bg-secondary rounded-xl border-2 border-border overflow-hidden">
+                  <div className="bg-secondary rounded-lg border-2 border-border overflow-hidden">
                     <div className="p-3 sm:p-5">
                       <div className="flex items-center gap-2 text-xs sm:text-sm font-bold mb-3 sm:mb-4 text-foreground">
                         <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-foreground" />
                         Schedule Preview
                       </div>
                       <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                        <div className="bg-muted rounded-lg sm:rounded-xl p-2 sm:p-4 border border-border">
+                        <div className="bg-muted rounded-lg sm:rounded-lg p-2 sm:p-4 border border-border">
                           <p className="text-xl sm:text-3xl font-bold text-foreground">{scheduleData.runCount}</p>
                           <p className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-0.5 sm:mt-1">runs</p>
                         </div>
-                        <div className="bg-muted rounded-lg sm:rounded-xl p-2 sm:p-4 border border-border">
+                        <div className="bg-muted rounded-lg sm:rounded-lg p-2 sm:p-4 border border-border">
                           <p className="text-base sm:text-3xl font-bold text-foreground">
                             {scheduleData.avgInterval >= 60
                               ? `~${Math.floor(scheduleData.avgInterval / 60)}h`
@@ -697,7 +697,7 @@ export function EngagementTypeCard({
                           </p>
                           <p className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-0.5 sm:mt-1">interval</p>
                         </div>
-                        <div className="bg-muted rounded-lg sm:rounded-xl p-2 sm:p-4 border border-border">
+                        <div className="bg-muted rounded-lg sm:rounded-lg p-2 sm:p-4 border border-border">
                           <p className="text-sm sm:text-lg font-bold text-foreground">{format(scheduleData.finishTime, 'MMM d')}</p>
                           <p className="text-xs sm:text-base font-bold text-foreground">{format(scheduleData.finishTime, 'h:mm a')}</p>
                           <p className="text-[10px] sm:text-xs text-muted-foreground font-medium hidden sm:block mt-1">finish</p>

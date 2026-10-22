@@ -42,30 +42,30 @@ export function QuickOrderSheet({ open, onOpenChange, link, onPlaced }: QuickOrd
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-3xl bg-[#0a0a14] border-white/10 max-h-[85vh] overflow-y-auto">
+      <SheetContent side="bottom" className="rounded-t-3xl bg-card border-border max-h-[85vh] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle className="text-white flex items-center gap-2"><Rocket className="w-5 h-5 text-fuchsia-400" /> Boost this post</SheetTitle>
-          <SheetDescription className="text-white/80 text-xs break-all">{link}</SheetDescription>
+          <SheetTitle className="text-foreground flex items-center gap-2"><Rocket className="w-5 h-5 text-primary" /> Boost this post</SheetTitle>
+          <SheetDescription className="text-muted-foreground text-xs break-all">{link}</SheetDescription>
         </SheetHeader>
         <div className="grid gap-4 mt-4">
           <div>
-            <Label className="text-white/70">Views</Label>
+            <Label className="text-muted-foreground">Views</Label>
             <Input type="number" min={0} value={views} onChange={(e) => setViews(Math.max(0, Number(e.target.value) || 0))} />
           </div>
           <div>
-            <Label className="text-white/70">Likes</Label>
+            <Label className="text-muted-foreground">Likes</Label>
             <Input type="number" min={0} value={likes} onChange={(e) => setLikes(Math.max(0, Number(e.target.value) || 0))} />
           </div>
           <div>
-            <Label className="text-white/70">Comments</Label>
+            <Label className="text-muted-foreground">Comments</Label>
             <Input type="number" min={0} value={comments} onChange={(e) => setComments(Math.max(0, Number(e.target.value) || 0))} />
           </div>
           <div>
-            <Label className="text-white/70">Delivery window (hours, 0 = auto)</Label>
+            <Label className="text-muted-foreground">Delivery window (hours, 0 = auto)</Label>
             <Input type="number" min={0} max={168} value={hours} onChange={(e) => setHours(Math.min(168, Math.max(0, Number(e.target.value) || 0)))} />
-            <p className="text-[11px] text-white/50 mt-1">Quantity is spread organically with random timing across this window — likes, comments, saves and shares follow the views curve.</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Quantity is spread organically with random timing across this window — likes, comments, saves and shares follow the views curve.</p>
           </div>
-          <Button onClick={submit} disabled={busy} className="h-11 bg-gradient-to-b from-purple-500 to-fuchsia-600">
+          <Button onClick={submit} disabled={busy} className="h-11 bg-gradient-to-b from-primary to-primary">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Place Order"}
           </Button>
         </div>
