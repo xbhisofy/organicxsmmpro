@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -187,29 +188,29 @@ export function InstagramAccountsPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl p-5 bg-[#0a0a14]/80 border border-white/10">
-        <label className="block text-xs font-semibold uppercase tracking-wider text-white/80 mb-2">Add Instagram Username</label>
+      <div className="rounded-lg p-5 bg-card border border-border">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Add Instagram Username</label>
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="flex-1 relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/75">@</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && username) linkMut.mutate(username); }}
               placeholder="your_username"
-              className="w-full h-11 pl-8 pr-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder:text-white/65 focus:outline-none focus:border-purple-400/40"
+              className="w-full h-11 pl-8 pr-3 rounded-lg bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40"
             />
           </div>
-          <button
+          <Button variant="ghost"
             disabled={!username || linkMut.isPending}
             onClick={() => linkMut.mutate(username)}
-            className="h-11 px-5 rounded-xl font-semibold bg-gradient-to-b from-purple-500 to-fuchsia-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
+            className="h-11 px-5 rounded-lg font-semibold bg-gradient-to-b from-primary to-primary text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
           >
             {linkMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             Link
-          </button>
+          </Button>
         </div>
-        <p className="mt-2 text-[11px] text-white/75 flex items-center gap-1.5">
+        <p className="mt-2 text-[11px] text-muted-foreground flex items-center gap-1.5">
           <ShieldAlert className="w-3 h-3" /> Read-only. We only fetch public profile info & posts.
         </p>
 
@@ -226,12 +227,12 @@ export function InstagramAccountsPanel() {
           const resetAt = oldest ? new Date(oldest.getTime() + 30 * 24 * 60 * 60 * 1000) : null;
           const resetStr = resetAt ? resetAt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : null;
           return (
-            <div className={`mt-3 rounded-xl px-3 py-2 text-[12px] flex flex-wrap items-start gap-x-2 gap-y-1 border ${
+            <div className={`mt-3 rounded-lg px-3 py-2 text-[12px] flex flex-wrap items-start gap-x-2 gap-y-1 border ${
               blocked
-                ? 'bg-rose-500/10 border-rose-400/30 text-rose-200'
+                ? 'bg-destructive/10 border-destructive/30 text-destructive'
                 : remaining <= 1
-                  ? 'bg-amber-500/10 border-amber-400/30 text-amber-200'
-                  : 'bg-emerald-500/10 border-emerald-400/30 text-emerald-200'
+                  ? 'bg-warning/10 border-warning/30 text-warning'
+                  : 'bg-success/10 border-success/30 text-success'
             }`}>
               {blocked ? <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />}
               <span className="font-semibold">{used}/10 links used</span>
@@ -248,7 +249,7 @@ export function InstagramAccountsPanel() {
 
       <div className="space-y-3">
         {!isLoading && accounts.length > 0 && (
-          <div className="rounded-2xl p-3 bg-sky-500/10 border border-sky-400/30 text-[12px] text-sky-100 flex items-start gap-2">
+          <div className="rounded-lg p-3 bg-accent/10 border border-accent/30 text-[12px] text-accent flex items-start gap-2">
             <RefreshCw className="w-4 h-4 shrink-0 mt-0.5" />
             <span className="min-w-0">
               Auto check is off (to save API requests). After uploading a new post, press that account's{' '}
@@ -257,30 +258,30 @@ export function InstagramAccountsPanel() {
           </div>
         )}
 
-        {isLoading && accounts.length === 0 && <div className="text-center text-white/80 py-8">Loading...</div>}
+        {isLoading && accounts.length === 0 && <div className="text-center text-muted-foreground py-8">Loading...</div>}
         {pending
           .filter((u) => !accounts.some((a: any) => String(a.username).toLowerCase() === u))
           .map((u) => (
-            <div key={`pending-${u}`} className="rounded-2xl p-4 bg-[#0a0a14]/80 border border-purple-400/20 flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-white/5 animate-pulse shrink-0" />
+            <div key={`pending-${u}`} className="rounded-lg p-4 bg-card border border-primary/20 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-secondary animate-pulse shrink-0" />
               <div className="flex-1 min-w-0">
-                <span className="font-semibold !text-white truncate">@{u}</span>
-                <p className="text-[11px] text-purple-200/80 mt-1 flex items-center gap-1.5">
+                <span className="font-semibold text-foreground truncate">@{u}</span>
+                <p className="text-[11px] text-primary mt-1 flex items-center gap-1.5">
                   <Loader2 className="w-3 h-3 animate-spin" /> Profile & posts fetch ho rahe hain...
                 </p>
               </div>
             </div>
           ))}
         {!isLoading && accounts.length === 0 && pending.length === 0 && (
-          <div className="text-center py-10 rounded-2xl border border-dashed border-white/10 text-white/75">
+          <div className="text-center py-10 rounded-lg border border-dashed border-border text-muted-foreground">
             No Instagram accounts linked yet.
           </div>
         )}
 
         {accounts.map((a: any) => (
-          <div key={a.id} className="rounded-2xl p-4 bg-[#0a0a14]/80 border border-white/10 flex flex-wrap items-center gap-3 sm:gap-4">
+          <div key={a.id} className="rounded-lg p-4 bg-card border border-border flex flex-wrap items-center gap-3 sm:gap-4">
             <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg ring-2 ring-purple-400/30">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-primary flex items-center justify-center text-foreground font-bold text-lg ring-2 ring-primary/30">
                 {a.username[0]?.toUpperCase()}
               </div>
               {a.avatar_url && (
@@ -289,7 +290,7 @@ export function InstagramAccountsPanel() {
                   alt={a.username}
                   referrerPolicy="no-referrer"
                   loading="lazy"
-                  className="absolute inset-0 w-full h-full rounded-full object-cover ring-2 ring-purple-400/30 transition-opacity duration-300 opacity-0"
+                  className="absolute inset-0 w-full h-full rounded-full object-cover ring-2 ring-primary/30 transition-opacity duration-300 opacity-0"
                   onLoad={(e) => { (e.target as HTMLImageElement).style.opacity = '1'; }}
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
@@ -297,16 +298,16 @@ export function InstagramAccountsPanel() {
             </div>
             <div className="flex-1 min-w-[140px]">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold !text-white truncate">@{a.username}</span>
-                {a.is_verified && <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />}
+                <span className="font-semibold text-foreground truncate">@{a.username}</span>
+                {a.is_verified && <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />}
               </div>
-              {a.full_name && <p className="text-[13px] text-white/85 truncate">{a.full_name}</p>}
+              {a.full_name && <p className="text-[13px] text-muted-foreground truncate">{a.full_name}</p>}
               {!a.last_fetched_at && !a.followers && !a.posts_count ? (
-                <p className="text-[11px] text-purple-200/80 mt-0.5 flex items-center gap-1.5">
+                <p className="text-[11px] text-primary mt-0.5 flex items-center gap-1.5">
                   <Loader2 className="w-3 h-3 animate-spin" /> Loading profile...
                 </p>
               ) : (
-                <p className="text-[11px] text-white/75 mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   {a.followers?.toLocaleString('en-IN') ?? 0} followers · {a.posts_count ?? 0} posts
                 </p>
               )}
@@ -316,43 +317,43 @@ export function InstagramAccountsPanel() {
               {(() => {
                 const on = a.auto_boost_enabled === true;
                 return (
-                  <button
+                  <Button variant="ghost"
                     onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}
                     title={on ? 'Auto post order ON — orders are placed on new posts' : 'Auto post order OFF'}
                     className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center justify-center gap-2 transition-colors disabled:opacity-60 ${
                       on
-                        ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-200'
-                        : 'bg-white/5 border-white/10 text-white/60'
+                        ? 'bg-success/15 border-success/30 text-success'
+                        : 'bg-secondary border-border text-muted-foreground'
                     }`}
                   >
                     <Zap className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Auto</span>
-                    <span className={`w-8 h-4 rounded-full relative transition-colors ${on ? 'bg-emerald-500/70' : 'bg-white/15'}`}>
-                      <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${on ? 'left-[18px]' : 'left-0.5'}`} />
+                    <span className={`w-8 h-4 rounded-full relative transition-colors ${on ? 'bg-success/70' : 'bg-secondary'}`}>
+                      <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-card transition-all ${on ? 'left-[18px]' : 'left-0.5'}`} />
                     </span>
-                  </button>
+                  </Button>
                 );
               })()}
-              <button
+              <Button variant="ghost"
                 onClick={() => checkMut.mutate(a.id)}
                 disabled={checking === a.id}
                 title="Check for new posts — an order is placed if a new post is found"
-                className="h-9 px-3 rounded-lg text-[12px] font-semibold bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-sky-100 flex flex-1 sm:flex-none items-center justify-center gap-2 disabled:opacity-60"
+                className="h-9 px-3 rounded-lg text-[12px] font-semibold bg-accent/15 hover:bg-accent/25 border border-accent/30 text-accent flex flex-1 sm:flex-none items-center justify-center gap-2 disabled:opacity-60"
               >
                 {checking === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                 Check
-              </button>
-              <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 flex flex-1 sm:flex-none items-center justify-center whitespace-nowrap">
+              </Button>
+              <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-secondary hover:bg-secondary border border-border text-muted-foreground flex flex-1 sm:flex-none items-center justify-center whitespace-nowrap">
                 View Posts
               </Link>
 
-              <button
+              <Button variant="ghost"
                 onClick={() => confirm(`Remove @${a.username}?`) && removeMut.mutate(a.id)}
-                className="w-9 h-9 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-400/20 text-red-300 flex items-center justify-center"
+                className="w-9 h-9 rounded-lg bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 text-destructive flex items-center justify-center"
                 title="Remove"
               >
                 <Trash2 className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         ))}

@@ -797,69 +797,54 @@ export default function EngagementOrder() {
     <DashboardLayout>
       <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 space-y-3 sm:space-y-6 pb-8">
         {/* Mission Console — unique compact hero with inline AI controls */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a14]/80 backdrop-blur-xl">
-          {/* Aurora wash */}
-          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-80">
-            <div className="absolute -top-24 -left-16 w-[360px] h-[360px] bg-purple-600/25 blur-[120px] rounded-full" />
-            <div className="absolute -bottom-24 -right-10 w-[320px] h-[320px] bg-fuchsia-500/20 blur-[120px] rounded-full" />
-            <div className="absolute top-1/3 left-1/2 w-[260px] h-[260px] bg-emerald-500/10 blur-[120px] rounded-full" />
-          </div>
-          {/* Grid texture */}
-          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{
-            backgroundImage: 'linear-gradient(#a78bfa 1px, transparent 1px), linear-gradient(90deg, #a78bfa 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
-            maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 85%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 85%)',
-          }} />
-
+        <div className="relative overflow-hidden rounded-lg border border-border bg-card backdrop-blur-xl">
           <div className="relative z-10 p-4 sm:p-6">
             {/* Top row: status + title + live dot */}
             <div className="flex items-start justify-between gap-3 mb-4 sm:mb-5">
               <div className="min-w-0">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 mb-2.5">
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-secondary border border-border mb-2.5">
                   <span className="relative flex w-1.5 h-1.5">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-                    <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-success opacity-75 animate-ping" />
+                    <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-success" />
                   </span>
-                  <span className="text-[10px] font-semibold tracking-[0.18em] uppercase !text-white/70">Engagement Console</span>
+                  <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-muted-foreground">Engagement Console</span>
                 </div>
-                <h1 className="text-xl sm:text-3xl font-bold tracking-tight !text-white leading-tight">
-                  Organic <span className="italic font-serif text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-fuchsia-300 to-emerald-300">Full Engagement</span>
+                <h1 className="text-xl sm:text-3xl font-bold tracking-normal text-foreground leading-tight">
+                  Organic <span className="italic font-serif text-primary">Full Engagement</span>
                 </h1>
-                <p className="text-[12px] sm:text-[13px] text-white/55 mt-1 max-w-md">
+                <p className="text-[12px] sm:text-[13px] text-muted-foreground mt-1 max-w-md">
                   One link — every engagement type, dispatched with humanlike organic pacing.
                 </p>
               </div>
-              <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-xl items-center justify-center bg-gradient-to-br from-purple-500/30 to-fuchsia-500/20 border border-white/10 shadow-[0_0_30px_rgba(168,85,247,0.25)]">
-                <Rocket className="h-5 w-5 text-purple-200" />
+              <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-lg items-center justify-center bg-gradient-to-br from-primary/30 to-primary/20 border border-border shadow-sm">
+                <Rocket className="h-5 w-5 text-primary" />
               </div>
             </div>
 
             {/* Auto Boost entry */}
             <Link
               to="/auto-boost"
-              className="group relative block rounded-2xl p-[1.5px] bg-gradient-to-r from-primary/70 via-orange-400/40 to-primary/10 transition-all hover:from-primary hover:via-orange-300/70 hover:shadow-[0_0_45px_hsl(var(--primary)/0.35)]"
+              className="group relative block rounded-lg p-[1.5px] bg-primary/10 border border-primary/20 transition-all hover:from-primary hover:via-primary/70 hover:shadow-sm"
             >
-              <div className="relative rounded-[14px] bg-[#150d22]/90 backdrop-blur-sm p-3.5 sm:p-4 overflow-hidden">
-                <div aria-hidden className="absolute -top-12 -right-8 w-40 h-40 bg-primary/25 blur-3xl rounded-full" />
-                <div aria-hidden className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:14px_14px]" />
+              <div className="relative rounded-[14px] bg-card backdrop-blur-sm p-3.5 sm:p-4 overflow-hidden">
+
                 <div className="relative flex items-center gap-3 sm:gap-4">
-                  <div className="shrink-0 relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden ring-1 ring-primary/40 bg-white/5 shadow-[0_0_25px_hsl(var(--primary)/0.35)]">
+                  <div className="shrink-0 relative w-11 h-11 sm:w-12 sm:h-12 rounded-lg overflow-hidden ring-1 ring-primary/40 bg-secondary shadow-sm">
                     <img src={logo} alt="OrganicSMM Pro logo" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <span className="text-[14px] sm:text-[15px] font-extrabold !text-white tracking-tight">Auto Boost</span>
-                      <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-primary/20 text-orange-100 border border-primary/40">
+                      <span className="text-[14px] sm:text-[15px] font-extrabold text-foreground tracking-normal">Auto Boost</span>
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40">
                         <Zap className="h-2.5 w-2.5" />
                         New post → auto order
                       </span>
                     </div>
-                    <p className="text-[11px] sm:text-[12px] text-white/70 leading-snug">
+                    <p className="text-[11px] sm:text-[12px] text-muted-foreground leading-snug">
                       Set quantity + delivery time for every new post — manage it here.
                     </p>
                   </div>
-                  <span className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/15 border border-primary/40 text-orange-100 transition-all group-hover:bg-primary group-hover:text-primary-foreground">
+                  <span className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/15 border border-primary/40 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
                 </div>
@@ -875,10 +860,10 @@ export default function EngagementOrder() {
         <Card className="glass-card border-2 border-border">
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-foreground/10 flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-foreground/10 flex items-center justify-center">
                 <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
               </div>
-              <Label className="text-base sm:text-lg font-bold tracking-tight text-foreground">Select Platform</Label>
+              <Label className="text-base sm:text-lg font-bold tracking-normal text-foreground">Select Platform</Label>
             </div>
             <PlatformSelector
               selected={platform}
@@ -893,10 +878,10 @@ export default function EngagementOrder() {
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-5">
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-foreground/10 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-foreground/10 flex items-center justify-center shrink-0">
                   <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
                 </div>
-                <Label className="text-base sm:text-lg font-bold tracking-tight text-foreground truncate">Video/Post Link</Label>
+                <Label className="text-base sm:text-lg font-bold tracking-normal text-foreground truncate">Video/Post Link</Label>
               </div>
               <AIEngagementChat
                 link={link}
@@ -909,7 +894,7 @@ export default function EngagementOrder() {
               placeholder={`https://${platform}.com/...`}
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              className="h-12 sm:h-14 text-base sm:text-lg rounded-xl border-2 border-border focus:border-foreground bg-secondary text-foreground font-medium placeholder:text-muted-foreground transition-all"
+              className="h-12 sm:h-14 text-base sm:text-lg rounded-lg border-2 border-border focus:border-foreground bg-secondary text-foreground font-medium placeholder:text-muted-foreground transition-all"
             />
           </CardContent>
         </Card>
@@ -932,12 +917,12 @@ export default function EngagementOrder() {
         <div className="space-y-4 sm:space-y-5">
           <div className="flex items-center justify-between px-1 gap-2">
             <div className="min-w-0">
-              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">Engagement Breakdown</h2>
+              <h2 className="text-lg sm:text-xl font-bold tracking-normal text-foreground">Engagement Breakdown</h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1 hidden sm:block">
                 Customize organic settings per type
               </p>
             </div>
-            <span className="text-xs sm:text-sm bg-foreground text-background px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-bold shrink-0">
+            <span className="text-xs sm:text-sm bg-foreground text-background px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-bold shrink-0">
               {bundlesLoading ? (
                 <span className="flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" /> Loading...</span>
               ) : (
@@ -1021,7 +1006,7 @@ export default function EngagementOrder() {
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                <div className="text-left sm:text-right p-2.5 sm:p-3 rounded-xl bg-secondary/50">
+                <div className="text-left sm:text-right p-2.5 sm:p-3 rounded-lg bg-secondary/50">
                   <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
                     <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
                     <span>Balance: {formatPrice(wallet?.balance || 0)}</span>
@@ -1037,7 +1022,7 @@ export default function EngagementOrder() {
                   size="lg"
                   onClick={handlePlaceOrder}
                   disabled={!link.trim() || placeOrderMutation.isPending || bundlesLoading}
-                  className="h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-bold rounded-xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all duration-300"
+                  className="h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-bold rounded-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all duration-300"
                 >
                   {placeOrderMutation.isPending ? (
                     <>

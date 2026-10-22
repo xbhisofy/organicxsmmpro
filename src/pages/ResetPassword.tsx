@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -38,35 +39,35 @@ export default function ResetPassword() {
     setTimeout(() => navigate('/engagement-order', { replace: true }), 1500);
   };
 
-  const inputClass = "h-12 rounded-xl bg-white/[0.04] border border-white/10 focus:border-purple-400/60 !text-white font-medium px-4 placeholder:text-white/65";
+  const inputClass = "h-12 rounded-lg bg-secondary border border-border focus:border-primary/60 text-foreground font-medium px-4 placeholder:text-muted-foreground";
 
   return (
-    <div className="min-h-screen w-full bg-[#030303] text-white flex items-center justify-center px-5 py-12">
-      <div className="w-full max-w-[420px] rounded-2xl border border-white/10 bg-white/[0.03] p-7">
-        <h1 className="!text-white text-3xl font-extrabold tracking-tight mb-1.5">Set new password</h1>
-        <p className="text-[13px] mb-7 text-white/80">Choose a new password for your account.</p>
+    <div className="min-h-screen w-full bg-card text-foreground flex items-center justify-center px-5 py-12">
+      <div className="w-full max-w-[420px] rounded-lg border border-border bg-secondary p-7">
+        <h1 className="text-foreground text-3xl font-extrabold tracking-normal mb-1.5">Set new password</h1>
+        <p className="text-[13px] mb-7 text-muted-foreground">Choose a new password for your account.</p>
         {done ? (
-          <p className="text-[13px] font-medium text-emerald-300">Password updated! Redirecting…</p>
+          <p className="text-[13px] font-medium text-success">Password updated! Redirecting…</p>
         ) : (
           <form onSubmit={submit} className="space-y-4">
             <div>
-              <Label className="text-[12px] font-semibold mb-1.5 block text-white/70">New password</Label>
+              <Label className="text-[12px] font-semibold mb-1.5 block text-muted-foreground">New password</Label>
               <div className="relative">
                 <Input type={show ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className={`${inputClass} pr-11`} placeholder="••••••••" disabled={!ready} />
-                <button type="button" onClick={() => setShow(!show)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/75">
+                <Button variant="ghost" type="button" onClick={() => setShow(!show)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                </Button>
               </div>
             </div>
             <div>
-              <Label className="text-[12px] font-semibold mb-1.5 block text-white/70">Confirm password</Label>
+              <Label className="text-[12px] font-semibold mb-1.5 block text-muted-foreground">Confirm password</Label>
               <Input type={show ? 'text' : 'password'} value={confirm} onChange={(e) => setConfirm(e.target.value)} className={inputClass} placeholder="••••••••" disabled={!ready} />
             </div>
-            {error && <p className="text-[13px] font-medium text-red-400">{error}</p>}
-            <button type="submit" disabled={busy || !ready} className="w-full h-11 rounded-xl text-[13px] font-semibold text-black bg-white hover:bg-purple-50 flex items-center justify-center gap-2 disabled:opacity-70">
+            {error && <p className="text-[13px] font-medium text-destructive">{error}</p>}
+            <Button type="submit" disabled={busy || !ready} className="w-full h-11 rounded-lg text-[13px] font-semibold text-primary-foreground bg-primary hover:bg-primary flex items-center justify-center gap-2 disabled:opacity-70">
               {busy || !ready ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Update password <ArrowRight className="w-3.5 h-3.5" /></>}
-            </button>
-            <Link to="/auth" className="block text-center text-[13px] text-white/80 hover:text-white">Back to login</Link>
+            </Button>
+            <Link to="/auth" className="block text-center text-[13px] text-muted-foreground hover:text-foreground">Back to login</Link>
           </form>
         )}
       </div>

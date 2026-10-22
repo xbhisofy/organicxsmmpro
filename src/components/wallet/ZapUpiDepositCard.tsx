@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -86,27 +87,27 @@ export default function ZapUpiDepositCard() {
   }
 
   return (
-    <div className="relative rounded-2xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10 p-6 backdrop-blur-md shadow-[0_20px_60px_-20px_rgba(124,58,237,0.2)]">
+    <div className="relative rounded-lg bg-gradient-to-br from-card to-card border border-border p-6 backdrop-blur-md shadow-sm">
       <div className="relative flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center">
-            <Zap className="w-4 h-4 text-white" fill="white" />
+          <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center">
+            <Zap className="w-4 h-4 text-foreground" fill="currentColor" />
           </div>
           <div>
-            <h3 className="text-[15px] font-semibold text-white leading-tight">Pay with UPI</h3>
-            <p className="text-[11px] text-white/50 mt-0.5">GPay · PhonePe · Paytm · BHIM</p>
+            <h3 className="text-[15px] font-semibold text-foreground leading-tight">Pay with UPI</h3>
+            <p className="text-[11px] text-muted-foreground mt-0.5">GPay · PhonePe · Paytm · BHIM</p>
           </div>
         </div>
-        <span className="px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[9px] font-semibold uppercase tracking-wider">
+        <span className="px-2 py-1 rounded-full bg-success/10 border border-success/20 text-success text-[9px] font-semibold uppercase tracking-wider">
           Instant
         </span>
       </div>
 
       <div className="relative space-y-4">
         <div>
-          <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50 ml-1">Amount</label>
+          <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground ml-1">Amount</label>
           <div className="mt-1.5 relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-semibold text-white/40">₹</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-semibold text-muted-foreground">₹</span>
             <input
               type="number"
               inputMode="numeric"
@@ -115,9 +116,9 @@ export default function ZapUpiDepositCard() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
-              className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3.5 pl-10 pr-16 text-xl font-bold tracking-tight text-white outline-none focus:border-white/25 focus:bg-white/[0.05] transition-all placeholder:text-white/20"
+              className="w-full bg-secondary border border-border rounded-lg py-3.5 pl-10 pr-16 text-xl font-bold tracking-normal text-foreground outline-none focus:border-border focus:bg-secondary transition-all placeholder:text-muted-foreground"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-white/40 tracking-wider">INR</span>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-muted-foreground tracking-wider">INR</span>
           </div>
         </div>
 
@@ -125,35 +126,35 @@ export default function ZapUpiDepositCard() {
           {QUICK_AMOUNTS.map((q) => {
             const active = Number(amount) === q;
             return (
-              <button
+              <Button variant="ghost"
                 key={q}
                 onClick={() => setAmount(String(q))}
                 className={
                   'py-2.5 rounded-lg text-xs font-semibold transition-all border ' +
                   (active
-                    ? 'bg-white/[0.08] border-white/20 text-white'
-                    : 'bg-white/[0.02] border-white/5 text-white/60 hover:bg-white/[0.05] hover:border-white/10 hover:text-white')
+                    ? 'bg-primary/10 border-primary/30 text-primary'
+                    : 'bg-secondary border-border text-muted-foreground hover:bg-secondary hover:border-border hover:text-foreground')
                 }
               >
                 ₹{q >= 1000 ? `${q / 1000}k` : q}
-              </button>
+              </Button>
             );
           })}
         </div>
 
-        <button
+        <Button variant="ghost"
           onClick={handlePay}
           disabled={loading || polling}
-          className="relative w-full py-3.5 rounded-xl font-semibold text-black flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 bg-white hover:bg-purple-50 shadow-[0_0_24px_rgba(255,255,255,0.15)]"
+          className="relative w-full py-3.5 rounded-lg font-semibold text-primary-foreground flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 bg-primary hover:bg-primary shadow-sm"
         >
           {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> <span>Opening UPI…</span></>)
             : polling ? (<><Loader2 className="w-4 h-4 animate-spin" /> <span>Verifying…</span></>)
-            : (<><Zap className="w-4 h-4" fill="white" /> <span>Pay ₹{Math.floor(Number(amount) || 0)} via UPI</span></>)}
-        </button>
+            : (<><Zap className="w-4 h-4" fill="currentColor" /> <span>Pay ₹{Math.floor(Number(amount) || 0)} via UPI</span></>)}
+        </Button>
 
         <div className="flex items-center justify-center gap-1.5 pt-1">
-          <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-          <p className="text-[10px] text-white/40 font-medium">Auto-credit in seconds · No manual approval</p>
+          <div className="w-1 h-1 rounded-full bg-success animate-pulse" />
+          <p className="text-[10px] text-muted-foreground font-medium">Auto-credit in seconds · No manual approval</p>
         </div>
       </div>
     </div>
