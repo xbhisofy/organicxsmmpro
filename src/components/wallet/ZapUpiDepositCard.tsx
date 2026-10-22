@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -125,7 +126,7 @@ export default function ZapUpiDepositCard() {
           {QUICK_AMOUNTS.map((q) => {
             const active = Number(amount) === q;
             return (
-              <button
+              <Button variant="ghost"
                 key={q}
                 onClick={() => setAmount(String(q))}
                 className={
@@ -136,12 +137,12 @@ export default function ZapUpiDepositCard() {
                 }
               >
                 ₹{q >= 1000 ? `${q / 1000}k` : q}
-              </button>
+              </Button>
             );
           })}
         </div>
 
-        <button
+        <Button variant="ghost"
           onClick={handlePay}
           disabled={loading || polling}
           className="relative w-full py-3.5 rounded-lg font-semibold text-primary-foreground flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 bg-primary hover:bg-primary shadow-sm"
@@ -149,7 +150,7 @@ export default function ZapUpiDepositCard() {
           {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> <span>Opening UPI…</span></>)
             : polling ? (<><Loader2 className="w-4 h-4 animate-spin" /> <span>Verifying…</span></>)
             : (<><Zap className="w-4 h-4" fill="currentColor" /> <span>Pay ₹{Math.floor(Number(amount) || 0)} via UPI</span></>)}
-        </button>
+        </Button>
 
         <div className="flex items-center justify-center gap-1.5 pt-1">
           <div className="w-1 h-1 rounded-full bg-success animate-pulse" />

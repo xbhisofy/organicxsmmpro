@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -154,7 +155,7 @@ export default function Wallet() {
 
             {/* Method switcher — minimal landing style */}
             <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-secondary border border-border mb-4 backdrop-blur-sm">
-              <button
+              <Button variant="ghost"
                 onClick={() => setMethod('upi')}
                 className={
                   'relative flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium text-sm transition-all ' +
@@ -168,8 +169,8 @@ export default function Wallet() {
                 {method === 'upi' && (
                   <span className="ml-1 h-1.5 w-1.5 rounded-full bg-success" style={{ animation: 'vault-pulse 1.8s ease-in-out infinite' }} />
                 )}
-              </button>
-              <button
+              </Button>
+              <Button variant="ghost"
                 onClick={() => setMethod('crypto')}
                 className={
                   'flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium text-sm transition-all ' +
@@ -180,7 +181,7 @@ export default function Wallet() {
               >
                 <Bitcoin className="w-3.5 h-3.5" />
                 Crypto · USD
-              </button>
+              </Button>
             </div>
 
             {method === 'upi' ? <ZapUpiDepositCard /> : <OxapayDepositCard />}
@@ -198,7 +199,7 @@ export default function Wallet() {
 
             <div className="flex gap-1 p-1 bg-secondary rounded-lg mb-5 border border-border">
               {(['all', 'deposit', 'order', 'refund'] as const).map((f) => (
-                <button
+                <Button variant="ghost"
                   key={f}
                   onClick={() => setFilter(f)}
                   className={
@@ -209,7 +210,7 @@ export default function Wallet() {
                   }
                 >
                   {f === 'all' ? 'All' : f === 'deposit' ? 'Deposits' : f === 'order' ? 'Orders' : 'Refunds'}
-                </button>
+                </Button>
               ))}
             </div>
 

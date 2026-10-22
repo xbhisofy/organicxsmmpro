@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -49,9 +50,9 @@ export function MobileBottomNav() {
               <Wallet className="w-3.5 h-3.5 text-primary" />
               <span className="tabular-nums">{formatPrice(wallet?.balance || 0)}</span>
             </Link>
-            <button onClick={() => setOpen(true)} className="flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary">
+            <Button variant="ghost" onClick={() => setOpen(true)} className="flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary">
               <MoreHorizontal className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -73,11 +74,11 @@ export function MobileBottomNav() {
                 </Link>
               );
             })}
-            <button onClick={() => setOpen(true)}
+            <Button variant="ghost" onClick={() => setOpen(true)}
               className="flex flex-col items-center justify-center gap-1 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
               <MoreHorizontal className="w-[18px] h-[18px]" />
               <span className="text-[10px] font-semibold tracking-normal">More</span>
-            </button>
+            </Button>
           </div>
         </div>
       </nav>
@@ -89,9 +90,9 @@ export function MobileBottomNav() {
           <div className="fixed bottom-0 left-0 right-0 z-50 max-h-[88vh] overflow-y-auto rounded-t-3xl bg-card backdrop-blur-xl border-t border-border pb-[max(1rem,env(safe-area-inset-bottom))]">
             <div className="sticky top-0 flex items-center justify-between px-5 py-3 border-b border-border bg-card">
               <span className="text-[13px] font-bold text-foreground">Menu</span>
-              <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary">
+              <Button variant="ghost" onClick={() => setOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             {profile && (
@@ -141,11 +142,11 @@ export function MobileBottomNav() {
             </div>
 
             <div className="px-4 pt-2">
-              <button onClick={() => { setOpen(false); signOut(); }}
+              <Button variant="ghost" onClick={() => { setOpen(false); signOut(); }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-[13px] font-semibold text-destructive bg-destructive/10 border border-destructive/20 hover:bg-destructive/15">
                 <LogOut className="w-4 h-4" />
                 Sign out
-              </button>
+              </Button>
             </div>
           </div>
         </>

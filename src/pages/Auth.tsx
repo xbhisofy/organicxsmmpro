@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -142,9 +143,9 @@ export default function Auth() {
               <h3 className="text-xl font-bold mb-2 text-foreground">Check your inbox</h3>
               <p className="text-[13px] mb-2 text-muted-foreground">Verification link sent to:</p>
               <p className="text-[13px] font-semibold mb-6 text-foreground">{email}</p>
-              <button onClick={() => { setShowVerifyEmail(false); setIsLogin(true); }} className="text-[13px] font-semibold text-primary hover:text-primary">
+              <Button variant="ghost" onClick={() => { setShowVerifyEmail(false); setIsLogin(true); }} className="text-[13px] font-semibold text-primary hover:text-primary">
                 ← Back to login
-              </button>
+              </Button>
             </div>
           ) : (
             <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit} className="space-y-4">
@@ -156,12 +157,12 @@ export default function Auth() {
                   </div>
                   {error && <p className="text-[13px] font-medium text-destructive">{error}</p>}
                   {successMessage && <p className="text-[13px] font-medium text-success">{successMessage}</p>}
-                  <button type="submit" disabled={isSubmitting} className="w-full h-11 rounded-lg text-[13px] font-semibold text-primary-foreground bg-primary hover:bg-primary transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70">
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-11 rounded-lg text-[13px] font-semibold text-primary-foreground bg-primary hover:bg-primary transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70">
                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Send reset link <ArrowRight className="w-3.5 h-3.5" /></>}
-                  </button>
-                  <button type="button" onClick={() => setIsForgotPassword(false)} className="w-full text-center text-[13px] font-medium text-muted-foreground hover:text-foreground">
+                  </Button>
+                  <Button variant="ghost" type="button" onClick={() => setIsForgotPassword(false)} className="w-full text-center text-[13px] font-medium text-muted-foreground hover:text-foreground">
                     Back to login
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -179,31 +180,31 @@ export default function Auth() {
                     <div className="flex items-center justify-between mb-1.5">
                       <Label className="text-[12px] font-semibold text-muted-foreground" style={{ textTransform: 'none', letterSpacing: 'normal' }}>Password</Label>
                       {isLogin && (
-                        <button type="button" onClick={() => setIsForgotPassword(true)} className="text-[11px] font-medium text-primary hover:text-primary">
+                        <Button variant="ghost" type="button" onClick={() => setIsForgotPassword(true)} className="text-[11px] font-medium text-primary hover:text-primary">
                           Forgot password?
-                        </button>
+                        </Button>
                       )}
                     </div>
                     <div className="relative">
                       <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className={`${inputClass} pr-11`} />
-                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <Button variant="ghost" type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
                   {error && <p className="text-[13px] font-medium text-destructive">{error}</p>}
                   {successMessage && <p className="text-[13px] font-medium text-success">{successMessage}</p>}
 
-                  <button type="submit" disabled={isSubmitting} className="w-full h-11 rounded-lg text-[13px] font-semibold text-primary-foreground bg-primary hover:bg-primary transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70">
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-11 rounded-lg text-[13px] font-semibold text-primary-foreground bg-primary hover:bg-primary transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70">
                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{isLogin ? 'Sign in' : 'Create account'} <ArrowRight className="w-3.5 h-3.5" /></>}
-                  </button>
+                  </Button>
 
                   <p className="text-center text-[13px] text-muted-foreground">
                     {isLogin ? "Don't have an account? " : 'Already have an account? '}
-                    <button type="button" onClick={() => { setIsLogin(!isLogin); setError(''); setSuccessMessage(''); }} className="font-semibold text-primary hover:text-primary">
+                    <Button variant="ghost" type="button" onClick={() => { setIsLogin(!isLogin); setError(''); setSuccessMessage(''); }} className="font-semibold text-primary hover:text-primary">
                       {isLogin ? 'Sign up' : 'Sign in'}
-                    </button>
+                    </Button>
                   </p>
                 </div>
               )}

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Package, Wallet, ListOrdered, Settings, LifeBuoy, Shield, LogOut, Rocket, Sparkles, X, Code2, Droplets, Instagram, Grid3x3, Zap, History } from 'lucide-react';
 import logo from '@/assets/logo.jpg';
@@ -45,9 +46,9 @@ export function Sidebar({ onClose }: SidebarProps) {
             <span className="text-[9px] font-semibold uppercase tracking-[0.18em] leading-tight text-primary">✦ v2.0</span>
           </div>
         </Link>
-        <button onClick={onClose} className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary">
+        <Button variant="ghost" onClick={onClose} className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary">
           <X className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
 
       {/* User info */}
@@ -175,10 +176,10 @@ export function Sidebar({ onClose }: SidebarProps) {
 
       {/* Sign out */}
       <div className="p-3 border-t border-border">
-        <button onClick={() => signOut()} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-destructive/10">
+        <Button variant="ghost" onClick={() => signOut()} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-destructive/10">
           <LogOut className="w-3.5 h-3.5 text-destructive" />
           <span>Sign out</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

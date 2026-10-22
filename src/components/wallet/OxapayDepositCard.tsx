@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -127,7 +128,7 @@ export default function OxapayDepositCard() {
           {QUICK_AMOUNTS.map((q) => {
             const active = Number(amount) === q;
             return (
-              <button
+              <Button variant="ghost"
                 key={q}
                 onClick={() => setAmount(String(q))}
                 className={
@@ -138,12 +139,12 @@ export default function OxapayDepositCard() {
                 }
               >
                 ₹{q >= 1000 ? `${q / 1000}k` : q}
-              </button>
+              </Button>
             );
           })}
         </div>
 
-        <button
+        <Button variant="ghost"
           onClick={handlePay}
           disabled={loading || polling}
           className="relative w-full py-3.5 rounded-lg font-semibold text-primary-foreground flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 bg-primary hover:bg-primary shadow-sm"
@@ -151,7 +152,7 @@ export default function OxapayDepositCard() {
           {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> <span>Opening OxaPay…</span></>)
             : polling ? (<><Loader2 className="w-4 h-4 animate-spin" /> <span>Verifying payment…</span></>)
             : (<><Bitcoin className="w-4 h-4" /> <span>Pay ≈ ${usd} in Crypto</span></>)}
-        </button>
+        </Button>
 
         <div className="flex items-center justify-center gap-1.5 pt-1">
           <div className="w-1 h-1 rounded-full bg-success animate-pulse" />

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -53,9 +54,9 @@ export default function ResetPassword() {
               <Label className="text-[12px] font-semibold mb-1.5 block text-muted-foreground">New password</Label>
               <div className="relative">
                 <Input type={show ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className={`${inputClass} pr-11`} placeholder="••••••••" disabled={!ready} />
-                <button type="button" onClick={() => setShow(!show)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Button variant="ghost" type="button" onClick={() => setShow(!show)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                </Button>
               </div>
             </div>
             <div>
@@ -63,9 +64,9 @@ export default function ResetPassword() {
               <Input type={show ? 'text' : 'password'} value={confirm} onChange={(e) => setConfirm(e.target.value)} className={inputClass} placeholder="••••••••" disabled={!ready} />
             </div>
             {error && <p className="text-[13px] font-medium text-destructive">{error}</p>}
-            <button type="submit" disabled={busy || !ready} className="w-full h-11 rounded-lg text-[13px] font-semibold text-primary-foreground bg-primary hover:bg-primary flex items-center justify-center gap-2 disabled:opacity-70">
+            <Button type="submit" disabled={busy || !ready} className="w-full h-11 rounded-lg text-[13px] font-semibold text-primary-foreground bg-primary hover:bg-primary flex items-center justify-center gap-2 disabled:opacity-70">
               {busy || !ready ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Update password <ArrowRight className="w-3.5 h-3.5" /></>}
-            </button>
+            </Button>
             <Link to="/auth" className="block text-center text-[13px] text-muted-foreground hover:text-foreground">Back to login</Link>
           </form>
         )}

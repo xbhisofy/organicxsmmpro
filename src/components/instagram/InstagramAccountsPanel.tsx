@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -200,14 +201,14 @@ export function InstagramAccountsPanel() {
               className="w-full h-11 pl-8 pr-3 rounded-lg bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40"
             />
           </div>
-          <button
+          <Button variant="ghost"
             disabled={!username || linkMut.isPending}
             onClick={() => linkMut.mutate(username)}
             className="h-11 px-5 rounded-lg font-semibold bg-gradient-to-b from-primary to-primary text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
           >
             {linkMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             Link
-          </button>
+          </Button>
         </div>
         <p className="mt-2 text-[11px] text-muted-foreground flex items-center gap-1.5">
           <ShieldAlert className="w-3 h-3" /> Read-only. We only fetch public profile info & posts.
@@ -316,7 +317,7 @@ export function InstagramAccountsPanel() {
               {(() => {
                 const on = a.auto_boost_enabled === true;
                 return (
-                  <button
+                  <Button variant="ghost"
                     onClick={() => toggleAutoMut.mutate({ id: a.id, enabled: !on })}
                     title={on ? 'Auto post order ON — orders are placed on new posts' : 'Auto post order OFF'}
                     className={`h-9 px-3 rounded-lg text-[12px] font-semibold border flex items-center justify-center gap-2 transition-colors disabled:opacity-60 ${
@@ -330,10 +331,10 @@ export function InstagramAccountsPanel() {
                     <span className={`w-8 h-4 rounded-full relative transition-colors ${on ? 'bg-success/70' : 'bg-secondary'}`}>
                       <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-card transition-all ${on ? 'left-[18px]' : 'left-0.5'}`} />
                     </span>
-                  </button>
+                  </Button>
                 );
               })()}
-              <button
+              <Button variant="ghost"
                 onClick={() => checkMut.mutate(a.id)}
                 disabled={checking === a.id}
                 title="Check for new posts — an order is placed if a new post is found"
@@ -341,18 +342,18 @@ export function InstagramAccountsPanel() {
               >
                 {checking === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                 Check
-              </button>
+              </Button>
               <Link to={`/my-posts?account=${encodeURIComponent(a.id)}`} className="px-3 h-9 rounded-lg text-[12px] font-semibold bg-secondary hover:bg-secondary border border-border text-muted-foreground flex flex-1 sm:flex-none items-center justify-center whitespace-nowrap">
                 View Posts
               </Link>
 
-              <button
+              <Button variant="ghost"
                 onClick={() => confirm(`Remove @${a.username}?`) && removeMut.mutate(a.id)}
                 className="w-9 h-9 rounded-lg bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 text-destructive flex items-center justify-center"
                 title="Remove"
               >
                 <Trash2 className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         ))}
