@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PLATFORM_CONFIG } from "@/lib/engagement-types";
 import { Instagram, Music, Youtube, Twitter, Facebook } from "lucide-react";
@@ -38,19 +37,19 @@ export function PlatformSelector({ selected, onSelect, availablePlatforms }: Pla
         const isSelected = selected === key;
 
         return (
-          <Button variant="outline"
+          <button
             key={key}
             onClick={() => onSelect(key)}
             className={cn(
-              "flex items-center gap-2 px-5 py-3 rounded-lg font-semibold text-xs uppercase tracking-normal",
+              "flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest",
               isSelected
-                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90 hover:text-primary-foreground"
-                : "bg-card text-muted-foreground border border-border hover:bg-secondary hover:text-foreground"
+                ? `bg-gradient-to-r ${config.color} text-white border-2 border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] scale-[1.05]`
+                : "bg-white/[0.03] text-white/65 border border-white/5 hover:bg-white/5 hover:text-white/80"
             )}
           >
-            <Icon className={cn("h-4 w-4", isSelected ? "text-primary-foreground" : "text-muted-foreground")} />
+            <Icon className={cn("h-4 w-4", isSelected ? "text-white" : "text-white/80")} />
             <span>{config.label}</span>
-          </Button>
+          </button>
         );
       })}
     </div>
