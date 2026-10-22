@@ -1,0 +1,3 @@
+# Architecture rules
+- Keep Single Order catalogue entries separate from engagement bundle services, linked to dedicated service records and explicit provider-account mappings, so importing or pricing a single service cannot alter an existing bundle.
+- Create Single Orders and wallet transactions atomically in a service-role-only database function, with server-side catalogue pricing and request idempotency, to prevent duplicate charges and client price tampering.
