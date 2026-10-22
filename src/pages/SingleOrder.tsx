@@ -60,7 +60,7 @@ export default function SingleOrder() {
     { icon: ShieldCheck, name: 'Drop', value: selected?.drop_type },
     { icon: Star, name: 'Quality', value: selected?.quality },
   ];
-  return <DashboardLayout><div className="mx-auto max-w-4xl space-y-6 pb-8">
+  return <DashboardLayout><div className="mx-auto max-w-4xl space-y-6 pb-28 sm:pb-20">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-6">
       <div className="flex items-center gap-3"><ShoppingCart className="h-8 w-8 text-primary" /><div><p className="text-xs text-muted-foreground">OrganicSMM Pro</p><h1 className="text-2xl sm:text-3xl tracking-normal">Single Order</h1></div></div>
       <Button variant="outline" asChild><Link to="/orders"><History className="mr-2 h-4 w-4" />Order History</Link></Button>
