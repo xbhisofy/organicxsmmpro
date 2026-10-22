@@ -25,8 +25,8 @@
     --warning-foreground: 0 0% 100%;
     --destructive: 0 68% 44%;
     --destructive-foreground: 0 0% 100%;
-    --border: 216 16% 87%;
-    --input: 216 16% 83%;
+    --border: 216 16% 90%;
+    --input: 216 16% 86%;
     --ring: 18 88% 43%;
     --radius: 0.5rem;
     --sidebar-background: 0 0% 100%;
@@ -37,8 +37,8 @@
     --sidebar-accent-foreground: 18 88% 35%;
     --sidebar-border: 216 16% 87%;
     --sidebar-ring: 18 88% 43%;
-    --shadow-soft: 0 2px 8px hsl(220 18% 15% / 0.04), 0 12px 30px hsl(220 18% 15% / 0.035);
-    --shadow-glow: 0 4px 12px hsl(18 88% 43% / 0.12);
+    --shadow-soft: 0 2px 6px hsl(220 18% 15% / 0.025);
+    --shadow-glow: 0 2px 6px hsl(18 88% 43% / 0.08);
     --gradient-primary: linear-gradient(110deg, hsl(18 88% 43%), hsl(26 90% 42%));
     --overlay: 220 18% 15%;
   }
