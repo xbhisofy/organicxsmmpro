@@ -640,6 +640,33 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Single Orders have no organic runs. Check them using the exact imported account.
+    if (!targetRunId) {
+      const { data: singleOrders } = await supabase.from('orders')
+        .select('id,provider_order_id,single_order_provider_account_id,updated_at')
+        .not('single_order_service_id', 'is', null).not('provider_order_id', 'is', null)
+        .in('status', ['pending', 'processing']).order('updated_at').limit(100);
+      const accountIds = [...new Set((singleOrders || []).map(o => o.single_order_provider_account_id).filter(Boolean))];
+      const { data: accounts } = accountIds.length ? await supabase.from('provider_accounts').select('id,api_url,api_key').in('id', accountIds) : { data: [] };
+      const byAccount = new Map((accounts || []).map(a => [a.id, a]));
+      for (let offset = 0; offset < (singleOrders || []).length; offset += 4) {
+        await Promise.all((singleOrders || []).slice(offset, offset + 4).map(async o => {
+          const account = byAccount.get(o.single_order_provider_account_id);
+          if (!account) return;
+          try {
+            const response = await fetch(account.api_url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ key: account.api_key, action: 'status', order: o.provider_order_id }), signal: AbortSignal.timeout(15000) });
+            if (!response.ok) return;
+            const result = await response.json();
+            if (result.error) return;
+            const statusKey = String(result.status || '').toLowerCase().replace(/[\s_-]/g, '');
+            const statuses: Record<string,string> = { completed: 'completed', complete: 'completed', partial: 'partial', canceled: 'cancelled', cancelled: 'cancelled', pending: 'processing', inprogress: 'processing', processing: 'processing' };
+            const remains = Number(result.remains), startCount = Number(result.start_count);
+            await supabase.from('orders').update({ status: statuses[statusKey] || 'processing', ...(Number.isFinite(remains) ? { remains: Math.max(0, remains) } : {}), ...(Number.isFinite(startCount) ? { start_count: Math.max(0, startCount) } : {}), updated_at: new Date().toISOString() }).eq('id', o.id).in('status', ['pending','processing']);
+          } catch { console.warn('Single Order status temporarily unavailable', o.id); }
+        }));
+      }
+    }
+
     console.log(`\n=== STATUS CHECK COMPLETE ===`)
     console.log(`Completed: ${completed}, Still Processing: ${stillProcessing}, Failed: ${failed}`)
 

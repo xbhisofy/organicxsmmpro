@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ShoppingCart, Search, History, Loader2, Clock, Gauge, RefreshCw, ShieldCheck, Star, Ban, ArrowRight, Wallet, CheckCircle2, Globe, Instagram, Youtube } from 'lucide-react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -13,13 +13,14 @@ import { SINGLE_PLATFORMS, singleOrderTotal, validateSingleOrder } from '@/lib/s
 import { toast } from 'sonner';
 
 export default function SingleOrder() {
+  const [params] = useSearchParams();
   const { data: services = [], isLoading, error, refetch } = useSingleOrderServices();
   const { wallet, refreshWallet } = useAuth();
   const { formatPrice } = useCurrency();
   const [platform, setPlatform] = useState('All');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
-  const [serviceId, setServiceId] = useState('');
+  const [serviceId, setServiceId] = useState(params.get('service') || '');
   const [link, setLink] = useState('');
   const [quantity, setQuantity] = useState('');
   const [busy, setBusy] = useState(false);
@@ -28,7 +29,8 @@ export default function SingleOrder() {
   const submitting = useRef(false);
   const filtered = useMemo(() => services.filter(s => (platform === 'All' || s.platform === platform) && `${s.name} ${s.category} ${s.provider_service_number}`.toLowerCase().includes(search.toLowerCase())), [services, platform, search]);
   const categories = [...new Set(filtered.map(s => s.category))];
-  const selectedCategory = categories.includes(category) ? category : categories[0] || '';
+  const requestedCategory = filtered.find(s => s.id === serviceId)?.category;
+  const selectedCategory = categories.includes(category) ? category : requestedCategory || categories[0] || '';
   const available = filtered.filter(s => s.category === selectedCategory);
   const selected = available.find(s => s.id === serviceId) || available[0];
   const count = Number(quantity);
