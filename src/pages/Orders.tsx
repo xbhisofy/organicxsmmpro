@@ -30,6 +30,7 @@ import {
 import type { Order, OrganicRun } from '@/lib/supabase';
 import { EditRunDialog } from '@/components/engagement/EditRunDialog';
 import { SingleOrderProgressChart } from '@/components/engagement/SingleOrderProgressChart';
+import { singleOrderAction } from '@/hooks/useSingleOrderServices';
 
 const statusFilters = ['All', 'pending', 'processing', 'completed', 'partial', 'failed', 'cancelled'];
 
@@ -79,7 +80,7 @@ export default function Orders() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('orders')
-        .select('id, order_number, status, price, link, quantity, remains, start_count, provider_order_id, is_organic_mode, is_drip_feed, created_at, updated_at, error_message, service:services(name, category)')
+        .select('id, order_number, status, price, link, quantity, remains, start_count, provider_order_id, is_organic_mode, is_drip_feed, single_order_service_id, created_at, updated_at, error_message, service:services(name, category)')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(200);
@@ -164,11 +165,19 @@ export default function Orders() {
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
-    await refetch();
-    if (expandedOrder) {
-      await refetchRuns();
+    try {
+      const active = orders?.filter(o => o.single_order_service_id && o.provider_order_id && ['pending', 'processing'].includes(o.status)) || [];
+      let failed = 0;
+      for (let offset = 0; offset < active.length; offset += 4) {
+        const results = await Promise.allSettled(active.slice(offset, offset + 4).map(o => singleOrderAction({ action: 'status', order_id: o.id })));
+        failed += results.filter(r => r.status === 'rejected').length;
+      }
+      if (failed) toast.error(`${failed} provider status checks unavailable. Try again shortly.`);
+      await refetch();
+      if (expandedOrder) await refetchRuns();
+    } finally {
+      setIsRefreshing(false);
     }
-    setIsRefreshing(false);
   };
 
   const filteredOrders = orders?.filter(order => {
@@ -364,6 +373,7 @@ export default function Orders() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">{order.service?.name || 'Unknown Service'}</h3>
+                            {order.single_order_service_id && <span className="text-xs text-primary">Single Order</span>}
                             {order.is_organic_mode && (
                               <span className="flex items-center gap-1 text-xs text-success bg-success/20 px-2 py-0.5 rounded-full">
                                 <Leaf className="h-3 w-3" />

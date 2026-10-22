@@ -85,6 +85,10 @@ serve(async (req) => {
       }
     }
 
+    if (order.single_order_service_id) {
+      return new Response(JSON.stringify({ skipped: true, message: 'Single Orders use their dedicated checkout and dispatch path' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    }
+
     const currentOrderError = (order.error_message || '').toLowerCase()
     const hasUncertainDispatch = currentOrderError.includes('[dispatch uncertain]') || currentOrderError.includes('[awaiting provider confirmation]')
 
